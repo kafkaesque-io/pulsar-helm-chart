@@ -1,0 +1,171 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "pulsar.name" . }}
+    chart: {{ template "pulsar.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.broker.component }}
+    cluster: {{ template "pulsar.fullname" . }}
+spec:
+  replicas: {{ .Values.broker.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "pulsar.name" . }}
+      release: {{ .Release.Name }}
+      component: {{ .Values.broker.component }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "pulsar.name" . }}
+        release: {{ .Release.Name }}
+        component: {{ .Values.broker.component }}
+        cluster: {{ template "pulsar.fullname" . }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/broker-configmap.yaml") . | sha256sum }}
+{{ toYaml .Values.broker.annotations | indent 8 }}
+    spec:
+    {{- if .Values.broker.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.broker.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.broker.tolerations }}
+      tolerations:
+{{ toYaml .Values.broker.tolerations | indent 8 }}
+    {{- end }}
+      affinity:
+        {{- if .Values.broker.preferredZone }}
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: failure-domain.beta.kubernetes.io
+                operator: In
+                values:
+                - {{ .Values.broker.preferredZone }} 
+        {{- end }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: "app"
+                operator: In
+                values:
+                - "{{ template "pulsar.name" . }}"
+              - key: "release"
+                operator: In
+                values:
+                - {{ .Release.Name }}
+              - key: "component"
+                operator: In
+                values:
+                - {{ .Values.broker.component }}
+            topologyKey: "kubernetes.io/hostname"
+      terminationGracePeriodSeconds: {{ .Values.broker.gracePeriod }}
+      volumes:
+        {{- if .Values.enableTls }}
+        - name: certs
+          secret:
+            secretName: "{{ .Values.tlsSecretName }}" 
+        {{- end }}
+        - name: token-public-key
+          secret:
+            secretName: token-public-key
+        - name: token-superuser
+          secret:
+            secretName: token-superuser
+      initContainers:
+      # This init container will wait for zookeeper to be ready before
+      # deploying the bookies
+      - name: wait-zookeeper-ready
+        image: "{{ .Values.image.broker.repository }}:{{ .Values.image.broker.tag }}"
+        imagePullPolicy: {{ .Values.image.broker.pullPolicy }}
+        command: ["sh", "-c"]
+        args:
+          - >-
+            until bin/pulsar zookeeper-shell -server {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }} ls /admin/clusters | grep "^\[.*{{ template "pulsar.fullname" . }}.*\]"; do
+              sleep 3;
+            done;
+      containers:
+      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
+        image: "{{ .Values.image.broker.repository }}:{{ .Values.image.broker.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if .Values.broker.probe }}
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.broker.probe.port }}
+          initialDelaySeconds: {{ .Values.broker.probe.initial }} 
+          periodSeconds:  {{ .Values.broker.probe.period }} 
+        livenessProbe:
+          exec:
+            command:
+            - /pulsar/bin/pulsar-admin
+            - brokers 
+            - healthcheck
+          initialDelaySeconds: 60 
+          periodSeconds: 20 
+        {{- end }}
+      {{- if .Values.broker.resources }}
+        resources:
+{{ toYaml .Values.broker.resources | indent 10 }}
+      {{- end }}
+        command: ["sh", "-c"]
+        args:
+        - >
+          bin/apply-config-from-env.py conf/broker.conf &&
+          bin/apply-config-from-env.py conf/pulsar_env.sh &&
+          bin/apply-config-from-env.py conf/client.conf &&
+          bin/gen-yml-from-env.py conf/functions_worker.yml &&
+          {{- if .Values.enableTls }}
+          openssl pkcs8 -topk8 -inform PEM -outform PEM -in /pulsar/certs/tls.key -out /pulsar/tls-pk8.key -nocrypt &&
+          {{- end }}
+          cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
+          bin/pulsar broker
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: pulsar
+          containerPort: 6650
+        volumeMounts:
+          {{- if .Values.enableTls }}
+          - name: certs
+            readonly: true
+            mountPath: /pulsar/certs
+          {{- end }}
+          - mountPath: "/pulsar/token-public-key"
+            name: token-public-key
+            readonly: true
+          - mountPath: "/pulsar/token-superuser"
+            name: token-superuser
+            readonly: true
+        envFrom:
+        - configMapRef:
+            name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
+        env:
+        - name: advertisedAddress
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP

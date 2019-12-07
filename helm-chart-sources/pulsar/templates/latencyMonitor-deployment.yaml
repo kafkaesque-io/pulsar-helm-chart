@@ -1,0 +1,85 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+{{- if .Values.extra.latencymonitor }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.latencymonitor.component }}"
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "pulsar.name" . }}
+    chart: {{ template "pulsar.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.latencymonitor.component }}
+    cluster: {{ template "pulsar.fullname" . }}
+spec:
+  replicas: {{ .Values.latencymonitor.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "pulsar.name" . }}
+      release: {{ .Release.Name }}
+      component: {{ .Values.latencymonitor.component }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "pulsar.name" . }}
+        release: {{ .Release.Name }}
+        component: {{ .Values.latencymonitor.component }}
+        cluster: {{ template "pulsar.fullname" . }}
+      annotations:
+{{ toYaml .Values.latencymonitor.annotations | indent 8 }}
+    spec:
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.latencymonitor.tolerations }}
+      tolerations:
+{{ toYaml .Values.latencymonitor.tolerations | indent 8 }}
+    {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.latencymonitor.gracePeriod }}
+      containers:
+      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.latencymonitor.component }}"
+        image: "{{ .Values.latencymonitor.image.repository }}:{{ .Values.image.latencymonitor.tag }}"
+        imagePullPolicy: {{ .Values.latencymonitor.image.pullPolicy }}
+      {{- if .Values.latencymonitor.resources }}
+        resources:
+{{ toYaml .Values.latencymonitor.resources | indent 10 }}
+      {{- end }}
+        readinessProbe:
+          httpGet:
+            port: 8000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        livenessProbe:
+          httpGet:
+            port: 8000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        ports:
+        - name: http
+          containerPort: 8000
+        env:
+        - name: SERVICE_URL
+          value: "pulsar://{{ .Values.dnsName }}:6650/"
+        - name: MONITOR_TOPIC
+          value: "pulsar-perf-topic"
+{{- end }}

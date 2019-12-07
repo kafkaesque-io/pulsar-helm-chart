@@ -1,0 +1,107 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+{{- if .Values.extra.bastion }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.bastion.component }}"
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "pulsar.name" . }}
+    chart: {{ template "pulsar.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.bastion.component }}
+    cluster: {{ template "pulsar.fullname" . }}
+spec:
+  replicas: {{ .Values.bastion.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "pulsar.name" . }}
+      release: {{ .Release.Name }}
+      component: {{ .Values.bastion.component }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "pulsar.name" . }}
+        release: {{ .Release.Name }}
+        component: {{ .Values.bastion.component }}
+        cluster: {{ template "pulsar.fullname" . }}
+      annotations:
+{{ toYaml .Values.bastion.annotations | indent 8 }}
+    spec:
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.bastion.tolerations }}
+      tolerations:
+{{ toYaml .Values.bastion.tolerations | indent 8 }}
+    {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.bastion.gracePeriod }}
+      volumes:
+        - name: token-private-key
+          secret:
+            secretName: token-private-key
+        - name: token-public-key
+          secret:
+            secretName: token-public-key
+        - name: token-admin
+          secret:
+            secretName: token-admin
+        - name: token-superuser
+          secret:
+            secretName: token-superuser
+      containers:
+      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bastion.component }}"
+        image: "{{ .Values.image.bastion.repository }}:{{ .Values.image.bastion.tag }}"
+        imagePullPolicy: {{ .Values.image.bastion.pullPolicy }}
+      {{- if .Values.bastion.resources }}
+        resources:
+{{ toYaml .Values.bastion.resources | indent 10 }}
+      {{- end }}
+        command: ["sh", "-c"]
+        volumeMounts:
+          - mountPath: "/pulsar/token-private-key"
+            name: token-private-key
+            readonly: true
+          - mountPath: "/pulsar/token-public-key"
+            name: token-public-key
+            readonly: true
+          - mountPath: "/pulsar/token-admin"
+            name: token-admin
+            readonly: true
+          - mountPath: "/pulsar/token-superuser"
+            name: token-superuser
+            readonly: true
+        args:
+        - >
+          cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
+          bin/apply-config-from-env.py conf/client.conf &&
+          sleep 10000000000
+        envFrom:
+        - configMapRef:
+            name: "{{ template "pulsar.fullname" . }}-{{ .Values.bastion.component }}"
+        env:
+        - name: webServiceUrl
+          value: http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080/
+        - name: brokerServiceUrl
+          value: pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650/
+{{- end }}

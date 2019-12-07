@@ -1,0 +1,38 @@
+{{- if .Values.extra.usedns }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.dns.component }}"
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: "{{ template "pulsar.fullname" . }}-{{ .Values.dns.component }}"
+    spec:
+      serviceAccountName: "{{ template "pulsar.fullname" . }}-{{ .Values.dns.component }}"
+      {{- if .Values.dns.azureVolume }}
+      volumes:
+        - name: azure-config 
+          secret:
+            secretName: azure-config-file 
+      {{- end }}
+      containers:
+      - name: external-dns
+        image: registry.opensource.zalan.do/teapot/external-dns:latest
+        {{- if .Values.dns.azureVolume }}
+        volumeMounts:
+          - mountPath: "/etc/kubernetes/"
+            name: azure-config 
+            readonly: true
+        {{- end }}
+        args:
+        - --source=service
+        - --source=ingress
+        - --provider={{ .Values.dns.provider }}
+        - --domain-filter={{ .Values.dns.domainFilter }}
+        - --policy=upsert-only # would prevent ExternalDNS from deleting any records, omit to enable full synchronization
+        - --registry=txt
+        - --txt-owner-id=my-identifier
+{{- end }}

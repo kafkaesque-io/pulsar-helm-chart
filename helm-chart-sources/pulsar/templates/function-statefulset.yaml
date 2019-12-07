@@ -1,0 +1,187 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+{{- if .Values.extra.function }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "pulsar.name" . }}
+    chart: {{ template "pulsar.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.function.component }}
+    cluster: {{ template "pulsar.fullname" . }}
+spec:
+  serviceName: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
+  replicas: {{ .Values.function.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "pulsar.name" . }}
+      release: {{ .Release.Name }}
+      component: {{ .Values.function.component }}
+  updateStrategy:
+{{ toYaml .Values.function.updateStrategy | indent 4 }}
+  podManagementPolicy: {{ .Values.function.podManagementPolicy }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "pulsar.name" . }}
+        release: {{ .Release.Name }}
+        component: {{ .Values.function.component }}
+        cluster: {{ template "pulsar.fullname" . }}
+      annotations:
+{{ toYaml .Values.function.annotations | indent 8 }}
+    spec:
+      serviceAccountName: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
+      {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.function.tolerations }}
+      tolerations:
+{{ toYaml .Values.function.tolerations | indent 8 }}
+      {{- end }}
+      affinity:
+        {{- if .Values.function.preferredZone }}
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: failure-domain.beta.kubernetes.io
+                operator: In
+                values:
+                - {{ .Values.function.preferredZone }}
+        {{- end }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: "app"
+                operator: In
+                values:
+                - "{{ template "pulsar.name" . }}"
+              - key: "release"
+                operator: In
+                values:
+                - {{ .Release.Name }}
+              - key: "component"
+                operator: In
+                values:
+                - {{ .Values.function.component }}
+            topologyKey: "kubernetes.io/hostname"
+      terminationGracePeriodSeconds: {{ .Values.function.gracePeriod }}
+      volumes:
+        - name: token-superuser
+          secret:
+            secretName: token-superuser
+        - name: config-volume
+          configMap:
+            name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}" 
+        - name: token-public-key
+          secret:
+            secretName: token-public-key
+        {{- if .Values.enableTls }}
+        - name: certs
+          secret:
+            secretName: "{{ .Values.tlsSecretName }}"
+        {{- end }}
+      {{- if not .Values.persistence }}
+      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-{{ .Values.function.volumes.data.name }}"
+        emptyDir: {}
+      {{- end }}
+      containers:
+      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
+        image: "{{ .Values.image.function.repository }}:{{ .Values.image.function.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if .Values.function.probe }}
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.function.probe.port }}
+          initialDelaySeconds: {{ .Values.function.probe.initial }} 
+          periodSeconds:  {{ .Values.function.probe.period }} 
+        {{- end }}
+        {{- if .Values.function.resources }}
+        resources:
+{{ toYaml .Values.function.resources | indent 10 }}
+        {{- end }}
+        command: ["sh", "-c"]
+        args:
+        - >
+          cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
+          bin/apply-config-from-env.py conf/broker.conf &&
+          cp -f funcconf/functions_worker.yml conf/functions_worker.yml &&
+          export PF_workerHostname="${workerHostname}.{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}" &&
+          bin/gen-yml-from-env.py conf/functions_worker.yml &&
+          bin/apply-config-from-env.py conf/pulsar_env.sh &&
+          {{- if .Values.enableTls }}
+          openssl pkcs8 -topk8 -inform PEM -outform PEM -in /pulsar/certs/tls.key -out /pulsar/tls-pk8.key -nocrypt &&
+          {{- end }}
+          bin/pulsar functions-worker 
+        ports:
+        - name: functiontls
+          containerPort: 6751
+        - name: function
+          containerPort: 6750
+        envFrom:
+        - configMapRef:
+            name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-extra"
+        env:
+        - name: workerHostname
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name 
+        - name: PF_workerId 
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        volumeMounts:
+          - mountPath: "/pulsar/token-superuser"
+            name: token-superuser
+            readonly: true
+          - mountPath: "/pulsar/token-public-key"
+            name: token-public-key
+            readonly: true
+          {{- if .Values.enableTls }}
+          - name: certs
+            readonly: true
+            mountPath: /pulsar/certs
+          {{- end }}
+          - name: config-volume
+            mountPath: /pulsar/funcconf/functions_worker.yml
+            subPath: functions_worker.yml
+          - name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-{{ .Values.function.volumes.data.name }}"
+            mountPath: /pulsar/logs
+  {{- if .Values.persistence }}
+  volumeClaimTemplates:
+  - metadata:
+      name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-{{ .Values.function.volumes.data.name }}"
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.function.volumes.data.size }}
+      {{- if .Values.function.volumes.data.storageClass }}
+      storageClassName: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-{{ .Values.function.volumes.data.name }}"
+      {{- end }}
+  {{- end }}
+{{- end }}
