@@ -45,7 +45,7 @@ main() {
     if [[ -n "${changed_charts[*]}" ]]; then
         for chart in "${changed_charts[@]}"; do
             echo "Packaging chart '$chart'..."
-            package_chart "charts/$chart"
+            package_chart "helm-chart-sources/$chart"
         done
 
         release_charts
@@ -65,8 +65,6 @@ find_latest_tag() {
 
 package_chart() {
     local chart="$1"
-#    helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com
-#    helm dependency build "$chart"
     helm package "$chart" --destination .deploy
 }
 
