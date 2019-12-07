@@ -47,9 +47,13 @@ spec:
       annotations:
 {{ toYaml .Values.dashboard.annotations | indent 8 }}
     spec:
-    {{- if .Values.nodeSelector }}
+    {{- if (.Values.nodeSelector) and (eq .Values.dashboard.nodeSelector false) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.dashboard.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.dashboard.nodeSelector | indent 8 }}
     {{- end }}
     {{- if .Values.dashboard.tolerations }}
       tolerations:

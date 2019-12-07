@@ -47,9 +47,13 @@ spec:
       annotations:
 {{ toYaml .Values.autoRecovery.annotations | indent 8 }}
     spec:
-    {{- if .Values.nodeSelector }}
+    {{- if (.Values.nodeSelector) and (eq .Values.autoRecover.nodeSelector false) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.autoRecovery.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.autoRecovery.nodeSelector | indent 8 }}
     {{- end }}
     {{- if .Values.autoRecovery.tolerations }}
       tolerations:

@@ -47,7 +47,11 @@ spec:
         checksum/config: {{ include (print $.Template.BasePath "/broker-configmap.yaml") . | sha256sum }}
 {{ toYaml .Values.broker.annotations | indent 8 }}
     spec:
-    {{- if .Values.broker.nodeSelector }}
+    {{- if (.Values.nodeSelector) and (eq .Values.broker.nodeSelector false) }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if eq .Values.broker.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.broker.nodeSelector | indent 8 }}
     {{- end }}

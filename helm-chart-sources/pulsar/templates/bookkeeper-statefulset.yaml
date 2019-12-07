@@ -50,9 +50,13 @@ spec:
       annotations:
 {{ toYaml .Values.bookkeeper.annotations | indent 8 }}
     spec:
-    {{- if .Values.nodeSelector }}
+    {{- if (.Values.nodeSelector) and (eq .Values.bookkeeper.nodeSelector false) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.bookkeeper.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.bookkeeper.nodeSelector | indent 8 }}
     {{- end }}
     {{- if .Values.bookkeeper.tolerations }}
       tolerations:

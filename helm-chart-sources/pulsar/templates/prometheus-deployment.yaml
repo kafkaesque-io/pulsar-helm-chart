@@ -51,9 +51,13 @@ spec:
       annotations:
 {{ toYaml .Values.prometheus.annotations | indent 8 }}
     spec:
-    {{- if .Values.nodeSelector }}
+    {{- if (.Values.nodeSelector) and (eq .Values.prometheus.nodeSelector false) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.prometheus.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.prometheus.nodeSelector | indent 8 }}
     {{- end }}
     {{- if .Values.prometheus.tolerations }}
       tolerations:

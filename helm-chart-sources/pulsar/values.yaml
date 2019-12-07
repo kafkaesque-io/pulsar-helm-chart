@@ -25,8 +25,13 @@ fullnameOverride: pulsar
 # DNS name for loadbalancer
 dnsName: pulsar.example.com 
 
-nodeSelector:
-  zone: pulsar
+
+# Global node selector
+# If set, this will apply to all components
+# Individual components can be set to a different node 
+# selector
+#nodeSelector:
+#  zone: pulsar
 
 ## If persistence is enabled, components that has state will
 ## be deployed with PersistentVolumeClaims, otherwise, for test
@@ -379,8 +384,8 @@ function:
 proxy:
   component: proxy
   replicaCount: 10
-  nodeSelector:
-    zone: pulsar
+  #nodeSelector:
+  #  zone: pulsar
     # cloud.google.com/gke-nodepool: default-pool
   annotations:
     prometheus.io/scrape: "true"
@@ -451,8 +456,8 @@ dns:
 autoRecovery:
   component: autorecovery
   replicaCount: 1
-  # nodeSelector:
-    # cloud.google.com/gke-nodepool: default-pool
+  #nodeSelector:
+  #  cloud.google.com/gke-nodepool: default-pool
   annotations: {}
   tolarations: []
   gracePeriod: 0

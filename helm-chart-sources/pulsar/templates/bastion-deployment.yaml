@@ -47,9 +47,13 @@ spec:
       annotations:
 {{ toYaml .Values.bastion.annotations | indent 8 }}
     spec:
-    {{- if .Values.nodeSelector }}
+    {{- if (.Values.nodeSelector) and (eq .Values.bastion.nodeSelector false) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.bastion.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.bastion.nodeSelector | indent 8 }}
     {{- end }}
     {{- if .Values.bastion.tolerations }}
       tolerations:

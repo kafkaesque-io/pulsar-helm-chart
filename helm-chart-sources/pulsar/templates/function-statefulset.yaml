@@ -52,9 +52,13 @@ spec:
 {{ toYaml .Values.function.annotations | indent 8 }}
     spec:
       serviceAccountName: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
-      {{- if .Values.nodeSelector }}
+      {{- if (.Values.nodeSelector) and (eq .Values.function.nodeSelector false) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.function.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.function.nodeSelector | indent 8 }}
       {{- end }}
       {{- if .Values.function.tolerations }}
       tolerations:
