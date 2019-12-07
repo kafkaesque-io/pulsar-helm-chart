@@ -7,7 +7,6 @@ jobs:
       - checkout
       - run:
           command: |
-            shellcheck -x tests/e2e-kind.sh
             shellcheck -x .circleci/install_tools.sh
             shellcheck -x .circleci/release.sh
   lint-charts:
