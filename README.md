@@ -8,8 +8,20 @@ This Helm chart configures an Apache Pulsar cluster. It includes support for:
 * Tiered Storage
 * Independent Image Versions for Components (Zookeeper, Bookkeeper, etc), enabling controlled upgrades.
 
+## Installing and Updating
 To add this chart to your local Helm repository:
 
-```helm repo add kafkaesque https://kafkaesque-io.github.io/pulsar-helm-chart```
+```helm repo add kafkaesque https://helm.kafkaesque.io/pulsar-helm-chart```
+
+To update to the latest chart:
+
+```helm repo update```
+
+Note: This command updates all your Helm charts.
+
+To install a specific version of the chart:
+
+```helm install --repo https://helm.kafkaesque.io pulsar-helm-chart --version v1.0.1```
+
 
 Originally developed from the Helm chart from the Apache Pulsar project.
