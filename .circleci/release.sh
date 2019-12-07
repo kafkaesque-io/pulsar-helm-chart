@@ -39,7 +39,7 @@ main() {
     echo "Identifying changed charts since tag '$latest_tag'..."
 
     local changed_charts=()
-    readarray -t changed_charts <<< "$(git diff --find-renames --name-only "$latest_tag_rev" -- charts | cut -d '/' -f 2 | uniq)"
+    readarray -t changed_charts <<< "$(git diff --find-renames --name-only "$latest_tag_rev" -- helm-chart-sources | cut -d '/' -f 2 | uniq)"
 
 
     if [[ -n "${changed_charts[*]}" ]]; then
