@@ -1,4 +1,7 @@
+[![CircleCI](https://circleci.com/gh/kafkaesque-io/pulsar-helm-chart/tree/master.svg?style=svg)](https://circleci.com/gh/kafkaesque-io/pulsar-helm-chart/tree/master)
+
 # Helm Chart for an Apache Pulsar Cluster
+
 
 This Helm chart configures an Apache Pulsar cluster. It includes support for:
 * TLS
