@@ -19,14 +19,14 @@
 
 ## Namespace to deploy pulsar
 namespace: pulsar
-namespaceCreate: no
+namespaceCreate: yes
 fullnameOverride: pulsar
 
 # DNS name for loadbalancer
 dnsName: pulsar.example.com 
 
-nodeSelector:
-  zone: pulsar
+#nodeSelector:
+#  zone: pulsar
 
 ## If persistence is enabled, components that has state will
 ## be deployed with PersistentVolumeClaims, otherwise, for test
@@ -36,14 +36,14 @@ persistence: yes
 ## If prometheus_persistence is enabled, prometheus will be deployed
 ## with PersistentVolumeClaims, otherwise, for test purposes, they
 ## will be deployed with emptyDir
-prometheus_persistence: yes
+#prometheus_persistence: yes
 
-prometheus_rbac: yes
+#prometheus_rbac: yes
 
-default_storage:
-  type: gp2
-  provisioner: kubernetes.io/aws-ebs
-  fsType: ext4
+#default_storage:
+#  type: gp2
+#  provisioner: kubernetes.io/aws-ebs
+#  fsType: ext4
 
 enableTls: no
 tlsSecretName: pulsar-tls
@@ -58,17 +58,17 @@ extra:
   proxy: yes
   # DNS on proxy
   usedns: no
-  dnsOnProxy: yes
+  dnsOnProxy: yes 
   # Bookkeeper auto-recovery
-  autoRecovery: yes
+  autoRecovery: no
   # Bastion pod for administrative commands
-  bastion: yes
+  bastion: no
   # Monitoring stack (prometheus, grafana, and dashboard)
   monitoring: no
   # Zoonavigator
   zoonavigator: no
   # Standalone functions worker
-  function: yes 
+  function: no 
 ## Which images to use
 image:
   broker:
@@ -106,16 +106,16 @@ image:
 ## Tiered Storage
 ##
 
-storageOffload:
-  driver: aws-s3
+#storageOffload:
+#  driver: aws-s3
   # For s3 compatible services, need to specify the endpoint
   #serviceEndpoint: s3-compatible
   # For Google Cloud Storage, need to specify service account JSON file
   #serviceAccountKeyFile:
-  bucket: <bucket> 
-  region: us-west-2
-  accessKey: <key> 
-  accessSecret: <secret> 
+  #  bucket: <bucket> 
+  #region: us-west-2
+  #accessKey: <key> 
+  #accessSecret: <secret> 
   #maxBlockSizeInBytes: 64000000 
   #readBufferSizeInBytes: 1000000
   # managedLedgerOffloadDeletionLagMs: 30000
@@ -138,23 +138,23 @@ zookeeper:
   gracePeriod: 0
   resources:
     requests:
-      memory: 4Gi
-      cpu: 1
+      memory: 512Mi
+      cpu: 0.3 
   volumes:
     data:
       name: data
-      size: 100Gi
-      storageClass:
-        type: gp2
-        provisioner: kubernetes.io/aws-ebs
-        fsType: ext4  
+      size: 1Gi
+      #storageClass:
+      #  type: gp2
+      #  provisioner: kubernetes.io/aws-ebs
+      #  fsType: ext4  
       #  replication-type: regional-pd
       #  zones: us-east1-b, us-east1-c, us-east1-d
   ## Zookeeper configmap
   ## templates/zookeeper-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms4g -Xmx4g -Dcom.sun.management.jmxremote -Djute.maxbuffer=10485760 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+DisableExplicitGC -XX:+PerfDisableSharedMem -Dzookeeper.forceSync=no\""
+    PULSAR_MEM: "\"-Xms512m -Xmx512m -Dcom.sun.management.jmxremote -Djute.maxbuffer=10485760 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+DisableExplicitGC -XX:+PerfDisableSharedMem -Dzookeeper.forceSync=no\""
     PULSAR_GC: "\"-XX:+UseG1GC -XX:MaxGCPauseMillis=10\""
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
@@ -193,7 +193,7 @@ zookeeperMetadata:
 ##
 bookkeeper:
   component: bookkeeper
-  replicaCount: 3
+  replicaCount: 2
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
@@ -207,34 +207,34 @@ bookkeeper:
   gracePeriod: 0
   resources:
     requests:
-      memory: 8Gi
-      cpu: 2
+      memory: 512Mi
+      cpu: 0.3 
   volumes:
     journal:
       name: journal
-      size: 250Gi
-      storageClass:
-        type: gp2
-        provisioner: kubernetes.io/aws-ebs
-        fsType: ext4  
+      size: 2Gi
+      #storageClass:
+      #  type: gp2
+      #  provisioner: kubernetes.io/aws-ebs
+      #  fsType: ext4  
     ledgers:
       name: ledgers
-      size: 250Gi
-      storageClass:
-        type: gp2
-        provisioner: kubernetes.io/aws-ebs
-        fsType: ext4  
+      size: 2Gi
+      #storageClass:
+      #  type: gp2
+      #  provisioner: kubernetes.io/aws-ebs
+      #  fsType: ext4  
   ## Bookkeeper configmap
   ## templates/bookkeeper-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms15g -Xmx15g -XX:MaxDirectMemorySize=15g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+UseG1GC -XX:MaxGCPauseMillis=10 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:ParallelGCThreads=32 -XX:ConcGCThreads=32 -XX:G1NewSizePercent=50 -XX:+DisableExplicitGC -XX:-ResizePLAB -XX:+ExitOnOutOfMemoryError -XX:+PerfDisableSharedMem -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCApplicationStoppedTime -XX:+PrintHeapAtGC -verbosegc -XX:G1LogLevel=finest\""
+    PULSAR_MEM: "\"-Xms512m -Xmx512m -XX:MaxDirectMemorySize=512m -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+UseG1GC -XX:MaxGCPauseMillis=10 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:ParallelGCThreads=32 -XX:ConcGCThreads=32 -XX:G1NewSizePercent=50 -XX:+DisableExplicitGC -XX:-ResizePLAB -XX:+ExitOnOutOfMemoryError -XX:+PerfDisableSharedMem -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCApplicationStoppedTime -XX:+PrintHeapAtGC -verbosegc -XX:G1LogLevel=finest\""
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
     dbStorage_writeCacheMaxSizeMb: "2048"
-    dbStorage_readAheadCacheMaxSizeMb: "2048"
-    journalMaxSizeMB: "2048"
+    dbStorage_readAheadCacheMaxSizeMb: "2"
+    journalMaxSizeMB: "2"
     statsProviderClass: org.apache.bookkeeper.stats.prometheus.PrometheusMetricsProvider
     useHostNameAsBookieID: "true"
   ## Bookkeeper configmap
@@ -258,7 +258,7 @@ bookkeeper:
 ##
 broker:
   component: broker
-  replicaCount: 6
+  replicaCount: 2
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
     #
@@ -271,13 +271,13 @@ broker:
   #functionsWorkerEnabled: "true"
   resources:
     requests:
-      memory: 15Gi
-      cpu: 4
+      memory: 512Mi
+      cpu: 0.3 
   ## Broker configmap
   ## templates/broker-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms15g -Xmx15g -XX:MaxDirectMemorySize=15g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:ParallelGCThreads=32 -XX:ConcGCThreads=32 -XX:G1NewSizePercent=50 -XX:+DisableExplicitGC -XX:-ResizePLAB -XX:+ExitOnOutOfMemoryError -XX:+PerfDisableSharedMem\""
+    PULSAR_MEM: "\"-Xms512m -Xmx512m -XX:MaxDirectMemorySize=512m -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:ParallelGCThreads=32 -XX:ConcGCThreads=32 -XX:G1NewSizePercent=50 -XX:+DisableExplicitGC -XX:-ResizePLAB -XX:+ExitOnOutOfMemoryError -XX:+PerfDisableSharedMem\""
     PULSAR_GC: "\"-XX:+UseG1GC -XX:MaxGCPauseMillis=10\""
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
@@ -316,7 +316,7 @@ broker:
 
 function:
   component: function
-  replicaCount: 3
+  replicaCount: 1
   functionReplicaCount: 2
   updateStrategy:
     type: RollingUpdate
@@ -334,23 +334,23 @@ function:
   gracePeriod: 0
   resources:
     requests:
-      memory: 4Gi
-      cpu: 2
+      memory: 512Mi
+      cpu: 0.3 
   volumes:
     data:
       name: logs
-      size: 50Gi
-      storageClass:
-       type: gp2
-       provisioner: kubernetes.io/aws-ebs
-       fsType: ext4
+      size: 1Gi
+      #storageClass:
+      # type: gp2
+      # provisioner: kubernetes.io/aws-ebs
+      # fsType: ext4
       #  replication-type: regional-pd
       #  zones: us-east1-b, us-east1-c, us-east1-d
   ## Function configmap
   ## templates/function-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms4g -Xmx4g -XX:MaxDirectMemorySize=4g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:ParallelGCThreads=32 -XX:ConcGCThreads=32 -XX:G1NewSizePercent=50 -XX:+DisableExplicitGC -XX:-ResizePLAB -XX:+ExitOnOutOfMemoryError -XX:+PerfDisableSharedMem\""
+    PULSAR_MEM: "\"-Xms512m -Xmx512m -XX:MaxDirectMemorySize=512m -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:ParallelGCThreads=32 -XX:ConcGCThreads=32 -XX:G1NewSizePercent=50 -XX:+DisableExplicitGC -XX:-ResizePLAB -XX:+ExitOnOutOfMemoryError -XX:+PerfDisableSharedMem\""
     PULSAR_GC: "\"-XX:+UseG1GC -XX:MaxGCPauseMillis=10\""
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
@@ -378,7 +378,7 @@ function:
 ##
 proxy:
   component: proxy
-  replicaCount: 10
+  replicaCount: 2 
   nodeSelector:
     zone: pulsar
     # cloud.google.com/gke-nodepool: default-pool
@@ -391,19 +391,19 @@ proxy:
   # Resources for the main Pulsar proxy
   resources:
     requests:
-      memory: 2Gi
-      cpu: 1
+      memory: 512Mi
+      cpu: 0.3 
   # Resources for the websocket proxy
   wsResources:
     requests:
-      memory: 2Gi
+      memory: 512Mi
       cpu: 1
   ## Proxy configmap
   ## templates/proxy-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g\""
-    numHttpServerThreads: "10"
+    PULSAR_MEM: "\"-Xms512m -Xmx512m -XX:MaxDirectMemorySize=512m\""
+    numHttpServerThreads: "4"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -414,7 +414,7 @@ proxy:
   ##
   service:
     annotations: {}
-    type: LoadBalancer
+    type: ClusterIp
     ports:
     - name: http
       port: 8080
