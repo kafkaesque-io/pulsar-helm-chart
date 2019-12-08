@@ -14,7 +14,7 @@ This Helm chart configures an Apache Pulsar cluster. It includes support for:
 ## Add to local Helm repository 
 To add this chart to your local Helm repository:
 
-```helm repo add kafkaesque https://helm.kafkaesque.iot```
+```helm repo add kafkaesque https://helm.kafkaesque.io```
 
 To update to the latest chart:
 
