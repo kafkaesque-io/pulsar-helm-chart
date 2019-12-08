@@ -69,11 +69,11 @@ package_chart() {
 }
 
 release_charts() {
-    chart-releaser upload -o kafkaesque -r pulsar-helm-chart -p .deploy -t "$CH_TOKEN"
+    chart-releaser upload -o kafkaesque-io -r pulsar-helm-chart -p .deploy -t "$CH_TOKEN"
 }
 
 update_index() {
-    chart-releaser index -o kafkaesque -r pulsar-helm-chart -p .deploy/index.yaml -t "$CH_TOKEN"
+    chart-releaser index -o kafkaesque-io -r pulsar-helm-chart -p .deploy/index.yaml -t "$CH_TOKEN"
 
     git config user.email "$GIT_EMAIL"
     git config user.name "$GIT_USERNAME"
