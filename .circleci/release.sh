@@ -73,7 +73,7 @@ release_charts() {
 }
 
 update_index() {
-    chart-releaser index -o kafkaesque-io -r pulsar-helm-chart -i .deploy/index.yaml -p .deploy -t "$CH_TOKEN" -c "https://helm.kafkaesque.io"
+    chart-releaser index -o kafkaesque-io -r pulsar-helm-chart -i .deploy/index.yaml -p .deploy -t "$CH_TOKEN" -c https://github.com/kafkaesque-io/pulsar-helm-chart 
 
     git config user.email "$GIT_EMAIL"
     git config user.name "$GIT_USERNAME"
