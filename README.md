@@ -32,4 +32,4 @@ To install a specific version of the chart:
 
 ```helm install --repo https://helm.kafkaesque.io pulsar --version v1.0.1```
 
-Originally developed from the Helm chart from the Apache Pulsar project.
+_Originally developed from the Helm chart from the Apache Pulsar project._
