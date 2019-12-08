@@ -2,7 +2,6 @@
 
 # Helm Chart for an Apache Pulsar Cluster
 
-
 This Helm chart configures an Apache Pulsar cluster. It includes support for:
 * TLS
 * Authentication
@@ -10,6 +9,8 @@ This Helm chart configures an Apache Pulsar cluster. It includes support for:
 * Standalone Functions Workers
 * Tiered Storage
 * Independent Image Versions for Components (Zookeeper, Bookkeeper, etc), enabling controlled upgrades.
+
+_Don't want to run it yourself? Go to [Kafkaesque](https://kafkaesque.io) for fully managed Apache Pulsar services._
 
 ## Add to local Helm repository 
 To add this chart to your local Helm repository:
@@ -45,14 +46,18 @@ First, you need to generate a key-pair for signing the tokens using the Pulsar t
 
 Then you need to store those keys as secrets:
 
-```kubectl create secret generic token-private-key \
+```
+kubectl create secret generic token-private-key \
  --from-file=my-private.key \
- --namespace pulsar```
+ --namespace pulsar
+ ```
 
 
-```kubectl create secret generic token-public-key \
+```
+kubectl create secret generic token-public-key \
  --from-file=my-public.key \
- --namespace pulsar```
+ --namespace pulsar
+ ```
 
 
 Using those keys, generate tokens with subjects(roles): 
@@ -68,9 +73,11 @@ You need to generate tokens with the following subjects:
 
 Once you have created those tokens, add each as a secret:
 
-```kubectl create secret generic token-<subject> \
+```
+kubectl create secret generic token-<subject> \
  --from-file=<subject>.jwt \
- --namespace pulsar```
+ --namespace pulsar
+ ```
 
 
 ### TLS
@@ -78,8 +85,9 @@ Once you have created those tokens, add each as a secret:
 To use TLS, you must first create a certificate and store it in the secret defined by ```tlsSecretName```.
 You can create the certificate like this:
 
-```kubectl create secret tls ${CERT_NAME} --key ${KEY_FILE} --cert ${CERT_FILE}```
+```kubectl create secret tls <tlsSecretName> --key <keyFile> --cert <certFile>```
 
-The resulting secret will be of type kubernetes.io/tls. For automated handling of certificates,
+The resulting secret will be of type kubernetes.io/tls. For automated handling of certificates, you can use a tool
+such as [cert-manager](https://cert-mananager).
 
-_Originally developed from the Helm chart from the Apache Pulsar project._
+_Originally developed from the Helm chart from the [Apache Pulsar](https://pulsar.apache.org/) project._
