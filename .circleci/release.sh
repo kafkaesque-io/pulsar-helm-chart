@@ -78,11 +78,11 @@ update_index() {
     git config user.email "$GIT_EMAIL"
     git config user.name "$GIT_USERNAME"
 
-    git checkout gh-pages
+    git checkout master 
     cp --force .deploy/index.yaml index.yaml
     git add index.yaml
-    git commit --message="Update index.yaml" --signoff
-    git push "$GIT_REPO_URL" gh-pages
+    git commit --message="Update index.yaml [ci skip]" --signoff
+    git push "$GIT_REPO_URL" master 
 }
 
 main
