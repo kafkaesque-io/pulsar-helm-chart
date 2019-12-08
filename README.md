@@ -1,6 +1,4 @@
-[![CircleCI](https://circleci.com/gh/kafkaesque-io/pulsar-helm-chart/tree/master.svg?style=svg)](https://circleci.com/gh/kafkaesque-io/pulsar-helm-chart/tree/master)
-
-# Helm Chart for an Apache Pulsar Cluster
+# Helm Chart for an Apache Pulsar Cluster [![CircleCI](https://circleci.com/gh/kafkaesque-io/pulsar-helm-chart/tree/master.svg?style=svg)](https://circleci.com/gh/kafkaesque-io/pulsar-helm-chart/tree/master)
 
 This Helm chart configures an Apache Pulsar cluster. It includes support for:
 * TLS
@@ -9,6 +7,9 @@ This Helm chart configures an Apache Pulsar cluster. It includes support for:
 * Standalone Functions Workers
 * Tiered Storage
 * Independent Image Versions for Components (Zookeeper, Bookkeeper, etc), enabling controlled upgrades.
+
+[Helm](https://helm.sh) must be installed and initialized to use the chart.
+Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
 
 _Don't want to run it yourself? Go to [Kafkaesque](https://kafkaesque.io) for fully managed Apache Pulsar services._
 
