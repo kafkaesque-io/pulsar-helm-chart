@@ -21,7 +21,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
@@ -95,12 +95,14 @@ spec:
           secret:
             secretName: "{{ .Values.tlsSecretName }}" 
         {{- end }}
+        {{- if .Values.enableTokenAuth }}
         - name: token-public-key
           secret:
             secretName: token-public-key
         - name: token-superuser
           secret:
             secretName: token-superuser
+        {{- end }}
       initContainers:
       # This init container will wait for zookeeper to be ready before
       # deploying the bookies
@@ -146,7 +148,9 @@ spec:
           {{- if .Values.enableTls }}
           openssl pkcs8 -topk8 -inform PEM -outform PEM -in /pulsar/certs/tls.key -out /pulsar/tls-pk8.key -nocrypt &&
           {{- end }}
+          {{- if .Values.enableTokenAuth }}
           cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
+          {{- end }}
           bin/pulsar broker
         ports:
         - name: http
@@ -159,12 +163,14 @@ spec:
             readonly: true
             mountPath: /pulsar/certs
           {{- end }}
+          {{- if .Values.enableTokenAuth }}
           - mountPath: "/pulsar/token-public-key"
             name: token-public-key
             readonly: true
           - mountPath: "/pulsar/token-superuser"
             name: token-superuser
             readonly: true
+          {{- end }}
         envFrom:
         - configMapRef:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"

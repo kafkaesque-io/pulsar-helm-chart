@@ -22,7 +22,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: "{{ template "pulsar.fullname" . }}-{{ .Values.bastion.component }}"
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
@@ -60,6 +60,7 @@ spec:
 {{ toYaml .Values.bastion.tolerations | indent 8 }}
     {{- end }}
       terminationGracePeriodSeconds: {{ .Values.bastion.gracePeriod }}
+      {{- if .Values.enableTokenAuth }}
       volumes:
         - name: token-private-key
           secret:
@@ -73,6 +74,7 @@ spec:
         - name: token-superuser
           secret:
             secretName: token-superuser
+      {{- end }}
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bastion.component }}"
         image: "{{ .Values.image.bastion.repository }}:{{ .Values.image.bastion.tag }}"
@@ -82,6 +84,7 @@ spec:
 {{ toYaml .Values.bastion.resources | indent 10 }}
       {{- end }}
         command: ["sh", "-c"]
+        {{- if .Values.enableTokenAuth }}
         volumeMounts:
           - mountPath: "/pulsar/token-private-key"
             name: token-private-key
@@ -95,9 +98,12 @@ spec:
           - mountPath: "/pulsar/token-superuser"
             name: token-superuser
             readonly: true
+        {{- end }}
         args:
         - >
+          {{- if .Values.enableTokenAuth }}
           cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
+          {{- end }}
           bin/apply-config-from-env.py conf/client.conf &&
           sleep 10000000000
         envFrom:

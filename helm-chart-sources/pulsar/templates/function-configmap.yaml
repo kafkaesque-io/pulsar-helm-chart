@@ -21,7 +21,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
@@ -68,6 +68,7 @@ data:
     {{- if .Values.function.enableStateStorage }}
     stateStorageServiceUrl: "bk://{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}:4181"
     {{- end }}
+    {{- if .Values.enableTokenAuth }}
     authenticationEnabled: "true"
     authorizationEnabled: "true"
     authorizationProvider: "org.apache.pulsar.broker.authorization.PulsarAuthorizationProvider"
@@ -79,6 +80,7 @@ data:
     superUserRoles: 
         {{- range splitList "," .Values.superUserRoles }}
       - {{ . | quote }}
+    {{- end }}
     {{- end }}
     connectorsDirectory: "./connectors"
     {{- if eq .Values.function.runtime "process" }}
@@ -96,7 +98,7 @@ data:
       # uri to kubernetes cluster, leave it to empty and it will use the kubernetes settings in function worker
       k8Uri:
       # the kubernetes namespace to run the function instances. it is `default`, if this setting is left to be empty
-      jobNamespace: {{ .Values.namespace }} 
+      jobNamespace: {{ .Release.Namespace }} 
       # the docker image to run function instance. by default it is `apachepulsar/pulsar`
       pulsarDockerImageName: apachepulsar/pulsar
       # the root directory of pulsar home directory in `pulsarDockerImageName`. by default it is `/pulsar`.

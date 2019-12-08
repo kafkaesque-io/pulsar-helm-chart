@@ -22,7 +22,7 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-{{ .Values.zookeeper.volumes.data.name }}"
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
@@ -36,11 +36,17 @@ provisioner: {{ .Values.zookeeper.volumes.data.storageClass.provisioner }}
 parameters:
   type: {{ .Values.zookeeper.volumes.data.storageClass.type }}
   fsType: {{ .Values.zookeeper.volumes.data.storageClass.fsType }}
-  iopsPerGB: "20"
-{{- else }}
+  {{- if .Values.zookeeper.volumes.extraParams }}
+{{ toYaml .Values.zookeeper.volumes.extraParams | indent 2 }}
+  {{- end }}
+{{- end }}
+{{- if .Values.default_storage }}
 provisioner: {{ .Values.default_storage.provisioner }}
 parameters:
   type: {{ .Values.default_storage.type }}
   fsType: {{ .Values.default_storage.fsType }}
+  {{- if .Values.default_storage.extraParams }}
+{{ toYaml .Values.default_storage.extraParams | indent 2 }}
+  {{- end }}
 {{- end }}
 {{- end }}

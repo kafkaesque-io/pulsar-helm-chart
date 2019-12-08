@@ -21,7 +21,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-extra"
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
@@ -30,10 +30,12 @@ metadata:
     component: {{ .Values.function.component }}
     cluster: {{ template "pulsar.fullname" . }}
 data:
+  {{- if .Values.enableTokenAuth }}
   authorizationEnabled: "true"
   authenticationEnabled: "true"
   authenticationProviders: "org.apache.pulsar.broker.authentication.AuthenticationProviderToken,org.apache.pulsar.broker.authentication.AuthenticationProviderTls" 
   superUserRoles: "{{ .Values.superUserRoles }}"
   tokenPublicKey: "file:///pulsar/token-public-key/my-public.key"
+  {{- end }}
 {{ toYaml .Values.function.configData | indent 2 }}
 {{- end }}

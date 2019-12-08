@@ -22,7 +22,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeperMetadata.component }}"
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
@@ -40,7 +40,7 @@ spec:
         command: ["sh", "-c"]
         args:
           - >-
-            until nslookup {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-{{ add (.Values.zookeeper.replicaCount | int) -1 }}.{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}.{{ .Values.namespace }}; do
+            until nslookup {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-{{ add (.Values.zookeeper.replicaCount | int) -1 }}.{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}.{{ .Release.Namespace }}; do
               sleep 3;
             done;
       containers:
@@ -58,11 +58,11 @@ spec:
               --cluster {{ template "pulsar.fullname" . }} \
               --zookeeper {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }} \
               --configuration-store {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }} \
-              --web-service-url http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ .Values.namespace }}.svc.cluster.local:8080/ \
-              --broker-service-url pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ .Values.namespace }}.svc.cluster.local:6650/ || true;
+              --web-service-url http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ .Release.Namespace }}.svc.cluster.local:8080/ \
+              --broker-service-url pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ .Release.Namespace }}.svc.cluster.local:6650/ || true;
               {{- if .Values.enableTls }}
-              --web-service-url-tls https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ .Values.namespace }}.svc.cluster.local:8443/ \
-              --broker-service-url-tls pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ .Values.namespace }}.svc.cluster.local:6651/ \
+              --web-service-url-tls https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ .Release.Namespace }}.svc.cluster.local:8443/ \
+              --broker-service-url-tls pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ .Release.Namespace }}.svc.cluster.local:6651/ \
               {{- end }}
       restartPolicy: Never
 {{- end }}

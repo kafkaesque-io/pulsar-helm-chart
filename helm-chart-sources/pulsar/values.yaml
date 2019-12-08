@@ -17,9 +17,10 @@
 # under the License.
 #
 
-## Namespace to deploy pulsar
-namespace: pulsar
-namespaceCreate: no
+# Namespace to deploy pulsar
+# Use the Helm --namespace option to set the namespace
+
+# Override for the name of the helm deployment
 fullnameOverride: pulsar
 
 # DNS name for loadbalancer
@@ -36,7 +37,7 @@ dnsName: pulsar.example.com
 ## If persistence is enabled, components that has state will
 ## be deployed with PersistentVolumeClaims, otherwise, for test
 ## purposes, they will be deployed with emptDir
-persistence: yes
+#persistence: yes
 
 ## If prometheus_persistence is enabled, prometheus will be deployed
 ## with PersistentVolumeClaims, otherwise, for test purposes, they
@@ -45,10 +46,32 @@ prometheus_persistence: yes
 
 prometheus_rbac: yes
 
-default_storage:
-  type: gp2
-  provisioner: kubernetes.io/aws-ebs
-  fsType: ext4
+# For AWS
+# default_storage:
+#  type: gp2
+#  provisioner: kubernetes.io/aws-ebs
+#  fsType: ext4
+#  extraParams:
+#     iopsPerGB: "10"
+
+
+# For GCP
+# default_storage:
+#   type: pd-ssd
+#   provisioner: kubernetes.io/gce-pd
+#   fsType: ext4
+#   extraParams:
+#      replication-type: none
+
+# For Azure
+# default_storage:
+#   type: managed-premium
+#   provisioner: kubernetes.io/azure-disk
+#   fsType: ext4
+#     extraParams:
+#       skuName: Standard_LRS
+#       location: eastus
+#       storageAccount: azure_storage_account_name
 
 enableTls: no
 tlsSecretName: pulsar-tls
@@ -57,6 +80,9 @@ superUserRoles: superuser,admin,websocket,proxy
 proxyRoles: proxy
 tlsCaCert: ca-certificates.crt
 
+# Enable token-based authentication and authorization
+enableTokenAuth: no
+
 ## which extra components to deploy
 extra:
   # Pulsar proxy
@@ -64,7 +90,7 @@ extra:
   # DNS on proxy
   usedns: no
   dnsOnProxy: yes
-  # Bookkeeper auto-recovery
+  # Bookkeeper auto-recoveryq
   autoRecovery: yes
   # Bastion pod for administrative commands
   bastion: yes
@@ -111,18 +137,18 @@ image:
 ## Tiered Storage
 ##
 
-storageOffload:
-  driver: aws-s3
+#storageOffload:
+  # driver: aws-s3
   # For s3 compatible services, need to specify the endpoint
-  #serviceEndpoint: s3-compatible
+  # serviceEndpoint: s3-compatible
   # For Google Cloud Storage, need to specify service account JSON file
-  #serviceAccountKeyFile:
-  bucket: <bucket> 
-  region: us-west-2
-  accessKey: <key> 
-  accessSecret: <secret> 
-  #maxBlockSizeInBytes: 64000000 
-  #readBufferSizeInBytes: 1000000
+  # serviceAccountKeyFile:
+  # bucket: <bucket> 
+  # region: us-west-2
+  # accessKey: <key> 
+  # accessSecret: <secret> 
+  # maxBlockSizeInBytes: 64000000 
+  # readBufferSizeInBytes: 1000000
   # managedLedgerOffloadDeletionLagMs: 30000
 
 ## Pulsar: Zookeeper cluster
@@ -149,10 +175,10 @@ zookeeper:
     data:
       name: data
       size: 100Gi
-      storageClass:
-        type: gp2
-        provisioner: kubernetes.io/aws-ebs
-        fsType: ext4  
+      #storageClass:
+      #  type: gp2
+      #  provisioner: kubernetes.io/aws-ebs
+      # fsType: ext4  
       #  replication-type: regional-pd
       #  zones: us-east1-b, us-east1-c, us-east1-d
   ## Zookeeper configmap
@@ -218,17 +244,17 @@ bookkeeper:
     journal:
       name: journal
       size: 250Gi
-      storageClass:
-        type: gp2
-        provisioner: kubernetes.io/aws-ebs
-        fsType: ext4  
+      # storageClass:
+      #   type: gp2
+      #   provisioner: kubernetes.io/aws-ebs
+      #   fsType: ext4  
     ledgers:
       name: ledgers
       size: 250Gi
-      storageClass:
-        type: gp2
-        provisioner: kubernetes.io/aws-ebs
-        fsType: ext4  
+      # storageClass:
+      #   type: gp2
+      #   provisioner: kubernetes.io/aws-ebs
+      #   fsType: ext4  
   ## Bookkeeper configmap
   ## templates/bookkeeper-configmap.yaml
   ##
@@ -237,9 +263,9 @@ bookkeeper:
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
-    dbStorage_writeCacheMaxSizeMb: "2048"
-    dbStorage_readAheadCacheMaxSizeMb: "2048"
-    journalMaxSizeMB: "2048"
+    #dbStorage_writeCacheMaxSizeMb: "2048"
+    #dbStorage_readAheadCacheMaxSizeMb: "2048"
+    #journalMaxSizeMB: "2048"
     statsProviderClass: org.apache.bookkeeper.stats.prometheus.PrometheusMetricsProvider
     useHostNameAsBookieID: "true"
   ## Bookkeeper configmap
@@ -345,10 +371,10 @@ function:
     data:
       name: logs
       size: 50Gi
-      storageClass:
-       type: gp2
-       provisioner: kubernetes.io/aws-ebs
-       fsType: ext4
+      # storageClass:
+      #  type: gp2
+      #  provisioner: kubernetes.io/aws-ebs
+      #  fsType: ext4
       #  replication-type: regional-pd
       #  zones: us-east1-b, us-east1-c, us-east1-d
   ## Function configmap
@@ -588,10 +614,10 @@ prometheus:
     data:
       name: data
       size: 5Gi
-      storageClass:
-        type: gp2
-        provisioner: kubernetes.io/aws-ebs
-        fsType: ext4
+      # storageClass:
+      #   type: gp2
+      #   provisioner: kubernetes.io/aws-ebs
+      #   fsType: ext4
   ## Prometheus service
   ## templates/prometheus-service.yaml
   ##

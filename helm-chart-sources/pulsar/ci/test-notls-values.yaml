@@ -18,8 +18,6 @@
 #
 
 ## Namespace to deploy pulsar
-namespace: pulsar
-namespaceCreate: yes
 fullnameOverride: pulsar
 
 # DNS name for loadbalancer
@@ -31,7 +29,7 @@ dnsName: pulsar.example.com
 ## If persistence is enabled, components that has state will
 ## be deployed with PersistentVolumeClaims, otherwise, for test
 ## purposes, they will be deployed with emptDir
-persistence: yes
+# persistence: yes
 
 ## If prometheus_persistence is enabled, prometheus will be deployed
 ## with PersistentVolumeClaims, otherwise, for test purposes, they
@@ -51,6 +49,9 @@ tlsProxySecretName: proxy-pulsar-tls
 superUserRoles: superuser,admin,websocket,proxy
 proxyRoles: proxy
 tlsCaCert: ca-certificates.crt
+
+# Enable token-based authentication and authorization
+enableTokenAuth: no
 
 ## which extra components to deploy
 extra:
@@ -232,9 +233,6 @@ bookkeeper:
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
-    dbStorage_writeCacheMaxSizeMb: "2048"
-    dbStorage_readAheadCacheMaxSizeMb: "2"
-    journalMaxSizeMB: "2"
     statsProviderClass: org.apache.bookkeeper.stats.prometheus.PrometheusMetricsProvider
     useHostNameAsBookieID: "true"
   ## Bookkeeper configmap
@@ -379,8 +377,8 @@ function:
 proxy:
   component: proxy
   replicaCount: 2 
-  nodeSelector:
-    zone: pulsar
+  # nodeSelector:
+    # zone: pulsar
     # cloud.google.com/gke-nodepool: default-pool
   annotations:
     prometheus.io/scrape: "true"
@@ -414,20 +412,17 @@ proxy:
   ##
   service:
     annotations: {}
-    type: ClusterIp
+    type: ClusterIP
     ports:
     - name: http
       port: 8080
-      nodePort: 30001
       protocol: TCP
     - name: pulsar
       port: 6650
       protocol: TCP
-      nodePort: 30002
     - name: ws
       port: 8000
       protocol: TCP
-      nodePort: 30003
 
   ## Proxy PodDisruptionBudget
   ## templates/proxy-pdb.yaml
@@ -583,10 +578,10 @@ prometheus:
     data:
       name: data
       size: 5Gi
-      storageClass:
-        type: gp2
-        provisioner: kubernetes.io/aws-ebs
-        fsType: ext4
+      #storageClass:
+      #  type: gp2
+      #  provisioner: kubernetes.io/aws-ebs
+      #  fsType: ext4
   ## Prometheus service
   ## templates/prometheus-service.yaml
   ##

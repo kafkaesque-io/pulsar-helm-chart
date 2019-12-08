@@ -29,11 +29,11 @@ Note: This command updates all your Helm charts.
 
 Once you have added the repository, install the chart:
 
-```helm install kafkaesque/pulsar```
+```helm install --namespace pulsar kafkaesque/pulsar```
 
 To install a specific version of the chart:
 
-```helm install --repo https://helm.kafkaesque.io pulsar --version v1.0.1```
+```helm install --namespace pulsar --repo https://helm.kafkaesque.io pulsar --version v1.0.3```
 
 ## Dependencies
 

@@ -24,14 +24,14 @@ helm repo add kafkaesque https://helm.kafkaesque.com
 And then a version of the preferred chart can be installed by running:
 
 ```bash
-helm install --repo https://helm.kafkaesque.io <chart_name> --version <version_number>
+helm install --namespace pulsar --repo https://helm.kafkaesque.io <chart_name> --version <version_number>
 ```
 
 For example:
 
 
 ```bash
-helm install --repo https://helm.kafkaesque.io pulsar --version v1.0.1
+helm install --namespace pulsar --repo https://helm.kafkaesque.io pulsar --version v1.0.3
 ```
 
 If no Helm Chart version is specified the latest version will be installed.

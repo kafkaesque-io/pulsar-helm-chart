@@ -21,7 +21,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
@@ -39,9 +39,10 @@ data:
   clusterName: {{ template "pulsar.fullname" . }}
   functionsWorkerEnabled: "{{ .Values.broker.functionsWorkerEnabled }}"
   PF_pulsarFunctionsCluster: {{ template "pulsar.fullname" . }}
+  allowAutoTopicCreationType: "non-partitioned"
+  {{- if .Values.enableTokenAuth }}
   PF_clientAuthenticationPlugin: "org.apache.pulsar.client.impl.auth.AuthenticationToken"
   PF_clientAuthenticationParameters: "file:///pulsar/token-superuser/superuser.jwt"
-  allowAutoTopicCreationType: "non-partitioned"
   # For client conf so that we can run pulsar-admin health check
   authParams: "file:///pulsar/token-superuser-stripped.jwt"
   authPlugin: "org.apache.pulsar.client.impl.auth.AuthenticationToken"
@@ -53,6 +54,7 @@ data:
   tokenPublicKey: "file:///pulsar/token-public-key/my-public.key"
   brokerClientAuthenticationPlugin: "org.apache.pulsar.client.impl.auth.AuthenticationToken"
   brokerClientAuthenticationParameters: "file:///pulsar/token-superuser/superuser.jwt"
+  {{- end }}
 {{- if .Values.enableTls }}
   PF_useTls: "true"
   tlsEnabled: "true"

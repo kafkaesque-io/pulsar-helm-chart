@@ -22,7 +22,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}"
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
@@ -92,7 +92,9 @@ spec:
                 - {{ .Values.proxy.component }}
             topologyKey: "kubernetes.io/hostname"
       terminationGracePeriodSeconds: {{ .Values.proxy.gracePeriod }}
+      {{- if or (.Values.enableTls) (.Values.enableTokenAuth) }}
       volumes:
+      {{- end }}
         {{- if .Values.enableTls }}
         - name: certs
           secret:
@@ -101,6 +103,7 @@ spec:
           secret:
             secretName: "{{ .Values.tlsProxySecretName }}"           
         {{- end }}
+        {{- if .Values.enableTokenAuth }}
         - name: token-public-key
           secret:
             secretName: token-public-key
@@ -113,6 +116,7 @@ spec:
         - name: token-websocket
           secret:
             secretName: token-websocket
+        {{- end }}
       initContainers:
       # This init container will wait for zookeeper to be ready before
       # deploying the bookies
@@ -158,7 +162,9 @@ spec:
         ports:
         - name: http
           containerPort: 8080
+        {{- if or .Values.enableTls .Values.enableTokenAuth }}
         volumeMounts:
+        {{- end }}
           {{- if .Values.enableTls }}
           - name: certs
             readonly: true
@@ -167,12 +173,14 @@ spec:
             readonly: true
             mountPath: /pulsar/proxy-client-cert
           {{- end }}
+          {{- if .Values.enableTokenAuth }}
           - mountPath: "/pulsar/token-public-key"
             name: token-public-key
             readonly: true
           - mountPath: "/pulsar/token-proxy"
             name: token-proxy
             readonly: true
+          {{- end }}
         envFrom:
         - configMapRef:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}"
@@ -186,7 +194,9 @@ spec:
         command: ["sh", "-c"]
         args:
         - >
+          {{- if .Values.enableTokenAuth }}
           echo "tokenPublicKey=" >> /pulsar/conf/websocket.conf &&
+          {{- end }}
           bin/apply-config-from-env.py conf/websocket.conf &&
           bin/apply-config-from-env.py conf/pulsar_env.sh &&
           {{- if .Values.enableTls }}
@@ -196,12 +206,15 @@ spec:
         ports:
         - name: http
           containerPort: 8080
+        {{- if or .Values.enableTls .Values.enableTokenAuth }}
         volumeMounts:
+        {{- end }}
           {{- if .Values.enableTls }}
           - name: certs
             readonly: true
             mountPath: /pulsar/certs
           {{- end }}
+          {{- if .Values.enableTokenAuth }}
           - mountPath: "/pulsar/token-public-key"
             name: token-public-key
             readonly: true
@@ -211,6 +224,7 @@ spec:
           - mountPath: "/pulsar/token-websocket"
             name: token-websocket
             readonly: true
+          {{- end }}
         envFrom:
         - configMapRef:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}-ws"

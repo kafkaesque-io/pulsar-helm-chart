@@ -22,7 +22,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}-ws"
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
@@ -39,6 +39,7 @@ data:
     {{ range $i, $e := until (.Values.zookeeper.replicaCount | int) }}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}{{ end }}
   clusterName: {{ template "pulsar.fullname" . }}
   webServicePort: "{{ .Values.proxy.wsProxyPort }}"
+  {{- if .Values.enableTokenAuth }}
   brokerClientAuthenticationPlugin: "org.apache.pulsar.client.impl.auth.AuthenticationToken"
   brokerClientAuthenticationParameters: "file:///pulsar/token-websocket/websocket.jwt"
   authenticationEnabled: "true"
@@ -46,6 +47,7 @@ data:
   tokenPublicKey: "file:///pulsar/token-public-key/my-public.key"
   authorizationEnabled: "true"
   superUserRoles: "{{ .Values.superUserRoles }}" 
+  {{- end }}
 {{- if .Values.enableTls }}
   webServicePortTls: "{{ .Values.proxy.wsProxyPortTls }}"
   tlsEnabled: "true"

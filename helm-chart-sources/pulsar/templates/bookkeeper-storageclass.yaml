@@ -22,7 +22,7 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
@@ -36,13 +36,20 @@ provisioner: {{ .Values.bookkeeper.volumes.journal.storageClass.provisioner }}
 parameters:
   type: {{ .Values.bookkeeper.volumes.journal.storageClass.type }}
   fsType: {{ .Values.bookkeeper.volumes.journal.storageClass.fsType }}
-  iopsPerGB: "20"
-{{- else }}
+  {{- if .Values.bookkeeper.volumes.ledgers.extraParams }}
+{{ toYaml .Values.bookkeeper.volumes.ledgers.extraParams | indent 2 }}
+  {{- end }}
+{{- end }}
+{{- if .Values.default_storage }}
 provisioner: {{ .Values.default_storage.provisioner }}
 parameters:
   type: {{ .Values.default_storage.type }}
   fsType: {{ .Values.default_storage.fsType }}
+{{- if .Values.default_storage.extraParams }}
+{{ toYaml .Values.default_storage.extraParams | indent 2 }}
 {{- end }}
+{{- end }}
+
 
 ---
 
@@ -50,7 +57,7 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
@@ -64,10 +71,17 @@ provisioner: {{ .Values.bookkeeper.volumes.ledgers.storageClass.provisioner }}
 parameters:
   type: {{ .Values.bookkeeper.volumes.ledgers.storageClass.type }}
   fsType: {{ .Values.bookkeeper.volumes.ledgers.storageClass.fsType }}
-{{- else }}
+  {{- if .Values.bookkeeper.volumes.ledgers.extraParams }}
+{{ toYaml .Values.bookkeeper.volumes.ledgers.extraParams | indent 2 }}
+  {{- end }}
+{{- end }}
+{{- if .Values.default_storage }}
 provisioner: {{ .Values.default_storage.provisioner }}
 parameters:
   type: {{ .Values.default_storage.type }}
   fsType: {{ .Values.default_storage.fsType }}
+  {{- if .Values.default_storage.extraParams }}
+{{ toYaml .Values.default_storage.extraParams | indent 2 }}
+  {{- end }}  
 {{- end }}
 {{- end }}

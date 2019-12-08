@@ -22,7 +22,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
@@ -95,15 +95,17 @@ spec:
             topologyKey: "kubernetes.io/hostname"
       terminationGracePeriodSeconds: {{ .Values.function.gracePeriod }}
       volumes:
-        - name: token-superuser
-          secret:
-            secretName: token-superuser
         - name: config-volume
           configMap:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}" 
+        {{- if .Values.enableTokenAuth }}
+        - name: token-superuser
+          secret:
+            secretName: token-superuser
         - name: token-public-key
           secret:
             secretName: token-public-key
+        {{- end }}
         {{- if .Values.enableTls }}
         - name: certs
           secret:
@@ -131,7 +133,9 @@ spec:
         command: ["sh", "-c"]
         args:
         - >
+          {{- if .Values.enableTokenAuth }}
           cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
+          {{- end }}
           bin/apply-config-from-env.py conf/broker.conf &&
           cp -f funcconf/functions_worker.yml conf/functions_worker.yml &&
           export PF_workerHostname="${workerHostname}.{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}" &&
@@ -159,12 +163,14 @@ spec:
             fieldRef:
               fieldPath: metadata.name
         volumeMounts:
+          {{- if .Values.enableTokenAuth }}
           - mountPath: "/pulsar/token-superuser"
             name: token-superuser
             readonly: true
           - mountPath: "/pulsar/token-public-key"
             name: token-public-key
             readonly: true
+          {{- end }}
           {{- if .Values.enableTls }}
           - name: certs
             readonly: true
