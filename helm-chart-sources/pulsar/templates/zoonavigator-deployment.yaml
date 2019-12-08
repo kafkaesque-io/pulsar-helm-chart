@@ -79,6 +79,7 @@ spec:
         - name: WEB_HTTP_PORT
           value: "8001"
         {{- if .Values.zoonavigator.autoConnect }}
+        # Will set Zoonavigator to autoconnect to Zookeepers
         - name: AUTO_CONNECT_CONNECTION_STRING
           value: "{{- $global := . }}{{ range $i, $e := until (.Values.zookeeper.replicaCount | int) }}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}{{ end }}"
         {{- end }}
