@@ -3,11 +3,11 @@ entries:
   pulsar:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2019-12-07T20:27:41.555913346-05:00"
+    created: "2019-12-08T01:55:46.317310469Z"
     description: Apache Pulsar Helm chart for Kubernetes
-    digest: 6699575324eb7d50a46fae0d6947023a58972763b0ee1957c174a5650ea8680f
+    digest: 572a7c6445d9cb39b5f66df8b2d85888cda8e661ceca72bf7f9b548687f78bae
     name: pulsar
     urls:
-    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.1/pulsar-1.0.1.tgz
-    version: 1.0.1
-generated: "2019-12-07T20:27:41.467112581-05:00"
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.2/pulsar-1.0.2.tgz
+    version: 1.0.2
+generated: "2019-12-08T01:55:46.144190349Z"
