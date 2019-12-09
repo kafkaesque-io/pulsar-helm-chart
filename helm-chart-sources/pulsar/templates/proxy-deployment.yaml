@@ -45,6 +45,7 @@ spec:
         component: {{ .Values.proxy.component }}
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/proxy-configmap.yaml") . | sha256sum }}
 {{ toYaml .Values.proxy.annotations | indent 8 }}
     spec:
       {{- if .Values.extra.kubectlProxy }}
@@ -145,6 +146,13 @@ spec:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}"
         image: "{{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}"
         imagePullPolicy: {{ .Values.image.proxy.pullPolicy }}
+        {{- if .Values.proxy.probe }}
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.proxy.probe.port }}
+          initialDelaySeconds: {{ .Values.proxy.probe.initial }} 
+          periodSeconds:  {{ .Values.proxy.probe.period }} 
+        {{- end }}
       {{- if .Values.proxy.resources }}
         resources:
 {{ toYaml .Values.proxy.resources | indent 10 }}

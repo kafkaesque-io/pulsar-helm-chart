@@ -36,7 +36,7 @@ metadata:
 spec:
   ports:
 {{ toYaml .Values.broker.service.ports | indent 2 }}
-{{- if eq .Values.broker.service.type "ClusterIP" }}
+{{- if .Values.broker.service.headless }}
   clusterIP: None
 {{- end }}
   type: {{ .Values.broker.service.type }}

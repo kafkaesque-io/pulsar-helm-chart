@@ -16,29 +16,26 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-{{- if .Values.extra.function }}
+{{- if .Values.extra.stateStorage }}
 apiVersion: v1
-kind: Service
+kind: ConfigMap
 metadata:
-  name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}"
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    component: {{ .Values.function.component }}
+    component: {{ .Values.stateStorage.component }}
     cluster: {{ template "pulsar.fullname" . }}
-  annotations:
-spec:
-  ports:
-{{ toYaml .Values.function.service.ports | indent 2 }}
-{{- if .Values.function.service.headless }}
-  clusterIP: None
+data:
+{{- if .Values.enableTokenAuth }}
+  authorizationEnabled: "true"
+  authenticationEnabled: "true"
+  authenticationProviders: "org.apache.pulsar.broker.authentication.AuthenticationProviderToken"
+  superUserRoles: "{{ .Values.superUserRoles }}"
+  tokenPublicKey: "file:///pulsar/token-public-key/my-public.key"
 {{- end }}
-  type: {{ .Values.function.service.type }}
-  selector:
-    app: {{ template "pulsar.name" . }}
-    release: {{ .Release.Name }}
-    component: {{ .Values.function.component }}
+{{ toYaml .Values.stateStorage.configData | indent 2 }}
 {{- end }}

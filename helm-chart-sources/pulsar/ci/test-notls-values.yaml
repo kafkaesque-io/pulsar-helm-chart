@@ -29,7 +29,7 @@ dnsName: pulsar.example.com
 ## If persistence is enabled, components that has state will
 ## be deployed with PersistentVolumeClaims, otherwise, for test
 ## purposes, they will be deployed with emptDir
-# persistence: yes
+persistence: no
 
 ## If prometheus_persistence is enabled, prometheus will be deployed
 ## with PersistentVolumeClaims, otherwise, for test purposes, they

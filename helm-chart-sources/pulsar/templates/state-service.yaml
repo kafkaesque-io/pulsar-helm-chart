@@ -16,29 +16,29 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-{{- if .Values.extra.function }}
+{{- if .Values.extra.stateStorage }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}"
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    component: {{ .Values.function.component }}
+    component: {{ .Values.stateStorage.component }}
     cluster: {{ template "pulsar.fullname" . }}
   annotations:
 spec:
   ports:
-{{ toYaml .Values.function.service.ports | indent 2 }}
-{{- if .Values.function.service.headless }}
+{{ toYaml .Values.stateStorage.service.ports | indent 2 }}
+{{- if .Values.stateStorage.service.headless }}
   clusterIP: None
 {{- end }}
-  type: {{ .Values.function.service.type }}
+  type: {{ .Values.stateStorage.service.type }}
   selector:
     app: {{ template "pulsar.name" . }}
     release: {{ .Release.Name }}
-    component: {{ .Values.function.component }}
+    component: {{ .Values.stateStorage.component }}
 {{- end }}
