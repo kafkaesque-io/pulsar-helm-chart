@@ -73,7 +73,7 @@ extra:
 ## Which images to use
 image:
   broker:
-    repository: apachepulsar/pulsar-all
+    repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
     tag: 2.4.1
   function:
@@ -81,15 +81,15 @@ image:
     pullPolicy: IfNotPresent
     tag: 2.4.1
   zookeeper:
-    repository: apachepulsar/pulsar-all
+    repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
     tag: 2.4.1
   bookkeeper:
-    repository: apachepulsar/pulsar-all
+    repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
     tag: 2.4.1
   proxy:
-    repository: apachepulsar/pulsar-all
+    repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
     tag: 2.4.1
   bastion:
