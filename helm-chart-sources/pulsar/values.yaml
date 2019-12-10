@@ -369,7 +369,6 @@ function:
     period: 10
   runtime: "process"
   enableStateStorage: no 
-  headless: yes
   #preferredZone: "us-east1-c"
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
@@ -407,6 +406,7 @@ function:
   service:
     annotations: {}
     type: ClusterIP
+    headless: yes
     ports:
     - name: http
       port: 6750
@@ -423,7 +423,6 @@ stateStorage:
   component: statestorage
   replicaCount: 1
   numStorageContainers: 16
-  headless: yes
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
@@ -467,6 +466,7 @@ stateStorage:
   service:
     annotations: {}
     type: ClusterIP
+    headless: yes
     ports:
     - name: bkstate
       port: 4181
