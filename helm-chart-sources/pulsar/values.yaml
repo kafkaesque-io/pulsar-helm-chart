@@ -230,7 +230,7 @@ bookkeeper:
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
-  #enableStreamStorage: "true"
+  enableStreamStorage: no 
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations:
@@ -305,7 +305,7 @@ broker:
     prometheus.io/port: "8080"
   tolarations: []
   gracePeriod: 0
-  #functionsWorkerEnabled: "true"
+  functionsWorkerEnabled: no 
   probe:
     port: 8080
     initial: 10
@@ -339,7 +339,7 @@ broker:
   service:
     annotations: {}
     type: ClusterIP
-    #headless: yes
+    headless: no
     ports:
     - name: http
       port: 8080
@@ -368,7 +368,8 @@ function:
     initial: 40
     period: 10
   runtime: "process"
-  #enableStateStorage: "true"
+  enableStateStorage: no 
+  headless: yes
   #preferredZone: "us-east1-c"
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
@@ -422,6 +423,7 @@ stateStorage:
   component: statestorage
   replicaCount: 1
   numStorageContainers: 16
+  headless: yes
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
@@ -479,6 +481,7 @@ tokenServer:
 proxy:
   component: proxy
   replicaCount: 3
+  disableZookeeperDiscovery: no
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations:

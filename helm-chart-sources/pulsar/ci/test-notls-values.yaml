@@ -256,7 +256,7 @@ bookkeeper:
 ##
 broker:
   component: broker
-  replicaCount: 2
+  replicaCount: 1
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
     #
@@ -376,7 +376,7 @@ function:
 ##
 proxy:
   component: proxy
-  replicaCount: 2 
+  replicaCount: 1 
   # nodeSelector:
     # zone: pulsar
     # cloud.google.com/gke-nodepool: default-pool
@@ -395,7 +395,7 @@ proxy:
   wsResources:
     requests:
       memory: 512Mi
-      cpu: 1
+      cpu: 0.3
   ## Proxy configmap
   ## templates/proxy-configmap.yaml
   ##
