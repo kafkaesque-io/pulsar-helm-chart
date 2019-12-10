@@ -37,7 +37,7 @@ dnsName: pulsar.example.com
 ## If persistence is enabled, components that has state will
 ## be deployed with PersistentVolumeClaims, otherwise, for test
 ## purposes, they will be deployed with emptDir
-#persistence: yes
+persistence: yes
 
 ## If prometheus_persistence is enabled, prometheus will be deployed
 ## with PersistentVolumeClaims, otherwise, for test purposes, they
@@ -48,8 +48,8 @@ prometheus_rbac: yes
 
 # For AWS
 # default_storage:
-#  type: gp2
 #  provisioner: kubernetes.io/aws-ebs
+#  type: gp2
 #  fsType: ext4
 #  extraParams:
 #     iopsPerGB: "10"
@@ -57,21 +57,21 @@ prometheus_rbac: yes
 
 # For GCP
 # default_storage:
-#   type: pd-ssd
 #   provisioner: kubernetes.io/gce-pd
+#   type: pd-ssd
 #   fsType: ext4
 #   extraParams:
 #      replication-type: none
 
 # For Azure
 # default_storage:
-#   type: managed-premium
 #   provisioner: kubernetes.io/azure-disk
 #   fsType: ext4
-#     extraParams:
-#       skuName: Standard_LRS
-#       location: eastus
-#       storageAccount: azure_storage_account_name
+#   type: managed-premium
+#   extraParams:
+#     storageaccounttype: Premium_LRS
+#     kind: Managed
+#     cachingmode: ReadOnly
 
 enableTls: no
 tlsSecretName: pulsar-tls
@@ -100,6 +100,8 @@ extra:
   zoonavigator: no
   # Standalone functions worker
   function: yes 
+  # Standalone state storage
+  stateStorage: no
 ## Which images to use
 image:
   broker:
@@ -228,13 +230,17 @@ bookkeeper:
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
-  #enableStreamStorage: "true"
+  enableStreamStorage: no 
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8000"
   tolarations: []
+  probe:
+    port: 3181
+    initial: 20
+    period: 10
   gracePeriod: 0
   resources:
     requests:
@@ -263,9 +269,9 @@ bookkeeper:
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
-    #dbStorage_writeCacheMaxSizeMb: "2048"
-    #dbStorage_readAheadCacheMaxSizeMb: "2048"
-    #journalMaxSizeMB: "2048"
+    # dbStorage_writeCacheMaxSizeMb: "2048"
+    # dbStorage_readAheadCacheMaxSizeMb: "2048"
+    # journalMaxSizeMB: "2048"
     statsProviderClass: org.apache.bookkeeper.stats.prometheus.PrometheusMetricsProvider
     useHostNameAsBookieID: "true"
   ## Bookkeeper configmap
@@ -289,7 +295,7 @@ bookkeeper:
 ##
 broker:
   component: broker
-  replicaCount: 6
+  replicaCount: 3
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
     #
@@ -299,7 +305,11 @@ broker:
     prometheus.io/port: "8080"
   tolarations: []
   gracePeriod: 0
-  #functionsWorkerEnabled: "true"
+  functionsWorkerEnabled: no 
+  probe:
+    port: 8080
+    initial: 10
+    period: 10
   resources:
     requests:
       memory: 15Gi
@@ -329,6 +339,7 @@ broker:
   service:
     annotations: {}
     type: ClusterIP
+    headless: no
     ports:
     - name: http
       port: 8080
@@ -352,9 +363,13 @@ function:
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
-  probePort: 6750
+  probe:
+    port: 6750
+    initial: 40
+    period: 10
   runtime: "process"
-  #enableStateStorage: "true"
+  enableStateStorage: no 
+  headless: yes
   #preferredZone: "us-east1-c"
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
@@ -404,14 +419,70 @@ function:
     usePolicy: yes
     maxUnavailable: 1
 
+stateStorage:
+  component: statestorage
+  replicaCount: 1
+  numStorageContainers: 16
+  headless: yes
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  probe:
+    port: 4181
+    initial: 10
+    period: 10
+  #preferredZone: "us-east1-c"
+  # nodeSelector:
+    # cloud.google.com/gke-nodepool: default-pool
+  annotations:
+    prometheus.io/scrape: "false"
+    prometheus.io/port: "8080"
+  tolarations: []
+  gracePeriod: 0
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 0.5 
+  volumes:
+    data:
+      name: data
+      size: 5Gi
+      #storageClass:
+      #  type: pd-ssd
+      #  provisioner: kubernetes.io/gce-pd
+      #  fsType: ext4
+      #  replication-type: regional-pd
+      #  zones: us-east1-b, us-east1-c, us-east1-d
+  ## StateStorage configmap
+  ## templates/state-configmap.yaml
+  ##
+  configData:
+    PULSAR_MEM: "\" -Xms1g -Xmx1g -XX:MaxDirectMemorySize=1g\""
+    PULSAR_LOG_LEVEL: "info"
+    PULSAR_LOG_ROOT_LEVEL: "info"
+    PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
+  ## Function service
+  ## templates/state-service.yaml
+  ##
+  service:
+    annotations: {}
+    type: ClusterIP
+    ports:
+    - name: bkstate
+      port: 4181
+
+
+tokenServer:
+  allowedRoles: superuser,token-creation
+
 ## Pulsar Extra: Proxy
 ## templates/proxy-deployment.yaml
 ##
 proxy:
   component: proxy
-  replicaCount: 10
-  #nodeSelector:
-  #  zone: pulsar
+  replicaCount: 3
+  disableZookeeperDiscovery: no
+  # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations:
     prometheus.io/scrape: "true"
@@ -419,6 +490,10 @@ proxy:
   tolarations: []
   #preferredZone: "us-east1-c"
   gracePeriod: 0
+  probe:
+    port: 8080
+    initial: 10
+    period: 10
   # Resources for the main Pulsar proxy
   resources:
     requests:

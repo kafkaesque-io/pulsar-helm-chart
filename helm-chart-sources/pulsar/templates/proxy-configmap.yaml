@@ -31,6 +31,12 @@ metadata:
     component: {{ .Values.proxy.component }}
     cluster: {{ template "pulsar.fullname" . }}
 data:
+  {{- if .Values.proxy.disableZookeeperDiscovery }}
+  brokerServiceURL: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
+  brokerServiceURLTLS: "https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6651"
+  brokerWebServiceURL: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080"
+  brokerWebServiceURLTLS: "https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8443"
+  {{- end }}
   zookeeperServers:
     {{- $global := . }}
     {{ range $i, $e := until (.Values.zookeeper.replicaCount | int) }}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}{{ end }}

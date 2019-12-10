@@ -29,7 +29,7 @@ dnsName: pulsar.example.com
 ## If persistence is enabled, components that has state will
 ## be deployed with PersistentVolumeClaims, otherwise, for test
 ## purposes, they will be deployed with emptDir
-# persistence: yes
+persistence: no
 
 ## If prometheus_persistence is enabled, prometheus will be deployed
 ## with PersistentVolumeClaims, otherwise, for test purposes, they
@@ -73,7 +73,7 @@ extra:
 ## Which images to use
 image:
   broker:
-    repository: apachepulsar/pulsar-all
+    repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
     tag: 2.4.1
   function:
@@ -81,15 +81,15 @@ image:
     pullPolicy: IfNotPresent
     tag: 2.4.1
   zookeeper:
-    repository: apachepulsar/pulsar-all
+    repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
     tag: 2.4.1
   bookkeeper:
-    repository: apachepulsar/pulsar-all
+    repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
     tag: 2.4.1
   proxy:
-    repository: apachepulsar/pulsar-all
+    repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
     tag: 2.4.1
   bastion:
@@ -256,7 +256,7 @@ bookkeeper:
 ##
 broker:
   component: broker
-  replicaCount: 2
+  replicaCount: 1
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
     #
@@ -376,7 +376,7 @@ function:
 ##
 proxy:
   component: proxy
-  replicaCount: 2 
+  replicaCount: 1 
   # nodeSelector:
     # zone: pulsar
     # cloud.google.com/gke-nodepool: default-pool
@@ -395,7 +395,7 @@ proxy:
   wsResources:
     requests:
       memory: 512Mi
-      cpu: 1
+      cpu: 0.3
   ## Proxy configmap
   ## templates/proxy-configmap.yaml
   ##

@@ -49,6 +49,7 @@ spec:
         component: {{ .Values.function.component }}
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/function-configmap.yaml") . | sha256sum }}
 {{ toYaml .Values.function.annotations | indent 8 }}
     spec:
       serviceAccountName: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"

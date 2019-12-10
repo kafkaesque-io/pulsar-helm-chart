@@ -1,0 +1,144 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+{{- if .Values.extra.stateStorage }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "pulsar.name" . }}
+    chart: {{ template "pulsar.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.stateStorage.component }}
+    cluster: {{ template "pulsar.fullname" . }}
+spec:
+  serviceName: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}"
+  replicas: {{ .Values.stateStorage.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "pulsar.name" . }}
+      release: {{ .Release.Name }}
+      component: {{ .Values.stateStorage.component }}
+  updateStrategy:
+{{ toYaml .Values.stateStorage.updateStrategy | indent 4 }}
+  podManagementPolicy: {{ .Values.stateStorage.podManagementPolicy }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "pulsar.name" . }}
+        release: {{ .Release.Name }}
+        component: {{ .Values.stateStorage.component }}
+        cluster: {{ template "pulsar.fullname" . }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/state-configmap.yaml") . | sha256sum }}
+{{ toYaml .Values.stateStorage.annotations | indent 8 }}
+    spec:
+      {{- if (.Values.nodeSelector) and (eq .Values.stateStorage.nodeSelector false) }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.stateStorage.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.stateStorage.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.stateStorage.tolerations }}
+      tolerations:
+{{ toYaml .Values.stateStorage.tolerations | indent 8 }}
+      {{- end }}
+      affinity:
+        {{- if .Values.stateStorage.preferredZone }}
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: failure-domain.beta.kubernetes.io
+                operator: In
+                values:
+                - {{ .Values.stateStorage.preferredZone }}
+        {{- end }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: "app"
+                operator: In
+                values:
+                - "{{ template "pulsar.name" . }}"
+              - key: "release"
+                operator: In
+                values:
+                - {{ .Release.Name }}
+              - key: "component"
+                operator: In
+                values:
+                - {{ .Values.stateStorage.component }}
+            topologyKey: "kubernetes.io/hostname"
+      terminationGracePeriodSeconds: {{ .Values.stateStorage.gracePeriod }}
+      containers:
+      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}"
+        image: "{{ .Values.image.stateStorage.repository }}:{{ .Values.image.stateStorage.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if .Values.stateStorage.probe }}
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.stateStorage.probe.port }}
+          initialDelaySeconds: {{ .Values.stateStorage.probe.initial }} 
+          periodSeconds:  {{ .Values.stateStorage.probe.period }} 
+        {{- end }}
+        {{- if .Values.stateStorage.resources }}
+        resources:
+{{ toYaml .Values.stateStorage.resources | indent 10 }}
+        {{- end }}
+        command: ["sh", "-c"]
+        args:
+        - >
+          bin/apply-config-from-env.py conf/pulsar_env.sh &&
+          bin/pulsar standalone --no-broker --stream-containers {{ .Values.stateStorage.numStorageContainers }} --stream-use-hostname
+        ports:
+        - name: bkstate
+          containerPort: 4181
+        envFrom:
+        - configMapRef:
+            name: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}"
+        volumeMounts:
+        - name: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}-{{ .Values.stateStorage.volumes.data.name }}"
+          mountPath: /pulsar/data
+      {{- if not .Values.persistence }}
+      volumes:
+      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}-{{ .Values.stateStorage.volumes.data.name }}"
+        emptyDir: {}
+      {{- end }}
+  {{- if .Values.persistence }}
+  volumeClaimTemplates:
+  - metadata:
+      name: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}-{{ .Values.stateStorage.volumes.data.name }}"
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.stateStorage.volumes.data.size }}
+    {{- if .Values.stateStorage.volumes.data.storageClass }}
+      storageClassName: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}-{{ .Values.stateStorage.volumes.data.name }}"
+    {{- end }}
+  {{- end }}
+{{- end }}

@@ -17,6 +17,7 @@
 # under the License.
 #
 
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -110,6 +111,13 @@ spec:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}"
         image: "{{ .Values.image.bookkeeper.repository }}:{{ .Values.image.bookkeeper.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if .Values.bookkeeper.probe }}
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.bookkeeper.probe.port }}
+          initialDelaySeconds: {{ .Values.bookkeeper.probe.initial }} 
+          periodSeconds:  {{ .Values.bookkeeper.probe.period }} 
+        {{- end }}
       {{- if .Values.bookkeeper.resources }}
         resources:
 {{ toYaml .Values.bookkeeper.resources | indent 10 }}
@@ -129,12 +137,20 @@ spec:
         volumeMounts:
         - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
           mountPath: /pulsar/data/bookkeeper/journal
+        {{- if .Values.bookkeeper.volumes.ranges }}
+        - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ranges.name }}"
+          mountPath: /pulsar/data/bookkeeper/ranges
+        {{- end }}
         - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
           mountPath: /pulsar/data/bookkeeper/ledgers
         {{- if not .Values.persistence }}
       volumes:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
         emptyDir: {}
+      {{- if .Values.bookkeeper.volumes.ranges }}
+      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ranges.name }}"
+        emptyDir: {}
+      {{- end }}
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
         emptyDir: {}
     {{- end }}
@@ -150,6 +166,18 @@ spec:
     {{- if .Values.bookkeeper.volumes.journal.storageClass }}
       storageClassName: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
     {{- end }}
+  {{- if .Values.bookkeeper.volumes.ranges }}
+  - metadata:
+      name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ranges.name }}"
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.bookkeeper.volumes.ranges.size }}
+    {{- if .Values.bookkeeper.volumes.ranges.storageClass }}
+      storageClassName: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ranges.name }}"
+    {{- end }}
+  {{- end }}
   - metadata:
       name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
     spec:
