@@ -48,8 +48,8 @@ prometheus_rbac: yes
 
 # For AWS
 # default_storage:
-#  type: gp2
 #  provisioner: kubernetes.io/aws-ebs
+#  type: gp2
 #  fsType: ext4
 #  extraParams:
 #     iopsPerGB: "10"
@@ -57,21 +57,21 @@ prometheus_rbac: yes
 
 # For GCP
 # default_storage:
-#   type: pd-ssd
 #   provisioner: kubernetes.io/gce-pd
+#   type: pd-ssd
 #   fsType: ext4
 #   extraParams:
 #      replication-type: none
 
 # For Azure
 # default_storage:
-#   type: managed-premium
 #   provisioner: kubernetes.io/azure-disk
 #   fsType: ext4
-#     extraParams:
-#       skuName: Standard_LRS
-#       location: eastus
-#       storageAccount: azure_storage_account_name
+#   type: managed-premium
+#   extraParams:
+#     storageaccounttype: Premium_LRS
+#     kind: Managed
+#     cachingmode: ReadOnly
 
 enableTls: no
 tlsSecretName: pulsar-tls
