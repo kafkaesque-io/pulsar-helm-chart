@@ -1,4 +1,4 @@
-image: "apachepulsar/pulsar-all:2.4.1"
+image: "alpine:latest"
 pullSecret:
   enabled: false
   name: regcred
