@@ -1,0 +1,44 @@
+apiVersion: {{ include "imagepuller.detectdsversion" . | default "apps/v1" }}
+kind: DaemonSet
+metadata:
+  name: {{ include "imagepuller.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+{{ include "imagepuller.labels" . | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "imagepuller.labels" .  | indent 8 }}
+    spec:
+      initContainers:
+      - name: init-puller
+        image: {{ .Values.initPuller.image }}
+        command: 
+          {{- range .Values.initPuller.command }}
+          - {{ . | quote }}
+          {{- end }}
+          - {{ .Values.image | quote }}
+        volumeMounts:
+        - name: docker
+          mountPath: /var/run/docker.sock
+        {{- if .Values.pullSecret.enabled }}
+        - name: pullsecret
+          mountPath: {{ .Values.initPuller.secretMountPath }}
+          readOnly: true
+        {{- end }}
+      volumes:
+      - name: docker
+        hostPath:
+          path: /var/run/docker.sock
+      {{- if .Values.pullSecret.enabled }}
+      - name: pullsecret
+        secret:
+          secretName: {{ .Values.pullSecret.name }}
+          items:
+          - key: {{ .Values.pullSecret.key }}
+            path: {{ .Values.initPuller.secretProjection }}
+      {{- end }}
+      containers:
+      - name: pause
+        image: gcr.io/google_containers/pause

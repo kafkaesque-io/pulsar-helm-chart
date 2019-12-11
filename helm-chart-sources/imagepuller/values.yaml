@@ -1,0 +1,13 @@
+image: "apachepulsar/pulsar-all:2.4.1"
+pullSecret:
+  enabled: false
+  name: regcred
+  key: .dockerconfigjson
+
+initPuller:
+  image: docker
+  command:
+    - docker
+    - pull
+  secretMountPath: "/root"
+  secretProjection: .docker/config.json
