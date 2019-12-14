@@ -27,9 +27,45 @@ Note: This command updates all your Helm charts.
 
 ## Installing Pulsar
 
-Once you have added the repository, install the chart:
+Before you can install the chart, you need to configure the storage class depending on the cloud provider. Create a new file called ```storage_values.yaml``` and put one of these sample values:
 
-```helm install --namespace pulsar kafkaesque/pulsar```
+```
+# For AWS
+# default_storage:
+#  provisioner: kubernetes.io/aws-ebs
+#  type: gp2
+#  fsType: ext4
+#  extraParams:
+#     iopsPerGB: "10"
+
+
+# For GCP
+# default_storage:
+#   provisioner: kubernetes.io/gce-pd
+#   type: pd-ssd
+#   fsType: ext4
+#   extraParams:
+#      replication-type: none
+
+# For Azure
+# default_storage:
+#   provisioner: kubernetes.io/azure-disk
+#   fsType: ext4
+#   type: managed-premium
+#   extraParams:
+#     storageaccounttype: Premium_LRS
+#     kind: Managed
+#     cachingmode: ReadOnly
+```
+
+
+Install the chart, specifying the storage values:
+
+```helm install --namespace pulsar --values storage_values.yaml kafkaesque/pulsar```
+
+Alternatively, for development, you can disable persistence:
+
+```helm install --namespace pulsar --set persistence=no kafkaesque/pulsar```
 
 To install a specific version of the chart:
 
