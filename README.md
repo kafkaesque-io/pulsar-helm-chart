@@ -65,7 +65,7 @@ Install the chart, specifying the storage values:
 
 Alternatively, for development, you can disable persistence:
 
-```helm install --namespace pulsar --set persistence=no kafkaesque/pulsar```
+```helm install --namespace pulsar --set persistence=false kafkaesque/pulsar```
 
 To install a specific version of the chart:
 
