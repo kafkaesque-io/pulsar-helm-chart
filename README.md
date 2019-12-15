@@ -67,9 +67,30 @@ Alternatively, for development, you can disable persistence:
 
 ```helm install --namespace pulsar --set persistence=false kafkaesque/pulsar```
 
-To install a specific version of the chart:
+The default values will create a ClusterIP for the proxy you can use to interact with the cluster. To find the IP address of the proxy use:
 
-```helm install --namespace pulsar --repo https://helm.kafkaesque.io pulsar --version v1.0.3```
+```kubectl get service```
+
+If you want to use an external loadbalancer, here is an example set of values to use:
+
+```
+proxy:
+ service:
+    type: LoadBalancer
+    ports:
+    - name: http
+      port: 8080
+      nodePort: 30001
+      protocol: TCP
+    - name: pulsar
+      port: 6650
+      protocol: TCP
+      nodePort: 30002
+    - name: ws
+      port: 8000
+      protocol: TCP
+      nodePort: 30003
+```
 
 ## Dependencies
 
