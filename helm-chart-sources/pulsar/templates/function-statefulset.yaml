@@ -113,8 +113,8 @@ spec:
             secretName: "{{ .Values.tlsSecretName }}"
         {{- end }}
       {{- if not .Values.persistence }}
-      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-{{ .Values.function.volumes.data.name }}"
-        emptyDir: {}
+        - name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-{{ .Values.function.volumes.data.name }}"
+          emptyDir: {}
       {{- end }}
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"

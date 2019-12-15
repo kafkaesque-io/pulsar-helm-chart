@@ -37,7 +37,7 @@ data:
     workerId: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
     workerHostname: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
     workerPort: "6750"
-    {{- if .Values.enableTls }}
+    {{- if .Values.function.enableTls }}
     workerPortTls: "6751"
     tlsEnabled: "true"
     useTls: "true"
