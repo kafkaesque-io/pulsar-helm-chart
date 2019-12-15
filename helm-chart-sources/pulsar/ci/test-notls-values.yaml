@@ -1,7 +1,5 @@
 
 persistence: no
-enableTls: no
-enableTokenAuth: no
 
 zookeeper:
   resources:
