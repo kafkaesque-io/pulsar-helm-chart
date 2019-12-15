@@ -25,7 +25,7 @@ To update to the latest chart:
 
 Note: This command updates all your Helm charts.
 
-## Installing Pulsar
+## Installing Pulsar in a Cloud Provider
 
 Before you can install the chart, you need to configure the storage class depending on the cloud provider. Create a new file called ```storage_values.yaml``` and put one of these sample values:
 
@@ -63,9 +63,17 @@ Install the chart, specifying the storage values:
 
 ```helm install --namespace pulsar --values storage_values.yaml kafkaesque/pulsar```
 
+## Installing Pulsar for development
+
 Alternatively, for development, you can disable persistence:
 
 ```helm install --namespace pulsar --set persistence=false kafkaesque/pulsar```
+
+That command will still create a cluster with high resource requirements. To get scaled down cluster down this [values file](https://github.com/kafkaesque-io/pulsar-helm-chart/blob/master/helm-chart-sources/pulsar/ci/test-notls-values.yaml) from the unit tests and use it to start the cluster:
+
+```helm install --namespace pulsar --values test-notls-values.yaml```
+
+## Accessing the Pulsar Cluster
 
 The default values will create a ClusterIP for the proxy you can use to interact with the cluster. To find the IP address of the proxy use:
 
