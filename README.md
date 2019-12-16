@@ -154,7 +154,20 @@ You can create the certificate like this:
 
 ```kubectl create secret tls <tlsSecretName> --key <keyFile> --cert <certFile>```
 
-The resulting secret will be of type kubernetes.io/tls. For automated handling of certificates, you can use a tool
+The resulting secret will be of type kubernetes.io/tls. The key should not be in PKCS 8 format even though that is the format used by Pulsar.  The format will be converted by chart to PKCS 8. 
+
+You can also specify the certificate information directly in the values:
+
+```
+# secrets:
+  # key: |
+  # certificate: |
+  # caCertificate: |
+```
+
+This is useful if you are using a self-signed certificate.
+
+For automated handling of publicly signed certificates, you can use a tool
 such as [cert-manager](https://cert-mananager).
 
 _Originally developed from the Helm chart from the [Apache Pulsar](https://pulsar.apache.org/) project._
