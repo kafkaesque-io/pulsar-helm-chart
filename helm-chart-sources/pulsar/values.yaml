@@ -78,6 +78,10 @@ tlsCaCert: ca-certificates.crt
 # Enable token-based authentication and authorization
 enableTokenAuth: no
 
+# Turn on anti affinity rules so that pods don't get scheduled on the same node
+# In development environments with a single node, this need to be disabled
+enableAntiAffinity: yes
+
 # Install Helm tests (run with helm test <release>)
 enableTests: no
 

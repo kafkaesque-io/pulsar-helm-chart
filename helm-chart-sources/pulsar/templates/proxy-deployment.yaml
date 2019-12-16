@@ -75,6 +75,7 @@ spec:
                 values:
                 - {{ .Values.proxy.preferredZone }}
         {{- end }}
+        {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
@@ -92,6 +93,7 @@ spec:
                 values:
                 - {{ .Values.proxy.component }}
             topologyKey: "kubernetes.io/hostname"
+        {{- end }}
       terminationGracePeriodSeconds: {{ .Values.proxy.gracePeriod }}
       {{- if or (.Values.enableTls) (.Values.enableTokenAuth) }}
       volumes:
