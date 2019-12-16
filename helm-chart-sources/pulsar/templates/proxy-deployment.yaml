@@ -100,9 +100,6 @@ spec:
         - name: certs
           secret:
             secretName: "{{ .Values.tlsSecretName }}"           
-        - name: proxy-client-cert
-          secret:
-            secretName: "{{ .Values.tlsProxySecretName }}"           
         {{- end }}
         {{- if .Values.enableTokenAuth }}
         - name: token-public-key
@@ -164,7 +161,6 @@ spec:
           bin/apply-config-from-env.py conf/pulsar_env.sh &&
           {{- if .Values.enableTls }}
           openssl pkcs8 -topk8 -inform PEM -outform PEM -in /pulsar/certs/tls.key -out /pulsar/tls-pk8.key -nocrypt &&
-          openssl pkcs8 -topk8 -inform PEM -outform PEM -in /pulsar/proxy-client-cert/tls.key -out /pulsar/proxy-client-cert-pk8.key -nocrypt &&
           {{- end }}
           bin/pulsar proxy
         ports:
@@ -177,9 +173,6 @@ spec:
           - name: certs
             readonly: true
             mountPath: /pulsar/certs
-          - name: proxy-client-cert
-            readonly: true
-            mountPath: /pulsar/proxy-client-cert
           {{- end }}
           {{- if .Values.enableTokenAuth }}
           - mountPath: "/pulsar/token-public-key"
