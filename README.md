@@ -9,7 +9,7 @@ This Helm chart configures an Apache Pulsar cluster. It includes support for:
 * Tiered Storage
 * Independent Image Versions for Components (Zookeeper, Bookkeeper, etc), enabling controlled upgrades.
 
-[Helm](https://helm.sh) must be installed and initialized to use the chart.
+[Helm](https://helm.sh) 2.X must be installed and initialized to use the chart.
 Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
 
 _Don't want to run it yourself? Go to [Kafkaesque](https://kafkaesque.io) for fully managed Apache Pulsar services._
