@@ -65,13 +65,15 @@ Install the chart, specifying the storage values:
 
 ## Installing Pulsar for development
 
-Alternatively, for development, you can disable persistence:
+This chart is designed for production use. To use this chart in a development environment (ex minikube), you need to:
 
-```helm install --namespace pulsar --set persistence=false kafkaesque/pulsar```
+* Disable persistence
+* Disable anti-affinity rules that ensure components run on different nodes
+* Reduce resource requirements
 
-That command will still create a cluster with high resource requirements. To get scaled down cluster down this [values file](https://github.com/kafkaesque-io/pulsar-helm-chart/blob/master/helm-chart-sources/pulsar/ci/test-notls-values.yaml) from the unit tests and use it to start the cluster:
+For an example set of values, download this [values file](https://github.com/kafkaesque-io/pulsar-helm-chart/blob/master/examples/dev-values.yaml). Use that values file or one like it to start the cluster:
 
-```helm install --namespace pulsar --values test-notls-values.yaml```
+```helm install --namespace pulsar --values dev-values.yaml```
 
 ## Accessing the Pulsar Cluster
 
