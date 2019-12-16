@@ -76,6 +76,7 @@ spec:
                 values:
                 - {{ .Values.stateStorage.preferredZone }}
         {{- end }}
+        {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
@@ -93,6 +94,7 @@ spec:
                 values:
                 - {{ .Values.stateStorage.component }}
             topologyKey: "kubernetes.io/hostname"
+        {{- end }}   
       terminationGracePeriodSeconds: {{ .Values.stateStorage.gracePeriod }}
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}"

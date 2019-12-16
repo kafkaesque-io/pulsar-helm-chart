@@ -71,6 +71,7 @@ spec:
                 values:
                 - {{ .Values.broker.preferredZone }} 
         {{- end }}
+        {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
@@ -88,6 +89,7 @@ spec:
                 values:
                 - {{ .Values.broker.component }}
             topologyKey: "kubernetes.io/hostname"
+        {{- end }}
       terminationGracePeriodSeconds: {{ .Values.broker.gracePeriod }}
       volumes:
         {{- if .Values.enableTls }}

@@ -64,6 +64,7 @@ spec:
 {{ toYaml .Values.bookkeeper.tolerations | indent 8 }}
     {{- end }}
       affinity:
+        {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
@@ -81,6 +82,7 @@ spec:
                 values:
                 - {{ .Values.bookkeeper.component }}
             topologyKey: "kubernetes.io/hostname"
+        {{- end }}
       terminationGracePeriodSeconds: {{ .Values.bookkeeper.gracePeriod }}
       initContainers:
       # This init container will wait for zookeeper to be ready before
