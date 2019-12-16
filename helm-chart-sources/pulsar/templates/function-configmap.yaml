@@ -42,7 +42,11 @@ data:
     tlsEnabled: "true"
     useTls: "true"
     tlsCertificateFilePath: "/pulsar/certs/tls.crt"
+    {{- if .Values.secrets }}
+    tlsTrustCertsFilePath: /pulsar/certs/ca.crt
+    {{- else }}
     tlsTrustCertsFilePath: "/etc/ssl/certs/{{ .Values.tlsCaCert }}"
+    {{- end }}
     tlsKeyFilePath: "/pulsar/tls-pk8.key"
     tlsAllowInsecureConnection: "true"
     pulsarServiceUrl: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6651"

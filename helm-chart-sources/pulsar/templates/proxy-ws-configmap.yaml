@@ -54,7 +54,11 @@ data:
   brokerClientTlsEnabled: "true"
   tlsCertificateFilePath: /pulsar/certs/tls.crt
   tlsKeyFilePath: /pulsar/tls-pk8.key
+  {{- if .Values.secrets }}
+  tlsTrustCertsFilePath: /pulsar/certs/ca.crt
+  {{- else }}
   tlsTrustCertsFilePath: "/etc/ssl/certs/{{ .Values.tlsCaCert }}"
+  {{- end }}
 {{- end }}
 {{ toYaml .Values.proxy.configData | indent 2 }}
 {{- end }}

@@ -31,9 +31,14 @@ metadata:
     component: {{ .Values.bastion.component }}
     cluster: {{ template "pulsar.fullname" . }}
 data:
-{{- if .Values.enableTokenAuth }}
+  {{- if .Values.enableTokenAuth }}
   authParams: "file:///pulsar/token-superuser-stripped.jwt"
   authPlugin: "org.apache.pulsar.client.impl.auth.AuthenticationToken"
-{{- end }}
+  {{- end }}
+  {{- if .Values.secrets }}
+  tlsTrustCertsFilePath: /pulsar/certs/ca.crt
+  {{- else }}
+  tlsTrustCertsFilePath: "/etc/ssl/certs/{{ .Values.tlsCaCert }}"
+  {{- end }}
 {{ toYaml .Values.bastion.configData | indent 2 }}
 {{- end }}

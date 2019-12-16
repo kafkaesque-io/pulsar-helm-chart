@@ -56,13 +56,30 @@ prometheus_rbac: yes
 
 enableTls: no
 tlsSecretName: pulsar-tls
-tlsProxySecretName: proxy-pulsar-tls
+
+# secrets:
+  ## If you're providing your own certificates, please use this to add the certificates as secrets
+  ## key and certificate should start with -----BEGIN CERTIFICATE----- or
+  ## -----BEGIN RSA PRIVATE KEY-----
+  ##
+  ## If you're using cert-manager, this is unneeded, as it will create the secret for you if it is not set
+  ##
+  ## Note: The key should not be in PKCS 8 format even though that is the format used by Pulsar
+  ##       The format will be converted by chart to PKCS 8. This is to maintain compatability with
+  ##       cert-manager
+  # key: |
+  # certificate: |
+  # caCertificate: |
+
 superUserRoles: superuser,admin,websocket,proxy
 proxyRoles: proxy
 tlsCaCert: ca-certificates.crt
 
 # Enable token-based authentication and authorization
 enableTokenAuth: no
+
+# Install Helm tests (run with helm test <release>)
+enableTests: no
 
 ## which extra components to deploy
 extra:
@@ -463,7 +480,7 @@ tokenServer:
 proxy:
   component: proxy
   replicaCount: 3
-  disableZookeeperDiscovery: no
+  disableZookeeperDiscovery: yes
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations:
