@@ -60,8 +60,8 @@ spec:
 {{ toYaml .Values.bastion.tolerations | indent 8 }}
     {{- end }}
       terminationGracePeriodSeconds: {{ .Values.bastion.gracePeriod }}
-      {{- if .Values.enableTokenAuth }}
       volumes:
+        {{- if .Values.enableTokenAuth }}
         - name: token-private-key
           secret:
             secretName: token-private-key
@@ -74,7 +74,12 @@ spec:
         - name: token-superuser
           secret:
             secretName: token-superuser
-      {{- end }}
+        {{- end }}
+        {{- if .Values.enableTls }}
+        - name: certs
+          secret:
+            secretName: "{{ .Values.tlsSecretName }}" 
+        {{- end }}
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bastion.component }}"
         image: "{{ .Values.image.bastion.repository }}:{{ .Values.image.bastion.tag }}"
@@ -84,8 +89,8 @@ spec:
 {{ toYaml .Values.bastion.resources | indent 10 }}
       {{- end }}
         command: ["sh", "-c"]
-        {{- if .Values.enableTokenAuth }}
         volumeMounts:
+          {{- if .Values.enableTokenAuth }}
           - mountPath: "/pulsar/token-private-key"
             name: token-private-key
             readonly: true
@@ -98,7 +103,12 @@ spec:
           - mountPath: "/pulsar/token-superuser"
             name: token-superuser
             readonly: true
-        {{- end }}
+          {{- end }}
+          {{- if .Values.enableTls }}
+          - name: certs
+            readonly: true
+            mountPath: /pulsar/certs
+            {{- end }}
         args:
         - >
           {{- if .Values.enableTokenAuth }}

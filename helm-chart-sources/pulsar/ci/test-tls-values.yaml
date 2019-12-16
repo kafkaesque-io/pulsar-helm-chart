@@ -1,6 +1,6 @@
 
 persistence: no
-
+enableTests: yes
 enableTls: yes
 tlsSecretName: pulsar-tls
 secrets:

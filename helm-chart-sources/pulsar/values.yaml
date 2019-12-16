@@ -78,6 +78,9 @@ tlsCaCert: ca-certificates.crt
 # Enable token-based authentication and authorization
 enableTokenAuth: no
 
+# Install Helm tests (run with helm test <release>)
+enableTests: no
+
 ## which extra components to deploy
 extra:
   # Pulsar proxy

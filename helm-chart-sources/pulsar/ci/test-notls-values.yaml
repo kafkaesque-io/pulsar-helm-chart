@@ -1,5 +1,6 @@
 
 persistence: no
+enableTests: yes
 
 zookeeper:
   resources:
