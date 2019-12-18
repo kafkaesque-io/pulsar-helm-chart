@@ -1,7 +1,9 @@
 # Helm Chart for an Apache Pulsar Cluster [![GitHub](https://avatars1.githubusercontent.com/u/9919?s=30&v=4)](https://github.com/kafkaesque-io/pulsar-helm-chart) [![CircleCI](https://circleci.com/gh/kafkaesque-io/pulsar-helm-chart/tree/master.svg?style=svg)](https://circleci.com/gh/kafkaesque-io/pulsar-helm-chart/tree/master)
 
 
-This Helm chart configures an Apache Pulsar cluster. It includes support for:
+This Helm chart configures an Apache Pulsar cluster. It is designed for production use, but can also be used in local development environments with the proper settings.
+
+It includes support for:
 * TLS
 * Authentication
 * WebSocket Proxy
