@@ -247,6 +247,8 @@ spec:
             readonly: true
             mountPath: /pulsar/certs
         env:
+          - name: PORT
+            value: "8500"
           - name: CA_PATH 
             value: /pulsar/certs/ca.crt
           - name: CERT_PATH 
@@ -257,8 +259,8 @@ spec:
             value: ws://localhost:8000 
           - name: FUNC_URL 
             value: "http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:6750"
-          - name: DEBUG
-            value: "*"
+          - name: TOKEN_SERVER_URL
+            value: http://localhost:8084
 {{- end }}
 {{- if .Values.extra.tokenServer }}
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}-tokenserver"
@@ -270,7 +272,7 @@ spec:
       {{- end }}
         ports:
         - name: tokenproxy
-          containerPort: 3000
+          containerPort: 8084
         volumeMounts:
           - name: certs
             readonly: true
@@ -282,12 +284,6 @@ spec:
             name: token-public-key
             readonly: true
         env:
-          - name: CA_PATH 
-            value: /pulsar/certs/ca.crt
-          - name: CERT_PATH 
-            value: /pulsar/certs/tls.crt
-          - name: KEY_PATH 
-            value: /pulsar/certs/tls.key
           - name: ROLES
             value: {{ .Values.tokenServer.allowedRoles }}
 {{- end }}
