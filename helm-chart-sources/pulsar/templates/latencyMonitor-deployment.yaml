@@ -83,7 +83,7 @@ spec:
           containerPort: 8000
         env:
         - name: SERVICE_URL
-          value: "pulsar://{{ .Values.dnsName }}:6650/"
+          value: pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650/ 
         - name: MONITOR_TOPIC
           value: "pulsar-perf-topic"
 {{- end }}
