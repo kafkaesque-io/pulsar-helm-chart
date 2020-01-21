@@ -363,6 +363,7 @@ function:
   component: function
   replicaCount: 2
   functionReplicaCount: 2
+  usePython3: no
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
