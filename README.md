@@ -27,6 +27,10 @@ To update to the latest chart:
 
 Note: This command updates all your Helm charts.
 
+To list the version of the chart in the local Helm repository:
+
+```helm search -l kafkaesque/pulsar```
+
 ## Installing Pulsar in a Cloud Provider
 
 Before you can install the chart, you need to configure the storage class depending on the cloud provider. Create a new file called ```storage_values.yaml``` and put one of these sample values:
