@@ -31,6 +31,7 @@ metadata:
     component: {{ .Values.zookeeper.component }}
     cluster: {{ template "pulsar.fullname" . }}
 allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
 {{- if .Values.zookeeper.volumes.data.storageClass }}
 provisioner: {{ .Values.zookeeper.volumes.data.storageClass.provisioner }}
 parameters:
