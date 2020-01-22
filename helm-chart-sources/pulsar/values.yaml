@@ -110,31 +110,31 @@ image:
   broker:
     repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
-    tag: 2.4.1
+    tag: 2.4.2
   function:
     repository: apachepulsar/pulsar-all
     pullPolicy: IfNotPresent
-    tag: 2.4.1
+    tag: 2.4.2
   zookeeper:
     repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
-    tag: 2.4.1
+    tag: 2.4.2
   bookkeeper:
     repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
-    tag: 2.4.1
+    tag: 2.4.2
   proxy:
     repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
-    tag: 2.4.1
+    tag: 2.4.2
   bastion:
     repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
-    tag: 2.4.1
+    tag: 2.4.2
   dashboard:
-    tag: 2.4.1
+    tag: 2.4.2
   grafana:
-    tag: 2.4.1
+    tag: 2.4.2
   prometheus:
     tag: v2.8.1
 
@@ -363,6 +363,7 @@ function:
   component: function
   replicaCount: 2
   functionReplicaCount: 2
+  usePython3: no
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady

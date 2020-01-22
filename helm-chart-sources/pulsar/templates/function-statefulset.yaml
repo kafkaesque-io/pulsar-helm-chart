@@ -147,6 +147,9 @@ spec:
           {{- if .Values.enableTls }}
           openssl pkcs8 -topk8 -inform PEM -outform PEM -in /pulsar/certs/tls.key -out /pulsar/tls-pk8.key -nocrypt &&
           {{- end }}
+          {{- if .Values.function.usePython3 }}
+          update-alternatives --install /usr/bin/python python /usr/local/bin/python3.5 10 &&
+          {{- end }}
           bin/pulsar functions-worker 
         ports:
         - name: functiontls

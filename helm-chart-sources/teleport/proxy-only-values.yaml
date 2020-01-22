@@ -1,0 +1,48 @@
+replicaCount: 2
+
+podAntiAffinity:
+  preferredDuringSchedulingIgnoredDuringExecution:
+  - podAffinityTerm:
+      labelSelector:
+        matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - teleport
+      topologyKey: kubernetes.io/hostname
+
+# See the admin guide for full details
+# https://gravitational.com/teleport/docs/admin-guide/#configuration-file
+config:
+  teleport:
+    log:
+      output: stderr
+      severity: DEBUG
+    data_dir: /var/lib/teleport
+    storage:
+      type: dir
+
+  auth_service:
+    enabled: yes
+    authentication:
+      type: local
+    cluster_name: teleport.example.com
+
+  ssh_service:
+    enabled: yes
+
+  proxy_service:
+    enabled: yes
+    public_addr: teleport.example.com
+    web_listen_addr: 0.0.0.0:3080
+    listen_addr: 0.0.0.0:3023
+    #https_key_file: /var/lib/certs/tls.key
+    #https_cert_file: /var/lib/certs/tls.crt
+    # kubernetes section configures
+    # kubernetes proxy protocol support
+    kubernetes:
+      enabled: yes
+      listen_addr: 0.0.0.0:3026
+      # public_addr is used to set values
+      # setup in kubeconfig after tsh login
+      # public_addr: [kubeproxy.example.com:443]
