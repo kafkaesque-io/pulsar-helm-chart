@@ -32,6 +32,7 @@ metadata:
     cluster: {{ template "pulsar.fullname" . }}
 allowVolumeExpansion: true
 {{- if .Release.IsInstall }}
+reclaimPolicy: Retain
 volumeBindingMode: WaitForFirstConsumer
 {{- end }}
 {{- if .Values.zookeeper.volumes.data.storageClass }}

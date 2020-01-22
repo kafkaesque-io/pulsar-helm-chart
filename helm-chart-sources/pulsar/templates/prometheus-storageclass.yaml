@@ -33,6 +33,7 @@ metadata:
     cluster: {{ template "pulsar.fullname" . }}
 allowVolumeExpansion: true
 {{- if .Release.IsInstall }}
+reclaimPolicy: Retain
 volumeBindingMode: WaitForFirstConsumer
 {{- end }}
 {{- if .Values.prometheus.volumes.data.storageClass }}

@@ -32,6 +32,7 @@ metadata:
     cluster: {{ template "pulsar.fullname" . }}
 allowVolumeExpansion: true
 {{- if .Release.IsInstall }}
+reclaimPolicy: Retain
 volumeBindingMode: WaitForFirstConsumer
 {{- end }}
 {{- if .Values.bookkeeper.volumes.journal.storageClass }}
@@ -70,6 +71,7 @@ metadata:
     cluster: {{ template "pulsar.fullname" . }}
 allowVolumeExpansion: true
 {{- if .Release.IsInstall }}
+reclaimPolicy: Retain
 volumeBindingMode: WaitForFirstConsumer
 {{- end }}
 {{- if .Values.bookkeeper.volumes.ledgers.storageClass }}
