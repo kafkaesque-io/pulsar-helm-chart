@@ -32,7 +32,9 @@ metadata:
     component: {{ .Values.prometheus.component }}
     cluster: {{ template "pulsar.fullname" . }}
 allowVolumeExpansion: true
+{{- if .Release.IsInstall }}
 volumeBindingMode: WaitForFirstConsumer
+{{- end }}
 {{- if .Values.prometheus.volumes.data.storageClass }}
 provisioner: {{ .Values.prometheus.volumes.data.storageClass.provisioner }}
 parameters:

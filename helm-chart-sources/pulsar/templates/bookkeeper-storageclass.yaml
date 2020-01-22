@@ -31,7 +31,9 @@ metadata:
     component: {{ .Values.bookkeeper.component }}
     cluster: {{ template "pulsar.fullname" . }}
 allowVolumeExpansion: true
+{{- if .Release.IsInstall }}
 volumeBindingMode: WaitForFirstConsumer
+{{- end }}
 {{- if .Values.bookkeeper.volumes.journal.storageClass }}
 provisioner: {{ .Values.bookkeeper.volumes.journal.storageClass.provisioner }}
 parameters:
@@ -67,7 +69,9 @@ metadata:
     component: {{ .Values.bookkeeper.component }}
     cluster: {{ template "pulsar.fullname" . }}
 allowVolumeExpansion: true
+{{- if .Release.IsInstall }}
 volumeBindingMode: WaitForFirstConsumer
+{{- end }}
 {{- if .Values.bookkeeper.volumes.ledgers.storageClass }}
 provisioner: {{ .Values.bookkeeper.volumes.ledgers.storageClass.provisioner }}
 parameters:
