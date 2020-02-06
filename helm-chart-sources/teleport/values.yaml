@@ -149,6 +149,9 @@ config:
   auth_type: local
   auth_second_factor: "off"
   storage_type: dir
+  static_join:
+    enabled: no
+    token: insert-join-token
   auth_service:
     enabled: yes
   ssh_service:
@@ -158,10 +161,17 @@ config:
   kubernetes:
     enabled: yes
   trusted_cluster:
-    enabled: yes
-    name: teleport.useast2.aws.kafkaesque.io
-    address: teleport.useast2.aws.kafkaesque.io
-    token: join-token
+    enabled: no
+    name: teleport.kafkaesque.io
+    address: teleport.kafkaesque.io
+    token: insert-join-token
+  github:
+    enabled: no
+    client_id:
+    client_secret:
+    organization:
+    team:
+
 
 
 # A map of additional environment variables
@@ -191,6 +201,10 @@ resources: {}
   # requests:
   #  cpu: 100m
   #  memory: 100Mi
+
+highPriority:
+  # Run the pod as system-cluster-critical to ensure it get scheduled over other pods 
+  enabled: true
 
 rbac:
   # Specifies whether RBAC resources should be created

@@ -27,7 +27,7 @@ spec:
 {{- end }}
     spec:
       automountServiceAccountToken: {{ .Values.automountServiceAccountToken }}
-      {{- if .Values.config.trusted_cluster.enabled }}
+      {{- if or .Values.config.trusted_cluster.enabled .Values.config.github.enabled}}
       initContainers:
       - name: "{{ .Chart.Name }}-init"
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -37,7 +37,12 @@ spec:
         - >
           teleport start -c /etc/teleport/teleport.yaml --pid-file /tmp/teleport.pid &
           sleep 5 &&
-          tctl create /etc/teleport/trusted-cluster.yaml &&
+          {{- if .Values.config.trusted_cluster.enabled }}
+          tctl create -f /etc/teleport/trusted-cluster.yaml &&
+          {{- end }}
+          {{- if .Values.config.github.enabled}}
+          tctl create -f /etc/teleport/github.yaml &&
+          {{- end }}
           kill `cat /tmp/teleport.pid` 
         volumeMounts:
 {{- if .Values.proxy.tls.enabled }}
@@ -58,6 +63,9 @@ spec:
 {{- if .Values.extraVolumeMounts }}
 {{ toYaml .Values.extraVolumeMounts | indent 8 }}
 {{- end }}
+      {{- end }}
+      {{- if .Values.highPriority.enabled }}
+      priorityClassName: high-priority
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}
