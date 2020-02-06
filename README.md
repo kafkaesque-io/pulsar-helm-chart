@@ -176,6 +176,6 @@ You can also specify the certificate information directly in the values:
 This is useful if you are using a self-signed certificate.
 
 For automated handling of publicly signed certificates, you can use a tool
-such as [cert-manager](https://cert-mananager).
+such as [cert-manager](https://cert-mananager). The following [page](https://github.com/kafkaesque-io/pulsar-helm-chart/blob/master/aws-customer-docs.md) describes how to set up cert-manager in AWS.
 
 _Originally developed from the Helm chart from the [Apache Pulsar](https://pulsar.apache.org/) project._
