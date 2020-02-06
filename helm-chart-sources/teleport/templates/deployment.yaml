@@ -65,7 +65,7 @@ spec:
 {{- end }}
       {{- end }}
       {{- if .Values.highPriority.enabled }}
-      priorityClassName: high-priority
+      priorityClassName: high-priority-teleport
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}
