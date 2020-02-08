@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ include "pulsar-monitor.fullname" . }}-config"
+data:
+  runtime.yml: |-
+    prometheusConfig:
+      port: ":{{ .Values.prometheus.port }}"
+      exposeMetrics: {{ .Values.prometheus.enabled }}
+    slackConfig:
+      alertUrl: {{ .Values.config.alertUrl }}
+    sitesConfig:
+      sites:
+        {{- toYaml .Values.sitesConfig | nindent 8 }}
+    opsGenieConfig:
+      intervalSeconds: 180
+      heartbeatKey: {{ .Values.config.opsGenieHeartbeatKey }}
+      alertKey: {{ .Values.config.opsGenieAlertKey }}
+    pulsarOpsConfig:
+      intervalSeconds: 120
+      masterToken: {{ .Values.config.pulsarClientToken }}
+      clusters:
+        {{- toYaml .Values.pulsarOpsClusters | nindent 8 }}
+    pulsarFunctionsConfig:
+      intervalSeconds: 120
+      masterToken: {{ .Values.config.pulsarClientToken }}
+      clusters:
+        {{- toYaml .Values.pulsarFunctionsClusters | nindent 8 }}
+    pulsarPerfConfig:
+      intervalSeconds: 120
+      token: {{ .Values.config.pulsarClientToken }}
+      topicCfgs:
+        {{- toYaml .Values.pulsarTopics | nindent 8 }}
