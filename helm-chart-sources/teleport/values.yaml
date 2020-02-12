@@ -19,7 +19,7 @@ annotations: {}
 # iam.amazonaws.com/role: teleport-dynamodb-and-s3-access
 
 replicaCount: 1
-strategy: RollingUpdate
+strategy: Recreate
 
 ## Additional container arguments
 extraArgs: []
