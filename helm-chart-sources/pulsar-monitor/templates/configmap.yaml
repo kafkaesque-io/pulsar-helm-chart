@@ -5,7 +5,7 @@ metadata:
 data:
   runtime.yml: |-
     prometheusConfig:
-      port: ":{{ .Values.prometheus.port }}"
+      port: ":{{ .Values.service.port }}"
       exposeMetrics: {{ .Values.prometheus.enabled }}
     slackConfig:
       alertUrl: {{ .Values.config.alertUrl }}

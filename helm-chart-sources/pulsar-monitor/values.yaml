@@ -16,7 +16,6 @@ fullnameOverride: ""
 # Prometheus metrics endpoint
 prometheus:
   enabled: true
-  port: 8080
 
 # Basic configuration for the monitor
 config:
@@ -84,9 +83,11 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+
+# Port that serves the Prometheus endpoint
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
 
 ingress:
   enabled: false

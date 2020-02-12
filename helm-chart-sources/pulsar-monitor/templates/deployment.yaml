@@ -18,7 +18,7 @@ spec:
       {{- if .Values.prometheus.enabled }}
       annotations:
         prometheus.io/path: /metrics
-        prometheus.io/port: "{{ .Values.prometheus.port }}"
+        prometheus.io/port: "{{ .Values.service.port }}"
         prometheus.io/scrape: "true"
       {{- end }}
     spec:
@@ -44,7 +44,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: {{ .Values.service.port }} 
               protocol: TCP
           livenessProbe:
             httpGet:

@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args:  ['{{ include "pulsar-monitor.fullname" . }}:{{ .Values.service.port }}']
+      args:  ['{{ include "pulsar-monitor.fullname" . }}:{{ .Values.service.port }}/metrics']
   restartPolicy: Never
