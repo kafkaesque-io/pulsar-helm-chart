@@ -18,6 +18,7 @@
 #
 
 {{- if .Values.persistence }}
+{{- if or .Values.bookkeeper.volumes.journal.storageClass .Values.default_storage}}
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -38,25 +39,34 @@ volumeBindingMode: WaitForFirstConsumer
 {{- if .Values.bookkeeper.volumes.journal.storageClass }}
 provisioner: {{ .Values.bookkeeper.volumes.journal.storageClass.provisioner }}
 parameters:
+  {{- if .Values.bookkeeper.volumes.journal.storageClass.type }}
   type: {{ .Values.bookkeeper.volumes.journal.storageClass.type }}
-  fsType: {{ .Values.bookkeeper.volumes.journal.storageClass.fsType }}
-  {{- if .Values.bookkeeper.volumes.ledgers.extraParams }}
-{{ toYaml .Values.bookkeeper.volumes.ledgers.extraParams | indent 2 }}
   {{- end }}
-{{- end }}
-{{- if .Values.default_storage }}
+  {{- if .Values.bookkeeper.volumes.journal.storageClass.fsType }}
+  fsType: {{ .Values.bookkeeper.volumes.journal.storageClass.fsType }}
+  {{- end }}
+  {{- if .Values.bookkeeper.volumes.journal.storageClass.extraParams }}
+{{ toYaml .Values.bookkeeper.volumes.journal.storageClass.extraParams | indent 2 }}
+  {{- end }}
+{{- else if .Values.default_storage }}
 provisioner: {{ .Values.default_storage.provisioner }}
 parameters:
+  {{- if .Values.default_storage.type }}
   type: {{ .Values.default_storage.type }}
+  {{- end }}
+  {{- if .Values.default_storage.fsType }}
   fsType: {{ .Values.default_storage.fsType }}
+  {{- end }}
 {{- if .Values.default_storage.extraParams }}
 {{ toYaml .Values.default_storage.extraParams | indent 2 }}
 {{- end }}
 {{- end }}
+{{- end }}
+
 
 
 ---
-
+{{- if or .Values.bookkeeper.volumes.ledgers.storageClass .Values.default_storage}}
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -77,19 +87,28 @@ volumeBindingMode: WaitForFirstConsumer
 {{- if .Values.bookkeeper.volumes.ledgers.storageClass }}
 provisioner: {{ .Values.bookkeeper.volumes.ledgers.storageClass.provisioner }}
 parameters:
+  {{- if .Values.bookkeeper.volumes.ledgers.storageClass.type }}
   type: {{ .Values.bookkeeper.volumes.ledgers.storageClass.type }}
-  fsType: {{ .Values.bookkeeper.volumes.ledgers.storageClass.fsType }}
-  {{- if .Values.bookkeeper.volumes.ledgers.extraParams }}
-{{ toYaml .Values.bookkeeper.volumes.ledgers.extraParams | indent 2 }}
   {{- end }}
-{{- end }}
-{{- if .Values.default_storage }}
+  {{- if .Values.bookkeeper.volumes.ledgers.storageClass.fsType }}
+  fsType: {{ .Values.bookkeeper.volumes.ledgers.storageClass.fsType }}
+  {{- end }}
+  {{- if .Values.bookkeeper.volumes.ledgers.storageClass.extraParams }}
+{{ toYaml .Values.bookkeeper.volumes.ledgers.storageClass.extraParams | indent 2 }}
+  {{- end }}
+{{- else if .Values.default_storage }}
 provisioner: {{ .Values.default_storage.provisioner }}
 parameters:
+  {{- if .Values.default_storage.type }}
   type: {{ .Values.default_storage.type }}
+  {{- end }}
+  {{- if .Values.default_storage.fsType }}
   fsType: {{ .Values.default_storage.fsType }}
+  {{- end }}
   {{- if .Values.default_storage.extraParams }}
 {{ toYaml .Values.default_storage.extraParams | indent 2 }}
   {{- end }}  
 {{- end }}
 {{- end }}
+{{- end }}
+
