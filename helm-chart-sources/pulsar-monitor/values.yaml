@@ -1,0 +1,151 @@
+# Default values for pulsar-monitor.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: kafkaesqueio/pulsar-ops-monitor
+  tag: 0.26
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# Prometheus metrics endpoint
+prometheus:
+  enabled: true
+
+# Basic configuration for the monitor
+config:
+  alertUrl: 'https://hooks.slack.com/services/<webhook-id>'
+  opsGenieHeartbeatKey: 'GenieKey <key>'
+  opsGenieAlertKey: 'GenieKey <key>'
+  pulsarClientToken: <token>
+
+# List of URL to poll 
+sitesConfig: []
+  # - url: https://kafkaesque.io/plans
+  #   name: plans
+  #   intervalSeconds: 30
+  #   responseSeconds: 15
+  #   statusCode: 200
+  #   retries: 3
+  #   alertPolicy:
+  #     Ceiling: 3
+  #     MovingWindowSeconds: 300
+  #     CeilingInMovingWindow: 6
+
+# List of cluster REST interfaces to poll
+pulsarOpsClusters: []
+  # - name: uscentral1-azure
+  #   alertPolicy:
+  #     Ceiling: 10
+  #     MovingWindowSeconds: 30
+  #     CeilingInMovingWindow: 10
+
+# List of functions to trigger
+pulsarFunctionsClusters: []
+  # - name: uscentral1-azure
+  #   triggerUrl: https://kafkaesque.io/api/v1/uscentral1-azure/functions/ming-luo/local-uscentral1-azure/for-monitor-function/trigger
+  #   alertPolicy:
+  #     Ceiling: 3
+  #     MovingWindowSeconds: 15
+  #     CeilingInMovingWindow: 5
+
+# List of topics to measure latency
+pulsarTopics: []
+  # - latencyBudgetMs: 360
+  #   pulsarUrl: pulsar+ssl://useast1.gcp.kafkaesque.io:6651
+  #   topicName: persistent://ming-luo/local-useast1-gcp/reserved-cluster-monitoring
+  #   alertPolicy:
+  #     Ceiling: 30
+  #     MovingWindowSeconds: 600
+  #     CeilingInMovingWindow: 5
+
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+
+# Port that serves the Prometheus endpoint
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Root CA certificate for Pulsar clusters. The default below is
+# is the Let's Encrypt root CA certificate
+
+caCert: |
+  -----BEGIN CERTIFICATE-----
+  MIIDSjCCAjKgAwIBAgIQRK+wgNajJ7qJMDmGLvhAazANBgkqhkiG9w0BAQUFADA/
+  MSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4xFzAVBgNVBAMT
+  DkRTVCBSb290IENBIFgzMB4XDTAwMDkzMDIxMTIxOVoXDTIxMDkzMDE0MDExNVow
+  PzEkMCIGA1UEChMbRGlnaXRhbCBTaWduYXR1cmUgVHJ1c3QgQ28uMRcwFQYDVQQD
+  Ew5EU1QgUm9vdCBDQSBYMzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB
+  AN+v6ZdQCINXtMxiZfaQguzH0yxrMMpb7NnDfcdAwRgUi+DoM3ZJKuM/IUmTrE4O
+  rz5Iy2Xu/NMhD2XSKtkyj4zl93ewEnu1lcCJo6m67XMuegwGMoOifooUMM0RoOEq
+  OLl5CjH9UL2AZd+3UWODyOKIYepLYYHsUmu5ouJLGiifSKOeDNoJjj4XLh7dIN9b
+  xiqKqy69cK3FCxolkHRyxXtqqzTWMIn/5WgTe1QLyNau7Fqckh49ZLOMxt+/yUFw
+  7BZy1SbsOFU5Q9D8/RhcQPGX69Wam40dutolucbY38EVAjqr2m7xPi71XAicPNaD
+  aeQQmxkqtilX4+U9m5/wAl0CAwEAAaNCMEAwDwYDVR0TAQH/BAUwAwEB/zAOBgNV
+  HQ8BAf8EBAMCAQYwHQYDVR0OBBYEFMSnsaR7LHH62+FLkHX/xBVghYkQMA0GCSqG
+  SIb3DQEBBQUAA4IBAQCjGiybFwBcqR7uKGY3Or+Dxz9LwwmglSBd49lZRNI+DT69
+  ikugdB/OEIKcdBodfpga3csTS7MgROSR6cz8faXbauX+5v3gTt23ADq1cEmv8uXr
+  AvHRAosZy5Q6XkjEGB5YGV8eAlrwDPGxrancWYaLbumR9YbK+rlmM6pZW87ipxZz
+  R8srzJmwN0jP41ZL9c8PDHIyh8bwRLtTcm1D9SZImlJnt1ir/md2cXjbDaJWFBM5
+  JDGFoqgCWjBH4d1QB7wCCZAA62RjYJsWvIjJEubSfZGL+T0yjWW06XyxV3bqxbYo
+  Ob8VZRzI9neWagqNdwvYkQsEjgfbKbYK7p2CNTUQ
+  -----END CERTIFICATE-----
+
+
+
+

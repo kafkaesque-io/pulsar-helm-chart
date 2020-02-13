@@ -1,6 +1,9 @@
 
 persistence: no
 enableTests: yes
+extra:
+  autoRecovery: no
+  bastion: no
 enableTls: yes
 tlsSecretName: pulsar-tls
 secrets:
@@ -117,19 +120,13 @@ bookkeeper:
 
 broker:
   component: broker
-  replicaCount: 1
+  replicaCount: 2
   resources:
     requests:
       memory: 512Mi
       cpu: 0.3 
   configData:
     PULSAR_MEM: "\"-Xms512m -Xmx512m -XX:MaxDirectMemorySize=512m -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:ParallelGCThreads=32 -XX:ConcGCThreads=32 -XX:G1NewSizePercent=50 -XX:+DisableExplicitGC -XX:-ResizePLAB -XX:+ExitOnOutOfMemoryError -XX:+PerfDisableSharedMem\""
-
-autoRecovery:
-  resources:
-    requests:
-      memory: 1Gi
-      cpu: 1
 
 function:
   replicaCount: 1

@@ -20,11 +20,22 @@ data:
         type: {{ .Values.config.auth_type }}
         second_factor: {{ .Values.config.auth_second_factor}}
       public_addr: {{ .Values.config.public_addr }}:3025
-      cluster_name: teleport.example.com
+      cluster_name: {{ .Values.config.cluster_name }}
+      {{- if .Values.config.static_join }}
+      tokens:
+        - trusted_cluster:{{ .Values.config.static_join.token }}
+      {{- end }}
 
     ssh_service:
       enabled: {{ .Values.config.ssh_service.enabled }}
       public_addr: {{ .Values.config.public_addr }}:3022
+      commands:
+      - name: hostname
+        command: [/bin/hostname]
+        period: 5m0s
+      - name: uptime
+        command: [/usr/bin/uptime, -p]
+        period: 5m0s
 
     proxy_service:
       enabled: {{ .Values.config.ssh_service.enabled }}
@@ -32,7 +43,7 @@ data:
       ssh_public_addr: {{ .Values.config.public_addr }}:3023
       web_listen_addr: 0.0.0.0:3080
       listen_addr: 0.0.0.0:3023
-      {{- if .Values.ingress.tls }}
+      {{- if .Values.proxy.tls.enabled }}
       https_key_file: {{ .Values.config.https_key_file }}
       https_cert_file: {{ .Values.config.https_cert_file }}
       {{- end }}
@@ -63,4 +74,23 @@ data:
       # the address in 'host:port' form of the web listening port on the
       # "master" proxy server:
       web_proxy_addr: {{ .Values.config.trusted_cluster.address }}:3080
+{{- end }}
+{{- if .Values.config.github.enabled }}
+  github.yaml: |-
+    kind: github
+    version: v3
+    metadata:
+      name: github
+    spec:
+      display: Github
+      client_id: {{ .Values.config.github.client_id }}       
+      client_secret: {{ .Values.config.github.client_secret }}
+      redirect_url: "https://{{ .Values.config.public_addr }}:3080/v1/webapi/github/callback"
+      teams_to_logins:
+        - organization: {{ .Values.config.github.organization }}
+          team: {{ .Values.config.github.team }}
+          logins:
+            - ec2-user
+            - root
+          kubernetes_groups: ["system:masters"]
 {{- end }}

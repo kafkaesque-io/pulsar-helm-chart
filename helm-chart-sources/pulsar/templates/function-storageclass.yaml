@@ -18,35 +18,35 @@
 #
 
 {{- if .Values.persistence }}
-{{- if or .Values.zookeeper.volumes.data.storageClass .Values.default_storage}}
+{{- if or .Values.function.volumes.data.storageClass .Values.default_storage}}
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-{{ .Values.zookeeper.volumes.data.name }}"
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-{{ .Values.function.volumes.data.name }}"
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    component: {{ .Values.zookeeper.component }}
+    component: {{ .Values.function.component }}
     cluster: {{ template "pulsar.fullname" . }}
 allowVolumeExpansion: true
 {{- if .Release.IsInstall }}
 reclaimPolicy: Retain
 volumeBindingMode: WaitForFirstConsumer
 {{- end }}
-{{- if .Values.zookeeper.volumes.data.storageClass }}
-provisioner: {{ .Values.zookeeper.volumes.data.storageClass.provisioner }}
+{{- if .Values.function.volumes.data.storageClass }}
+provisioner: {{ .Values.function.volumes.data.storageClass.provisioner }}
 parameters:
-  {{- if .Values.zookeeper.volumes.data.storageClass.type }}
-  type: {{ .Values.zookeeper.volumes.data.storageClass.type }}
+  {{- if .Values.function.volumes.data.storageClass.type }}
+  type: {{ .Values.function.volumes.data.storageClass.type }}
   {{- end }}
-  {{- if .Values.zookeeper.volumes.data.storageClass.fsType }}
-  fsType: {{ .Values.zookeeper.volumes.data.storageClass.fsType }}
+  {{- if .Values.function.volumes.data.storageClass.fsType }}
+  fsType: {{ .Values.function.volumes.data.storageClass.fsType }}
   {{- end }}
-  {{- if .Values.zookeeper.volumes.data.storageClass.extraParams }}
-{{ toYaml .Values.zookeeper.volumes.data.storageClass.extraParams | indent 2 }}
+  {{- if .Values.function.volumes.data.storageClass.extraParams }}
+{{ toYaml .Values.function.volumes.data.storageClass.extraParams | indent 2 }}
   {{- end }}
 {{- else if .Values.default_storage }}
 provisioner: {{ .Values.default_storage.provisioner }}

@@ -148,7 +148,7 @@ spec:
           openssl pkcs8 -topk8 -inform PEM -outform PEM -in /pulsar/certs/tls.key -out /pulsar/tls-pk8.key -nocrypt &&
           {{- end }}
           {{- if .Values.function.usePython3 }}
-          update-alternatives --install /usr/bin/python python /usr/local/bin/python3.5 10 &&
+          /pulsar/bin/set_python_version.sh &&
           {{- end }}
           bin/pulsar functions-worker 
         ports:
@@ -168,6 +168,10 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
+        {{- if .Values.function.usePython3 }}
+        - name: SET_PYTHON_3_DEFAULT
+          value: 'true'
+        {{- end }}
         volumeMounts:
           {{- if .Values.enableTokenAuth }}
           - mountPath: "/pulsar/token-superuser"
@@ -196,8 +200,10 @@ spec:
       resources:
         requests:
           storage: {{ .Values.function.volumes.data.size }}
-      {{- if .Values.function.volumes.data.storageClass }}
+      {{- if or .Values.function.volumes.data.storageClass .Values.default_storage }}
+      {{- if .Release.IsInstall }}
       storageClassName: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-{{ .Values.function.volumes.data.name }}"
+      {{- end }}
       {{- end }}
   {{- end }}
 {{- end }}
