@@ -3,20 +3,30 @@ entries:
   pulsar:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-01-22T01:05:04.908432363Z"
+    created: "2020-02-13T18:26:04.871203294Z"
     description: Apache Pulsar Helm chart for Kubernetes
-    digest: a4f75996d0552b41cecf8c618f7655eb249f6cdff4ad7f3276ba0bd30a573e3c
+    digest: 33b5af90ab825bfaaa59267aa0767fa58d489196ab7bf6c023eb818b891f6f46
     icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
     name: pulsar
     urls:
-    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.8/pulsar-1.0.8.tgz
-    version: 1.0.8
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.9/pulsar-1.0.9.tgz
+    version: 1.0.9
+  pulsar-monitor:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-02-13T18:26:04.997372481Z"
+    description: A Helm chart for the Pulsar Monitor application
+    digest: 58afa20754282677ccb6a0ea56620c48c994ef74bc14273c5d63f3e07b5c04c3
+    name: pulsar-monitor
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-monitor-0.1.0/pulsar-monitor-0.1.0.tgz
+    version: 0.1.0
   teleport:
-  - created: "2020-01-22T01:05:05.038596525Z"
+  - created: "2020-02-13T18:26:05.106048182Z"
     description: Teleport Community
-    digest: 7f79f1628bf92ddc291027df086c9cc8f5c63ea1a0bdace9c59c31c44213cb0e
+    digest: def95a688ce6f14856f2c6cb9ba74ec0b3e90f145d4b1c214121c0580f1c9076
     name: teleport
     urls:
-    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/teleport-0.1.0/teleport-0.1.0.tgz
-    version: 0.1.0
-generated: "2020-01-22T01:05:04.510017003Z"
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/teleport-1.0.0/teleport-1.0.0.tgz
+    version: 1.0.0
+generated: "2020-02-13T18:26:04.704283282Z"
