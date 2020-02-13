@@ -1,0 +1,17 @@
+{{- if .Values.enableTests }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-a-pre-test-sleep"
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+  - name: "{{ template "pulsar.fullname" . }}-a-pre-test-sleep"
+    image: "{{ .Values.image.bastion.repository }}:{{ .Values.image.bastion.tag }}"
+    imagePullPolicy: {{ .Values.image.bastion.pullPolicy }}
+    command: ["/bin/sleep"]
+    args: [ "30" ]
+  # Do not restart containers after they exit
+  restartPolicy: Never
+{{- end }}
