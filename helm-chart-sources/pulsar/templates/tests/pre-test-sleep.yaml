@@ -1,13 +1,13 @@
-{{- if .Values.enableTests }}
+{{- if .Values.enableTest }}
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ .Release.Name }}-a-pre-test-sleep"
+  name: "{{ .Release.Name }}-pre-test-sleep"
   annotations:
-    "helm.sh/hook": test-success
+    "helm.sh/hook": post-install
 spec:
   containers:
-  - name: "{{ template "pulsar.fullname" . }}-a-pre-test-sleep"
+  - name: "{{ template "pulsar.fullname" . }}-pre-test-sleep"
     image: "{{ .Values.image.bastion.repository }}:{{ .Values.image.bastion.tag }}"
     imagePullPolicy: {{ .Values.image.bastion.pullPolicy }}
     command: ["/bin/sleep"]
