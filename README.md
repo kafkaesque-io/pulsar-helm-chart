@@ -14,7 +14,7 @@ It includes support for:
 [Helm](https://helm.sh) 2.X must be installed and initialized to use the chart.
 Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
 
-_Don't want to run it yourself? Go to [Kafkaesque](https://kafkaesque.io) for fully managed Apache Pulsar services._
+_Don't want to run it yourself? Go to [Kafkaesque](https://kafkaesque.io) for fully managed Pulsar services._
 
 ## Add to local Helm repository 
 To add this chart to your local Helm repository:
