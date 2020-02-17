@@ -25,7 +25,7 @@ spec:
         volumeMounts:
           - mountPath: "/etc/kubernetes/"
             name: azure-config 
-            readonly: true
+            readOnly: true
         {{- end }}
         args:
         - --source=service

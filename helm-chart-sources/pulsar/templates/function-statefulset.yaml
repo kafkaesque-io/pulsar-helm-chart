@@ -176,14 +176,14 @@ spec:
           {{- if .Values.enableTokenAuth }}
           - mountPath: "/pulsar/token-superuser"
             name: token-superuser
-            readonly: true
+            readOnly: true
           - mountPath: "/pulsar/token-public-key"
             name: token-public-key
-            readonly: true
+            readOnly: true
           {{- end }}
           {{- if .Values.enableTls }}
           - name: certs
-            readonly: true
+            readOnly: true
             mountPath: /pulsar/certs
           {{- end }}
           - name: config-volume

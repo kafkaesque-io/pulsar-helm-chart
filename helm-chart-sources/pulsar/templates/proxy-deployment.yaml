@@ -173,16 +173,16 @@ spec:
         {{- end }}
           {{- if .Values.enableTls }}
           - name: certs
-            readonly: true
+            readOnly: true
             mountPath: /pulsar/certs
           {{- end }}
           {{- if .Values.enableTokenAuth }}
           - mountPath: "/pulsar/token-public-key"
             name: token-public-key
-            readonly: true
+            readOnly: true
           - mountPath: "/pulsar/token-proxy"
             name: token-proxy
-            readonly: true
+            readOnly: true
           {{- end }}
         envFrom:
         - configMapRef:
@@ -214,19 +214,19 @@ spec:
         {{- end }}
           {{- if .Values.enableTls }}
           - name: certs
-            readonly: true
+            readOnly: true
             mountPath: /pulsar/certs
           {{- end }}
           {{- if .Values.enableTokenAuth }}
           - mountPath: "/pulsar/token-public-key"
             name: token-public-key
-            readonly: true
+            readOnly: true
           - mountPath: "/pulsar/token-proxy"
             name: token-proxy
-            readonly: true
+            readOnly: true
           - mountPath: "/pulsar/token-websocket"
             name: token-websocket
-            readonly: true
+            readOnly: true
           {{- end }}
         envFrom:
         - configMapRef:
@@ -244,7 +244,7 @@ spec:
           containerPort: 8500 
         volumeMounts:
           - name: certs
-            readonly: true
+            readOnly: true
             mountPath: /pulsar/certs
         env:
           - name: PORT
@@ -275,14 +275,14 @@ spec:
           containerPort: 8084
         volumeMounts:
           - name: certs
-            readonly: true
+            readOnly: true
             mountPath: /pulsar/certs
           - mountPath: "/pulsar/token-private-key"
             name: token-private-key
-            readonly: true
+            readOnly: true
           - mountPath: "/pulsar/token-public-key"
             name: token-public-key
-            readonly: true
+            readOnly: true
         env:
           - name: ROLES
             value: {{ .Values.tokenServer.allowedRoles }}
