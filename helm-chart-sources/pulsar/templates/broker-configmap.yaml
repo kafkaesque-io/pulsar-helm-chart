@@ -79,20 +79,40 @@ data:
   PF_pulsarServiceUrl: "pulsar://localhost:6650"
   PF_pulsarWebServiceUrl: "http://localhost:8080"
 {{- end }}
-{{- if .Values.storageOffload }}
+{{- if .Values.storageOffload.driver }}
+{{- if eq .Values.storageOffload.driver "aws-s3" }}
   managedLedgerOffloadDriver: "{{ .Values.storageOffload.driver }}" 
   s3ManagedLedgerOffloadBucket: "{{ .Values.storageOffload.bucket }}" 
   s3ManagedLedgerOffloadRegion: "{{ .Values.storageOffload.region }}" 
   AWS_ACCESS_KEY_ID: "{{ .Values.storageOffload.accessKey }}" 
   AWS_SECRET_ACCESS_KEY: "{{ .Values.storageOffload.accessSecret }}" 
-{{- if .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}
+  {{- if .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}
   managedLedgerOffloadDeletionLagMs: "{{ .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}" 
+  {{- end }}
+  {{- if .Values.storageOffload.maxBlockSizeInBytes }}
+  s3ManagedLedgerOffloadMaxBlockSizeInBytes: "{{ .Values.storageOffload.maxBlockSizeInBytes }}" 
+  {{- end }}
+  {{- if .Values.storageOffload.readBufferSizeInBytes }}
+  s3ManagedLedgerOffloadReadBufferSizeInBytes: "{{ .Values.storageOffload.readBufferSizeInBytes }}" 
+  {{- end }}
 {{- end }}
-{{- if .Values.storageOffload.maxBlockSizeInBytes }}
-  maxBlockSizeInBytes: "{{ .Values.storageOffload.maxBlockSizeInBytes }}" 
-{{- end }}
-{{- if .Values.storageOffload.readBufferSizeInBytes }}
-  readBufferSizeInBytes: "{{ .Values.storageOffload.readBufferSizeInBytes }}" 
+{{- if eq .Values.storageOffload.driver "google-cloud-storage" }}
+  managedLedgerOffloadDriver: "{{ .Values.storageOffload.driver }}" 
+  gcsManagedLedgerOffloadBucket: "{{ .Values.storageOffload.bucket }}"
+  gcsManagedLedgerOffloadRegion: "{{ .Values.storageOffload.region }}"
+  gcsManagedLedgerOffloadServiceAccountKeyFile: "/pulsar/gcp-service-account/{{ .Values.storageOffload.gcsServiceAccountJsonFile }}"
+  {{- if .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}
+  managedLedgerOffloadDeletionLagMs: "{{ .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}" 
+  {{- end }}
+  {{- if .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}
+  managedLedgerOffloadAutoTriggerSizeThresholdBytes: "{{ .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}" 
+  {{- end }}
+  {{- if .Values.storageOffload.maxBlockSizeInBytes }}
+  gcsManagedLedgerOffloadMaxBlockSizeInBytes: "{{ .Values.storageOffload.maxBlockSizeInBytes }}" 
+  {{- end }}
+  {{- if .Values.storageOffload.readBufferSizeInBytes }}
+  gcsManagedLedgerOffloadReadBufferSizeInBytes: "{{ .Values.storageOffload.readBufferSizeInBytes }}" 
+  {{- end }}
 {{- end }}
 {{- end }}
 {{ toYaml .Values.broker.configData | indent 2 }}

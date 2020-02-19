@@ -33,8 +33,11 @@ main() {
         exit
     fi
 
-    rm -rf .deploy
-    mkdir -p .deploy
+    rm -rf .cr-release-packages
+    mkdir -p .cr-release-packages
+
+    rm -rf .cr-index
+    mkdir -p .cr-index
 
     echo "Identifying changed charts since tag '$latest_tag'..."
 
@@ -65,7 +68,7 @@ find_latest_tag() {
 
 package_chart() {
     local chart="$1"
-    helm package "$chart" --destination .deploy
+    helm package "$chart" --destination .cr-release-packages 
 }
 
 release_charts() {
@@ -73,16 +76,16 @@ release_charts() {
 }
 
 update_index() {
-    chart-releaser index -o kafkaesque-io -r pulsar-helm-chart -i .deploy/index.yaml -p .deploy -t "$CH_TOKEN" -c https://github.com/kafkaesque-io/pulsar-helm-chart 
+    chart-releaser index -o kafkaesque-io -r pulsar-helm-chart -t "$CH_TOKEN" -c https://github.com/kafkaesque-io/pulsar-helm-chart 
 
     git config user.email "$GIT_EMAIL"
     git config user.name "$GIT_USERNAME"
 
-    git checkout master 
-    cp --force .deploy/index.yaml index.yaml
+    git checkout gh-pages 
+    cp --force .cr-index/index.yaml index.yaml
     git add index.yaml
     git commit --message="Update index.yaml [ci skip]" --signoff
-    git push "$GIT_REPO_URL" master 
+    git push "$GIT_REPO_URL" gh-pages 
 }
 
 main
