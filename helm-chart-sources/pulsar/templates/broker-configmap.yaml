@@ -79,6 +79,7 @@ data:
   PF_pulsarServiceUrl: "pulsar://localhost:6650"
   PF_pulsarWebServiceUrl: "http://localhost:8080"
 {{- end }}
+{{- if .Values.storageOffload.driver }}
 {{- if eq .Values.storageOffload.driver "aws-s3" }}
   managedLedgerOffloadDriver: "{{ .Values.storageOffload.driver }}" 
   s3ManagedLedgerOffloadBucket: "{{ .Values.storageOffload.bucket }}" 
@@ -112,5 +113,6 @@ data:
   {{- if .Values.storageOffload.readBufferSizeInBytes }}
   gcsManagedLedgerOffloadReadBufferSizeInBytes: "{{ .Values.storageOffload.readBufferSizeInBytes }}" 
   {{- end }}
+{{- end }}
 {{- end }}
 {{ toYaml .Values.broker.configData | indent 2 }}
