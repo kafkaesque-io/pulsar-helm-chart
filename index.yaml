@@ -3,41 +3,12 @@ entries:
   pulsar:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-02-17T17:09:50.940397251Z"
+    created: "2020-02-19T22:07:18.364004951Z"
     description: Apache Pulsar Helm chart for Kubernetes
-    digest: ee0ab90100d7e20842d86c8636bb100ab744aff3859901676df191247bbd6509
+    digest: 45bc99d4605f09c08184dc02ce9b0c4533d4525579078570d6fbd3bf12f17a44
     icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
     name: pulsar
     urls:
-    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.10/pulsar-1.0.10.tgz
-    version: 1.0.10
-  pulsar-monitor:
-  - apiVersion: v1
-    appVersion: "1.0"
-    created: "2020-02-13T18:26:04.997372481Z"
-    description: A Helm chart for the Pulsar Monitor application
-    digest: 58afa20754282677ccb6a0ea56620c48c994ef74bc14273c5d63f3e07b5c04c3
-    name: pulsar-monitor
-    urls:
-    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-monitor-0.1.0/pulsar-monitor-0.1.0.tgz
-    version: 0.1.0
-  teleport:
-  - created: "2020-02-13T18:26:05.106048182Z"
-    description: Teleport Community
-    digest: def95a688ce6f14856f2c6cb9ba74ec0b3e90f145d4b1c214121c0580f1c9076
-    name: teleport
-    urls:
-    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/teleport-1.0.0/teleport-1.0.0.tgz
-    version: 1.0.0
-  imagepuller:
-  - apiVersion: v1
-    appVersion: "1.0"
-    created: "2019-12-15T20:21:43.960624756Z"
-    description: Pull container images to your nodes so that they are already present
-      when containers are launched
-    digest: 53e16e29d89bdd2fb9bf19aa43cdf6f49f56f056b53bf120d26d141e23c90f2b
-    name: imagepuller
-    urls:
-    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/imagepuller-1.0.0/imagepuller-1.0.0.tgz
-    version: 1.0.0
-generated: "2020-02-17T17:09:50.712354673Z"
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.11/pulsar-1.0.11.tgz
+    version: 1.0.11
+generated: "2020-02-19T22:07:18.145853311Z"
