@@ -72,7 +72,7 @@ package_chart() {
 }
 
 release_charts() {
-    chart-releaser upload -o kafkaesque-io -r pulsar-helm-chart -p .deploy -t "$CH_TOKEN"
+    chart-releaser upload -o kafkaesque-io -r pulsar-helm-chart -t "$CH_TOKEN"
 }
 
 update_index() {
