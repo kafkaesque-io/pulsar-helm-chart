@@ -143,19 +143,49 @@ image:
 ## Tiered Storage
 ##
 
-#storageOffload:
+storageOffload: {}
+  ## General
+  ## =======
+  # bucket: <bucket>
+  # region: <region>
+  # maxBlockSizeInBytes: "64000000" 
+  # readBufferSizeInBytes: "1000000"
+  ## The following are default values for the cluster. They can be changed
+  ## on each namespace.
+  # managedLedgerOffloadDeletionLagMs: "14400000"
+  # managedLedgerOffloadAutoTriggerSizeThresholdBytes: "1000000"
+
+  # For AWS S3
+  # ======
+  # You must create an IAM account with access to the bucket and 
+  # generate keys for that account.
+  #
   # driver: aws-s3
-  # For s3 compatible services, need to specify the endpoint
+  # accessKey: <access-key>
+  # accessSecret: <secret-key>
+  ## For s3 compatible services, need to specify the endpoint but
+  ## not needed for AWS
   # serviceEndpoint: s3-compatible
-  # For Google Cloud Storage, need to specify service account JSON file
-  # serviceAccountKeyFile:
-  # bucket: <bucket> 
-  # region: us-west-2
-  # accessKey: <key> 
-  # accessSecret: <secret> 
-  # maxBlockSizeInBytes: 64000000 
-  # readBufferSizeInBytes: 1000000
-  # managedLedgerOffloadDeletionLagMs: 30000
+
+  ## For Google Cloud Storage
+  ## ====================
+  ## You must create a service account that has access to the objects in GCP buckets
+  ## and upload its key as a JSON file to a secret.
+  ## 
+  ## 1. Go to https://console.cloud.google.com/iam-admin/serviceaccounts
+  ## 2. Select your project.
+  ## 3. Create a new service account.
+  ## 4. Give the service account permission to access the bucket. For example, 
+  ##    the "Storage Object Admin" role.
+  ## 5. Create a key for the service account and save it as a JSON file.
+  ## 6. Save the JSON file in a secret:
+  ##       kubectl create secret generic pulsar-gcp-sa-secret \
+  ##          --from-file=kafkaesque-223201-f12856532197.json \
+  ##          --namespace pulsar
+  ## 
+  # driver: google-cloud-storage
+  # gcsServiceAccountSecret: pulsar-gcp-sa-secret
+  # gcsServiceAccountJsonFile: kafkaesque-223201-f12856532197.json
 
 ## Pulsar: Zookeeper cluster
 ## templates/zookeeper-statefulset.yaml
