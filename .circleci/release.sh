@@ -76,7 +76,7 @@ release_charts() {
 }
 
 update_index() {
-    chart-releaser index -o kafkaesque-io -r pulsar-helm-chart -t "$CH_TOKEN" -c https://github.com/kafkaesque-io/pulsar-helm-chart 
+    chart-releaser index -o kafkaesque-io -r pulsar-helm-chart -t "$CH_TOKEN" -c https://helm.kafkaesque.io 
 
     git config user.email "$GIT_EMAIL"
     git config user.name "$GIT_USERNAME"
@@ -84,7 +84,7 @@ update_index() {
     git checkout gh-pages 
     cp --force .cr-index/index.yaml index.yaml
     git add index.yaml
-    git commit --message="Update index.yaml [ci skip]" --signoff
+    git commit --message="Update index.yaml" --signoff
     git push "$GIT_REPO_URL" gh-pages 
 }
 
