@@ -163,9 +163,15 @@ storageOffload: {}
   # driver: aws-s3
   # accessKey: <access-key>
   # accessSecret: <secret-key>
-  ## For s3 compatible services, need to specify the endpoint but
-  ## not needed for AWS
-  # serviceEndpoint: s3-compatible
+
+  # For S3 Compatible
+  # =================
+  # Need to create access and secret key for S3 compatible service
+  #
+  # driver: s3
+  # accessKey: <access-key>
+  # accessSecret: <secret-key>
+  # serviceEndpoint: host:port
 
   ## For Google Cloud Storage
   ## ====================
@@ -342,7 +348,7 @@ broker:
   functionsWorkerEnabled: no 
   probe:
     port: 8080
-    initial: 10
+    initial: 30
     period: 10
   resources:
     requests:
