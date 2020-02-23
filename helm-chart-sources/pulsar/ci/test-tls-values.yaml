@@ -120,7 +120,7 @@ bookkeeper:
 
 broker:
   component: broker
-  replicaCount: 2
+  replicaCount: 1
   resources:
     requests:
       memory: 400Mi
