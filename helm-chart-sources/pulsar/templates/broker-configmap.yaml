@@ -85,7 +85,30 @@ data:
   s3ManagedLedgerOffloadBucket: "{{ .Values.storageOffload.bucket }}" 
   s3ManagedLedgerOffloadRegion: "{{ .Values.storageOffload.region }}" 
   AWS_ACCESS_KEY_ID: "{{ .Values.storageOffload.accessKey }}" 
-  AWS_SECRET_ACCESS_KEY: "{{ .Values.storageOffload.accessSecret }}" 
+  AWS_SECRET_ACCESS_KEY: "{{ .Values.storageOffload.accessSecret }}"
+  {{- if .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}
+  managedLedgerOffloadAutoTriggerSizeThresholdBytes: "{{ .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}" 
+  {{- end }} 
+  {{- if .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}
+  managedLedgerOffloadDeletionLagMs: "{{ .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}" 
+  {{- end }}
+  {{- if .Values.storageOffload.maxBlockSizeInBytes }}
+  s3ManagedLedgerOffloadMaxBlockSizeInBytes: "{{ .Values.storageOffload.maxBlockSizeInBytes }}" 
+  {{- end }}
+  {{- if .Values.storageOffload.readBufferSizeInBytes }}
+  s3ManagedLedgerOffloadReadBufferSizeInBytes: "{{ .Values.storageOffload.readBufferSizeInBytes }}" 
+  {{- end }}
+{{- end }}
+{{- if eq .Values.storageOffload.driver "s3" }}
+  managedLedgerOffloadDriver: "{{ .Values.storageOffload.driver }}" 
+  s3ManagedLedgerOffloadBucket: "{{ .Values.storageOffload.bucket }}" 
+  s3ManagedLedgerOffloadRegion: "{{ .Values.storageOffload.region }}" 
+  AWS_ACCESS_KEY_ID: "{{ .Values.storageOffload.accessKey }}" 
+  AWS_SECRET_ACCESS_KEY: "{{ .Values.storageOffload.accessSecret }}"
+  s3ManagedLedgerOffloadServiceEndpoint: "{{ .Values.storageOffload.serviceEndpoint }}"
+  {{- if .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}
+  managedLedgerOffloadAutoTriggerSizeThresholdBytes: "{{ .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}" 
+  {{- end }} 
   {{- if .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}
   managedLedgerOffloadDeletionLagMs: "{{ .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}" 
   {{- end }}

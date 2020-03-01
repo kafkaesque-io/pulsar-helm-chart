@@ -118,15 +118,15 @@ spec:
             secretName: token-websocket
         {{- end }}
       initContainers:
-      # This init container will wait for zookeeper to be ready before
-      # deploying the bookies
-      - name: wait-zookeeper-ready
+      # This init container will wait for bookkeeper to be ready before
+      # deploying the booproxykies
+      - name: wait-bookkeeper-ready
         image: "{{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}"
         imagePullPolicy: {{ .Values.image.proxy.pullPolicy }}
         command: ["sh", "-c"]
         args:
           - >-
-            until bin/pulsar zookeeper-shell -server {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }} ls /admin/clusters | grep "^\[.*{{ template "pulsar.fullname" . }}.*\]"; do
+            until nslookup {{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ add (.Values.bookkeeper.replicaCount | int) -1 }}.{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}.{{ .Release.Namespace }}; do
               sleep 3;
             done;
       containers:

@@ -113,15 +113,15 @@ spec:
         {{- end }}
         {{- end }}
       initContainers:
-      # This init container will wait for zookeeper to be ready before
-      # deploying the bookies
-      - name: wait-zookeeper-ready
+      # This init container will wait for bookkeeper to be ready before
+      # deploying the broker
+      - name: wait-bookkeeper-ready
         image: "{{ .Values.image.broker.repository }}:{{ .Values.image.broker.tag }}"
         imagePullPolicy: {{ .Values.image.broker.pullPolicy }}
         command: ["sh", "-c"]
         args:
           - >-
-            until bin/pulsar zookeeper-shell -server {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }} ls /admin/clusters | grep "^\[.*{{ template "pulsar.fullname" . }}.*\]"; do
+            until nslookup {{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ add (.Values.bookkeeper.replicaCount | int) -1 }}.{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}.{{ .Release.Namespace }}; do
               sleep 3;
             done;
       containers:
@@ -130,8 +130,11 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         {{- if .Values.broker.probe }}
         readinessProbe:
-          tcpSocket:
-            port: {{ .Values.broker.probe.port }}
+          exec:
+            command:
+            - /pulsar/bin/pulsar-admin
+            - brokers 
+            - healthcheck
           initialDelaySeconds: {{ .Values.broker.probe.initial }} 
           periodSeconds:  {{ .Values.broker.probe.period }} 
         livenessProbe:
@@ -140,8 +143,8 @@ spec:
             - /pulsar/bin/pulsar-admin
             - brokers 
             - healthcheck
-          initialDelaySeconds: 60 
-          periodSeconds: 20 
+          initialDelaySeconds: {{ .Values.broker.probe.initial }} 
+          periodSeconds: {{ .Values.broker.probe.period }} 
         {{- end }}
       {{- if .Values.broker.resources }}
         resources:

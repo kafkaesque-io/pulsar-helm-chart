@@ -31,6 +31,9 @@ metadata:
     component: {{ .Values.proxy.component }}
     cluster: {{ template "pulsar.fullname" . }}
   annotations:
+{{- if .Values.proxy.service.annotations }}
+{{ toYaml .Values.proxy.service.annotations | indent 4 }}
+{{- end }}
 {{- if .Values.extra.dnsOnProxy }}
     external-dns.alpha.kubernetes.io/hostname: {{ .Values.dnsName }}
 {{- end }}

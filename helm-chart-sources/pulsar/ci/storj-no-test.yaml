@@ -12,42 +12,26 @@ image:
 
 storageOffload:
 
-  # Google Cloud Storage
-  # ====================
-  # You must create a service account that has access to the objects in GCP buckets
-  # and upload its key as a JSON file to a secret.
-  # 
-  # 1. Go to https://console.cloud.google.com/iam-admin/serviceaccounts
-  # 2. Select your project.
-  # 3. Create a new service account.
-  # 4. Give the service account permission to access the bucket. For example, 
-  #    the "Storage Object Admin" role.
-  # 5. Create a key for the service account and save it as a JSON file.
-  # 6. Save the JSON file in a secret:
-  #       kubectl create secret generic pulsar-gcp-sa-secret \
-  #          --from-file=kafkaesque-223201-f12856532197.json \
-  #          --namespace pulsar
-  # 
-  driver: google-cloud-storage
-  gcsServiceAccountSecret: pulsar-gcp-sa-secret
-  gcsServiceAccountJsonFile: kafkaesque-223201-f12856532197.json
-  bucket: kesque-tired-storage-test
-  region: us
-  # General Storage Offload Setting
-  # ===============================
-  # maxBlockSizeInBytes: "64000000" 
-  # readBufferSizeInBytes: "1000000"
-  maxBlockSizeInBytes: "64000000"
+  bucket: tiered-storage 
+  region: us-east-1 
+  maxBlockSizeInBytes: "64000000" 
   readBufferSizeInBytes: "1000000"
-  #
-  # The following are default values for the cluster. They can be changed
-  # on each namespace.
-  # managedLedgerOffloadDeletionLagMs: "14400000"
-  # managedLedgerOffloadAutoTriggerSizeThresholdBytes: "1000000"
+  ## The following are default values for the cluster. They can be changed
+  ## on each namespace.
   managedLedgerOffloadDeletionLagMs: "60000"
   managedLedgerOffloadAutoTriggerSizeThresholdBytes: "1000"
 
-
+  # For AWS S3
+  # ======
+  # You must create an IAM account with access to the bucket and 
+  # generate keys for that account.
+  #
+  driver: s3
+  accessKey: 2J7EJY4xTK6uHKqnCE4nAhdGfXqy
+  accessSecret: 4YeYwYdsoFFpvtNFuncWcTVqSTPL 
+  ## For s3 compatible services, need to specify the endpoint but
+  ## not needed for AWS
+  serviceEndpoint: http://127.0.0.1:7777 
 
 zookeeper:
   resources:
@@ -71,10 +55,10 @@ broker:
   replicaCount: 1
   resources:
     requests:
-      memory: 512Mi
+      memory: 1000Mi
       cpu: 0.3 
   configData:
-    PULSAR_MEM: "\"-Xms512m -Xmx512m -XX:MaxDirectMemorySize=512m -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:ParallelGCThreads=32 -XX:ConcGCThreads=32 -XX:G1NewSizePercent=50 -XX:+DisableExplicitGC -XX:-ResizePLAB -XX:+ExitOnOutOfMemoryError -XX:+PerfDisableSharedMem\""
+    PULSAR_MEM: "\"-Xms512m -Xmx1000m -XX:MaxDirectMemorySize=1000m -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:ParallelGCThreads=32 -XX:ConcGCThreads=32 -XX:G1NewSizePercent=50 -XX:+DisableExplicitGC -XX:-ResizePLAB -XX:+ExitOnOutOfMemoryError -XX:+PerfDisableSharedMem\""
 
 function:
   replicaCount: 1
