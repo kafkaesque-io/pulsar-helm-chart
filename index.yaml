@@ -1,6 +1,27 @@
 apiVersion: v1
 entries:
+  imagepuller:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2019-12-15T20:21:43.960624756Z"
+    description: Pull container images to your nodes so that they are already present
+      when containers are launched
+    digest: 53e16e29d89bdd2fb9bf19aa43cdf6f49f56f056b53bf120d26d141e23c90f2b
+    name: imagepuller
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/imagepuller-1.0.0/imagepuller-1.0.0.tgz
+    version: 1.0.0
   pulsar:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-03-01T15:43:56.393391189Z"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: 37cdea42d4468571b7fa657c3a8b88f788dd312dc86667645a172c47c089859e
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.12/pulsar-1.0.12.tgz
+    version: 1.0.12
   - apiVersion: v1
     appVersion: "1.0"
     created: "2020-02-19T22:07:18.364004951Z"
@@ -88,16 +109,5 @@ entries:
     name: teleport
     urls:
     - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/teleport-1.0.0/teleport-1.0.0.tgz
-    version: 1.0.0
-  imagepuller:
-  - apiVersion: v1
-    appVersion: "1.0"
-    created: "2019-12-15T20:21:43.960624756Z"
-    description: Pull container images to your nodes so that they are already present
-      when containers are launched
-    digest: 53e16e29d89bdd2fb9bf19aa43cdf6f49f56f056b53bf120d26d141e23c90f2b
-    name: imagepuller
-    urls:
-    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/imagepuller-1.0.0/imagepuller-1.0.0.tgz
     version: 1.0.0
 generated: "2020-02-19T22:07:18.145853311Z"
