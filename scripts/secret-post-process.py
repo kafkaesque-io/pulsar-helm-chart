@@ -7,19 +7,16 @@
 #
 # $ detect-secrets scan | python3 ./scripts/secret-post-process.py ; echo $?
 #
+# To suppress a secret, add this comment at the end of line in yaml
+# `# pragma: allowlist secret`
 
 import json
 import sys
 import os
 
 whiteList = [
-  "helm-chart-sources/pulsar/ci/gcp-storage-no-test.yaml",
   "helm-chart-sources/pulsar-monitor/values.yaml",
-  "helm-chart-sources/pulsar/ci/storj-no-test.yaml",
-  "helm-chart-sources/pulsar/values.yaml",
-  "helm-chart-sources/pulsar/templates/broker-configmap.yaml",
-  "helm-chart-sources/pulsar/ci/test-tls-values.yaml",
-  "src/unit-test/example_private_key"
+  "helm-chart-sources/pulsar/ci/test-tls-values.yaml"
 ]
 
 stdin=''
@@ -31,6 +28,7 @@ for line in sys.stdin:
         break
   else:
     lb = 0
+
     stdin += line
 
 results = json.loads(stdin)

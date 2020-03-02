@@ -27,8 +27,8 @@ storageOffload:
   # generate keys for that account.
   #
   driver: s3
-  accessKey: 2J7EJY4xTK6uHKqnCE4nAhdGfXqy
-  accessSecret: 4YeYwYdsoFFpvtNFuncWcTVqSTPL 
+  accessKey: "access key for s3 compatiables"
+  accessSecret: "access secret for s3 compatiables" # pragma: allowlist secret
   ## For s3 compatible services, need to specify the endpoint but
   ## not needed for AWS
   serviceEndpoint: http://127.0.0.1:7777 

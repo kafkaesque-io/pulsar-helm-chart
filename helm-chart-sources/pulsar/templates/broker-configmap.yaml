@@ -85,7 +85,7 @@ data:
   s3ManagedLedgerOffloadBucket: "{{ .Values.storageOffload.bucket }}" 
   s3ManagedLedgerOffloadRegion: "{{ .Values.storageOffload.region }}" 
   AWS_ACCESS_KEY_ID: "{{ .Values.storageOffload.accessKey }}" 
-  AWS_SECRET_ACCESS_KEY: "{{ .Values.storageOffload.accessSecret }}"
+  AWS_SECRET_ACCESS_KEY: "{{ .Values.storageOffload.accessSecret }}" # pragma: allowlist secret
   {{- if .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}
   managedLedgerOffloadAutoTriggerSizeThresholdBytes: "{{ .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}" 
   {{- end }} 
@@ -104,7 +104,7 @@ data:
   s3ManagedLedgerOffloadBucket: "{{ .Values.storageOffload.bucket }}" 
   s3ManagedLedgerOffloadRegion: "{{ .Values.storageOffload.region }}" 
   AWS_ACCESS_KEY_ID: "{{ .Values.storageOffload.accessKey }}" 
-  AWS_SECRET_ACCESS_KEY: "{{ .Values.storageOffload.accessSecret }}"
+  AWS_SECRET_ACCESS_KEY: "{{ .Values.storageOffload.accessSecret }}" # pragma: allowlist secret
   s3ManagedLedgerOffloadServiceEndpoint: "{{ .Values.storageOffload.serviceEndpoint }}"
   {{- if .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}
   managedLedgerOffloadAutoTriggerSizeThresholdBytes: "{{ .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}" 
