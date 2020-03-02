@@ -1,0 +1,48 @@
+#!/user/bin/env python3
+
+#
+# this file takes output of Yelp's secret-detect from standard input and process it
+#
+# $ pip install detect-secrets
+#
+# $ detect-secrets scan | python3 ./scripts/secret-post-process.py ; echo $?
+#
+
+import json
+import sys
+import os
+
+whiteList = [
+  "helm-chart-sources/pulsar/ci/gcp-storage-no-test.yaml",
+  "helm-chart-sources/pulsar-monitor/values.yaml",
+  "helm-chart-sources/pulsar/ci/storj-no-test.yaml",
+  "helm-chart-sources/pulsar/values.yaml",
+  "helm-chart-sources/pulsar/templates/broker-configmap.yaml",
+  "helm-chart-sources/pulsar/ci/test-tls-values.yaml",
+  "src/unit-test/example_private_key"
+]
+
+stdin=''
+
+for line in sys.stdin:
+  if line == "\n":
+    lb += 1
+    if lb == 2:
+        break
+  else:
+    lb = 0
+    stdin += line
+
+results = json.loads(stdin)
+
+error = False
+for (k, v) in results["results"].items():
+    if k not in whiteList:
+        print(k, v)
+        error = True
+
+if error:
+    print("Error: above secret detected")
+    os._exit(3)
+else:
+    print("successful")
