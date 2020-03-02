@@ -14,21 +14,19 @@ HEAD=$(git rev-parse HEAD)
 watchFiles=("helm-chart-sources/pulsar/Chart.yaml" "helm-chart-sources/imagepuller/Chart.yaml" "helm-chart-sources/teleport/Chart.yaml" "helm-chart-sources/pulsar-monitor/Chart.yaml")
 
 releaseRequired=0
-echo HEAD is ${HEAD}
 
 # build a list of latest commits on these watch files
 for ele in "${watchFiles[@]}"; do
-    commit=$(git log -1 --format=format:%H --full-diff ${DIR}/../${ele})
-    echo ${ele} ${commit}
-    if [ $HEAD = $commit ]; then
-      echo "this commit ${HEAD} updated ${ele} that requires to build chart"
+    commit=$(git log -1 --format=format:%H --full-diff "${DIR}"/../"${ele}")
+    if [ "${HEAD}" = "${commit}" ]; then
+      echo "the commit ${HEAD} updated ${ele} that requires to build chart"
       releaseRequired=1 
     fi
 done
 
-if [ $releaseRequired -ne 0 ]; then
-    ${DIR}/install_tools.sh
-    ${DIR}/release.sh
+if [ "${releaseRequired}" -ne 0 ]; then
+    "${DIR}"/install_tools.sh
+    "${DIR}"/release.sh
 else
     echo "release is not required"
 fi

@@ -8,15 +8,14 @@ HEAD=$(git rev-parse HEAD)
 
 watchFiles=("./helm-chart-sources" "./tests")
 
-echo HEAD is ${HEAD}
+echo HEAD is "${HEAD}"
 changed=0
 
 # build a list of latest commits on these watch files
 for ele in "${watchFiles[@]}"; do
-    commit=$(git log -1 --format=format:%H --full-diff ${DIR}/../${ele})
-    echo ${ele} ${commit}
-    if [ $HEAD = $commit ]; then
-      echo "this commit ${HEAD} updated ${ele} that requires to build chart"
+    commit=$(git log -1 --format=format:%H --full-diff "${DIR}"/../"${ele}")
+    if [ "${HEAD}" = "${commit}" ]; then
+      echo "the commit ${HEAD} updated ${ele} that requires to build chart"
       changed=1
     fi
 done
