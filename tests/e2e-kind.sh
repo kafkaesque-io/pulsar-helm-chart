@@ -9,7 +9,7 @@ changed=0
 # build a list of latest commits on these watch files
 for ele in "${watchFiles[@]}"; do
     diff=$(git log master... "${DIR}"/../"${ele}")
-    if [ ! -z "${diff}" ]; then
+    if [ -n "${diff}" ]; then
       echo "${ele} has difference between master ${diff}"
       changed=1
     fi
