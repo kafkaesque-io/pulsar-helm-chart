@@ -1,5 +1,31 @@
 #!/usr/bin/env bash
 
+# dir where this script resides
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+# latest commit HEAD
+HEAD=$(git rev-parse HEAD)
+
+watchFiles=("./helm-chart-sources" "./tests")
+
+echo HEAD is ${HEAD}
+changed=0
+
+# build a list of latest commits on these watch files
+for ele in "${watchFiles[@]}"; do
+    commit=$(git log -1 --format=format:%H --full-diff ${DIR}/../${ele})
+    echo ${ele} ${commit}
+    if [ $HEAD = $commit ]; then
+      echo "this commit ${HEAD} updated ${ele} that requires to build chart"
+      changed=1
+    fi
+done
+
+if [ $changed -eq 0 ]; then
+    echo "no changes to charts and tests, therefore skip chart build ..."
+    exit 0
+fi
+
 set -o errexit
 set -o nounset
 set -o pipefail
