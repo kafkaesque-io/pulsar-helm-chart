@@ -29,7 +29,7 @@ storageOffload:
   #          --namespace pulsar
   # 
   driver: google-cloud-storage
-  gcsServiceAccountSecret: pulsar-gcp-sa-secret
+  gcsServiceAccountSecret: pulsar-gcp-sa-secret # pragma: allowlist secret
   gcsServiceAccountJsonFile: kafkaesque-223201-f12856532197.json
   bucket: kesque-tired-storage-test
   region: us

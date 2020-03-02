@@ -59,8 +59,8 @@ tlsSecretName: pulsar-tls
 
 # secrets:
   ## If you're providing your own certificates, please use this to add the certificates as secrets
-  ## key and certificate should start with -----BEGIN CERTIFICATE----- or
-  ## -----BEGIN RSA PRIVATE KEY-----
+  ## key and certificate should start with -----BEGIN CERTIFICATE----- or 
+  ## -----BEGIN RSA PRIVATE KEY----- # pragma: allowlist secret
   ##
   ## If you're using cert-manager, this is unneeded, as it will create the secret for you if it is not set
   ##
@@ -162,7 +162,7 @@ storageOffload: {}
   #
   # driver: aws-s3
   # accessKey: <access-key>
-  # accessSecret: <secret-key>
+  # accessSecret: <secret-key> # pragma: allowlist secret
 
   # For S3 Compatible
   # =================
@@ -170,7 +170,7 @@ storageOffload: {}
   #
   # driver: s3
   # accessKey: <access-key>
-  # accessSecret: <secret-key>
+  # accessSecret: <secret-key> # pragma: allowlist secret 
   # serviceEndpoint: host:port
 
   ## For Google Cloud Storage
@@ -190,7 +190,7 @@ storageOffload: {}
   ##          --namespace pulsar
   ## 
   # driver: google-cloud-storage
-  # gcsServiceAccountSecret: pulsar-gcp-sa-secret
+  # gcsServiceAccountSecret: pulsar-gcp-sa-secret # pragma: allowlist secret
   # gcsServiceAccountJsonFile: kafkaesque-223201-f12856532197.json
 
 ## Pulsar: Zookeeper cluster
