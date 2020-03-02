@@ -37,8 +37,7 @@ jobs:
           command: |
             echo "export GIT_REPO_URL=$CIRCLE_REPOSITORY_URL" >> $BASH_ENV
             echo "export GIT_USERNAME=$CIRCLE_PROJECT_USERNAME" >> $BASH_ENV
-            .circleci/install_tools.sh
-            .circleci/release.sh
+            .circleci/build_release.sh
 workflows:
   version: 2
   untagged-build:
