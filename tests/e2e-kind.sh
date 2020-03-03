@@ -8,12 +8,12 @@ changed=0
 
 git branch
 
-git shortlog master... ./tests
+git log --pretty=oneline master... ./tests
 
 # build a list of latest commits on these watch files
 for ele in "${watchFiles[@]}"; do
-    git shortlog master... "${DIR}"/../"${ele}"
-    diff=$(git shortlog master... "${DIR}"/../"${ele}")
+    git log --pretty=oneline master... "${DIR}"/../"${ele}"
+    diff=$(git log --pretty=oneline master... "${DIR}"/../"${ele}")
     echo "${diff}"
     echo "${DIR}"/../"${ele}"
     if [ -n "${diff}" ]; then
