@@ -6,9 +6,14 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 watchFiles=("./helm-chart-sources" "./tests")
 changed=0
 
+git branch
+
+git shortlog master... ./tests
+
 # build a list of latest commits on these watch files
 for ele in "${watchFiles[@]}"; do
-    diff=$(git log master... "${DIR}"/../"${ele}")
+    git shortlog master... "${DIR}"/../"${ele}"
+    diff=$(git shortlog master... "${DIR}"/../"${ele}")
     echo "${diff}"
     echo "${DIR}"/../"${ele}"
     if [ -n "${diff}" ]; then
