@@ -101,6 +101,10 @@ secrets:
     izC1N6XSYnZZ6JhthkjZfTIJgS0Jz/Q6lBrnRhUVOv49PdVz7aWWtQoE
     -----END CERTIFICATE-----
 
+image:
+  broker:
+    repository: apachepulsar/pulsar
+
 zookeeper:
   resources:
     requests:

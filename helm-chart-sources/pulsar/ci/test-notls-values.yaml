@@ -5,6 +5,10 @@ extra:
   autoRecovery: no
   bastion: no
 
+image:
+  broker:
+    repository: apachepulsar/pulsar
+
 zookeeper:
   resources:
     requests:

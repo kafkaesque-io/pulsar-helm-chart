@@ -114,8 +114,8 @@ extra:
 ## Which images to use
 image:
   broker:
-    # If using tiered storage, use pulsar-all image for broker
-    repository: apachepulsar/pulsar
+    # If not using tiered storage, you can use the smaller pulsar image for the broker
+    repository: apachepulsar/pulsar-all
     pullPolicy: IfNotPresent
     tag: 2.5.0
   function:
