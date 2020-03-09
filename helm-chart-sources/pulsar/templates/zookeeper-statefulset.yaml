@@ -143,8 +143,6 @@ spec:
         requests:
           storage: {{ .Values.zookeeper.volumes.data.size }}
     {{- if or .Values.zookeeper.volumes.data.storageClass .Values.default_storage }}
-      {{- if .Release.IsInstall }}
       storageClassName: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-{{ .Values.zookeeper.volumes.data.name }}"
-      {{- end }}
     {{- end }}
 {{- end }}

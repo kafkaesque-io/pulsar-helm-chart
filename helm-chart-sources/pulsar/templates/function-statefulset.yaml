@@ -201,9 +201,7 @@ spec:
         requests:
           storage: {{ .Values.function.volumes.data.size }}
       {{- if or .Values.function.volumes.data.storageClass .Values.default_storage }}
-      {{- if .Release.IsInstall }}
       storageClassName: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-{{ .Values.function.volumes.data.name }}"
-      {{- end }}
       {{- end }}
   {{- end }}
 {{- end }}
