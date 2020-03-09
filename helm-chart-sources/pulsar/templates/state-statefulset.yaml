@@ -140,9 +140,7 @@ spec:
         requests:
           storage: {{ .Values.stateStorage.volumes.data.size }}
     {{- if or .Values.stateStorage.volumes.data.storageClass .Values.default_storage }}
-      {{- if .Release.IsInstall }}
       storageClassName: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}-{{ .Values.stateStorage.volumes.data.name }}"
-      {{- end }}
     {{- end }}
 
   {{- end }}
