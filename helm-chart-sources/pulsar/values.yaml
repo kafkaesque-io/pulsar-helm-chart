@@ -78,6 +78,12 @@ tlsCaCert: ca-certificates.crt
 # Enable token-based authentication and authorization
 enableTokenAuth: no
 
+# Token public key file name
+tokenPublicKeyFile: my-public.key
+
+# Token private key file name
+tokenPrivateKeyFile: my-private.key
+
 # Turn on anti affinity rules so that pods don't get scheduled on the same node
 # In development environments with a single node, this need to be disabled
 enableAntiAffinity: yes
