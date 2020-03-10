@@ -15,6 +15,7 @@ data:
     opsGenieConfig:
       intervalSeconds: 180
       heartbeatKey: {{ .Values.config.opsGenieHeartbeatKey }}
+      heartbeatUrl: {{ .Values.config.opsGenieHeartbeatUrl }}
       alertKey: {{ .Values.config.opsGenieAlertKey }}
     pulsarOpsConfig:
       intervalSeconds: 120
@@ -26,6 +27,8 @@ data:
       masterToken: {{ .Values.config.pulsarClientToken }}
       clusters:
         {{- toYaml .Values.pulsarFunctionsClusters | nindent 8 }}
+    pulsarTopicConfig:
+        {{- toYaml .Values.topicConfigs | nindent 8 }}
     pulsarPerfConfig:
       intervalSeconds: 120
       token: {{ .Values.config.pulsarClientToken }}
