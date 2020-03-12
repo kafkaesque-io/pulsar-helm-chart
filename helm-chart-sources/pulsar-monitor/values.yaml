@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: kafkaesqueio/pulsar-ops-monitor
-  tag: 0.29
+  tag: 0.3
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
