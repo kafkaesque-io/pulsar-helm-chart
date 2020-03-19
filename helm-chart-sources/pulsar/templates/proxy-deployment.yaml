@@ -117,6 +117,10 @@ spec:
           secret:
             secretName: token-websocket
         {{- end }}
+        {{- if .Values.proxy.initContainer }}
+        - name: lib-data
+          emptyDir: {}
+        {{- end }}
       initContainers:
       # This init container will wait for bookkeeper to be ready before
       # deploying the booproxykies
@@ -129,6 +133,22 @@ spec:
             until nslookup {{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ add (.Values.bookkeeper.replicaCount | int) -1 }}.{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}.{{ .Release.Namespace }}; do
               sleep 3;
             done;
+      {{- if .Values.proxy.initContainer }}
+      - name: add-libs
+        image: "{{ .Values.proxy.initContainer.repository }}:{{ .Values.proxy.initContainer.tag }}"
+        imagePullPolicy: "{{ .Values.proxy.initContainer.pullPolicy }}"
+        {{- if  .Values.proxy.initContainer.command }}
+        command:
+{{ toYaml .Values.proxy.initContainer.command | indent 10 }}
+        {{- end }}
+        {{- if  .Values.proxy.initContainer.args }}
+        args:
+{{ toYaml .Values.proxy.initContainer.args | indent 10 }}
+        {{- end }}
+        volumeMounts:
+          - name: lib-data
+            mountPath: /jars
+      {{- end }}
       containers:
 {{- if .Values.extra.kubectlProxy }}
       - name: "{{ template "pulsar.fullname" . }}-kubectl-proxy"
@@ -183,6 +203,10 @@ spec:
           - mountPath: "/pulsar/token-proxy"
             name: token-proxy
             readOnly: true
+          {{- end }}
+          {{- if .Values.proxy.initContainer }}
+          - name: lib-data
+            mountPath: /jars
           {{- end }}
         envFrom:
         - configMapRef:
