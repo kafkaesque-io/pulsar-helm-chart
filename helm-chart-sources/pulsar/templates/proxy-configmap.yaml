@@ -44,7 +44,9 @@ data:
     {{- $global := . }}
     {{ range $i, $e := until (.Values.zookeeper.replicaCount | int) }}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}{{ end }}
   clusterName: {{ template "pulsar.fullname" . }}
+  {{- if .Values.extra.function }}
   functionWorkerWebServiceURL: "http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:6750"
+  {{- end }}
 {{- if .Values.enableTls }}
   tlsEnabledInProxy: "true"
   tlsCertificateFilePath: /pulsar/certs/tls.crt
@@ -70,7 +72,11 @@ data:
   authenticationEnabled: "true"
   authorizationEnabled: "true"
   superUserRoles: "{{ .Values.superUserRoles }}"
+  {{- if .Values.proxy.extraAuthProvider }}
+  authenticationProviders: "org.apache.pulsar.broker.authentication.AuthenticationProviderToken,{{ .Values.proxy.extraAuthProvider }}"
+  {{- else }}
   authenticationProviders: "org.apache.pulsar.broker.authentication.AuthenticationProviderToken"
+  {{- end }}
   tokenPublicKey: "file:///pulsar/token-public-key/my-public.key"
   brokerClientAuthenticationPlugin: "org.apache.pulsar.client.impl.auth.AuthenticationToken"
   brokerClientAuthenticationParameters: "file:///pulsar/token-proxy/proxy.jwt"
