@@ -33,6 +33,12 @@ metadata:
 {{ toYaml .Values.bookkeeper.service.annotations | indent 4 }}
 spec:
   ports:
+  {{- if .Values.function.enableStateStorage }}
+  {{- if not .Values.extra.stateStorage }}
+  - name: stateStorage
+    port: 4181
+  {{- end }}
+  {{- end }}
 {{ toYaml .Values.bookkeeper.service.ports | indent 2 }}
   clusterIP: None
   selector:
