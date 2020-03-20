@@ -159,7 +159,7 @@ storageOffload: {}
   ## The following are default values for the cluster. They can be changed
   ## on each namespace.
   # managedLedgerOffloadDeletionLagMs: "14400000"
-  # managedLedgerOffloadAutoTriggerSizeThresholdBytes: "1000000"
+  # managedLedgerOffloadAutoTriggerSizeThresholdBytes: "-1" # disabled
 
   # For AWS S3
   # ======
