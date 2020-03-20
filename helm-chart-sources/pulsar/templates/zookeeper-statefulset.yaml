@@ -142,7 +142,19 @@ spec:
       resources:
         requests:
           storage: {{ .Values.zookeeper.volumes.data.size }}
-    {{- if or .Values.zookeeper.volumes.data.storageClass .Values.default_storage }}
+    {{- if or .Values.zookeeper.volumes.data.existingStorageClassName .Values.default_storage.existingStorageClassName }}
+      {{- if .Values.zookeeper.volumes.data.existingStorageClassName}}
+      {{- if ne .Values.zookeeper.volumes.data.existingStorageClassName "default"}}
+      storageClassName: "{{ .Values.zookeeper.volumes.data.existingStorageClassName }}"
+      {{- end }}
+      {{- else }}
+      {{- if ne .Values.default_storage.existingStorageClassName "default"}}
+      storageClassName: "{{ .Values.default_storage.existingStorageClassName }}"
+      {{- end }}
+      {{- end }}
+    {{- else }}
+      {{- if or .Values.zookeeper.volumes.data.storageClass .Values.default_storage }}
       storageClassName: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-{{ .Values.zookeeper.volumes.data.name }}"
+      {{- end }}
     {{- end }}
 {{- end }}

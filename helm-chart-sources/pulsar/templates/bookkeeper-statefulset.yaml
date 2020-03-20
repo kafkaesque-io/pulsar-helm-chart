@@ -96,7 +96,7 @@ spec:
             until bin/pulsar zookeeper-shell -server {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }} ls /admin/clusters | grep "^\[.*{{ template "pulsar.fullname" . }}.*\]"; do
               sleep 3;
             done;
-      # This initContainer will make sure that the bookeeper
+      # This initContainer will make sure that the bookkeeper
       # metadata is in zookeeper
       - name: pulsar-bookkeeper-metaformat
         image: "{{ .Values.image.bookkeeper.repository }}:{{ .Values.image.bookkeeper.tag }}"
@@ -139,9 +139,11 @@ spec:
         volumeMounts:
         - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
           mountPath: /pulsar/data/bookkeeper/journal
-        {{- if .Values.bookkeeper.volumes.ranges }}
+        {{- if and .Values.bookkeeper.volumes.ranges .Values.function.enableStateStorage}}
+        {{- if not .Values.extra.stateStorage }}
         - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ranges.name }}"
           mountPath: /pulsar/data/bookkeeper/ranges
+        {{- end }}
         {{- end }}
         - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
           mountPath: /pulsar/data/bookkeeper/ledgers
@@ -149,9 +151,11 @@ spec:
       volumes:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
         emptyDir: {}
-      {{- if .Values.bookkeeper.volumes.ranges }}
+      {{- if and .Values.bookkeeper.volumes.ranges .Values.function.enableStateStorage}}
+      {{- if not .Values.extra.stateStorage }}
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ranges.name }}"
         emptyDir: {}
+      {{- end }}
       {{- end }}
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
         emptyDir: {}
@@ -165,11 +169,23 @@ spec:
       resources:
         requests:
           storage: {{ .Values.bookkeeper.volumes.journal.size }}
-  
-    {{- if or .Values.bookkeeper.volumes.journal.storageClass .Values.default_storage }}
+    {{- if or .Values.bookkeeper.volumes.journal.existingStorageClassName .Values.default_storage.existingStorageClassName }}
+      {{- if .Values.bookkeeper.volumes.journal.existingStorageClassName}}
+      {{- if ne .Values.bookkeeper.volumes.journal.existingStorageClassName "default"}}
+      storageClassName: "{{ .Values.bookkeeper.volumes.journal.existingStorageClassName }}"
+      {{- end }}
+      {{- else }}
+      {{- if ne .Values.default_storage.existingStorageClassName "default"}}
+      storageClassName: "{{ .Values.default_storage.existingStorageClassName }}"
+      {{- end }}
+      {{- end }}
+    {{- else }}
+      {{- if or .Values.bookkeeper.volumes.journal.storageClass .Values.default_storage }}
       storageClassName: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
+      {{- end }}
     {{- end }}
-  {{- if .Values.bookkeeper.volumes.ranges }}
+  {{- if and .Values.bookkeeper.volumes.ranges .Values.function.enableStateStorage}}
+  {{- if not .Values.extra.stateStorage }}
   - metadata:
       name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ranges.name }}"
     spec:
@@ -177,9 +193,22 @@ spec:
       resources:
         requests:
           storage: {{ .Values.bookkeeper.volumes.ranges.size }}
-    {{- if or .Values.bookkeeper.volumes.ranges.storageClass .Values.default_storage }}
+    {{- if or .Values.bookkeeper.volumes.ranges.existingStorageClassName .Values.default_storage.existingStorageClassName }}
+      {{- if .Values.bookkeeper.volumes.ranges.existingStorageClassName}}
+      {{- if ne .Values.bookkeeper.volumes.ranges.existingStorageClassName "default"}}
+      storageClassName: "{{ .Values.bookkeeper.volumes.ranges.existingStorageClassName }}"
+      {{- end }}
+      {{- else }}
+      {{- if ne .Values.default_storage.existingStorageClassName "default"}}
+      storageClassName: "{{ .Values.default_storage.existingStorageClassName }}"
+      {{- end }}
+      {{- end }}
+    {{- else }}
+      {{- if or .Values.bookkeeper.volumes.ranges.storageClass .Values.default_storage }}
       storageClassName: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ranges.name }}"
+      {{- end }}
     {{- end }}
+  {{- end }}
   {{- end }}
   - metadata:
       name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
@@ -188,7 +217,19 @@ spec:
       resources:
         requests:
           storage: {{ .Values.bookkeeper.volumes.ledgers.size }}
-    {{- if or .Values.bookkeeper.volumes.ledgers.storageClass .Values.default_storage }}
+    {{- if or .Values.bookkeeper.volumes.ledgers.existingStorageClassName .Values.default_storage.existingStorageClassName }}
+      {{- if .Values.bookkeeper.volumes.ledgers.existingStorageClassName}}
+      {{- if ne .Values.bookkeeper.volumes.ledgers.existingStorageClassName "default"}}
+      storageClassName: "{{ .Values.bookkeeper.volumes.ledgers.existingStorageClassName }}"
+      {{- end }}
+      {{- else }}
+      {{- if ne .Values.default_storage.existingStorageClassName "default"}}
+      storageClassName: "{{ .Values.default_storage.existingStorageClassName }}"
+      {{- end }}
+      {{- end }}
+    {{- else }}
+      {{- if or .Values.bookkeeper.volumes.ledgers.storageClass .Values.default_storage }}
       storageClassName: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
+      {{- end }}
     {{- end }}
 {{- end }}
