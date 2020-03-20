@@ -19,6 +19,8 @@
 
 {{- if .Values.persistence }}
 {{- if .Values.extra.function }}
+{{- if not .Values.default_storage.existingStorageClassName }}
+{{- if not .Values.function.volumes.data.existingStorageClassName }}
 {{- if or .Values.function.volumes.data.storageClass .Values.default_storage}}
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
@@ -59,6 +61,8 @@ parameters:
   {{- if .Values.default_storage.extraParams }}
 {{ toYaml .Values.default_storage.extraParams | indent 2 }}
   {{- end }}
+{{- end }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

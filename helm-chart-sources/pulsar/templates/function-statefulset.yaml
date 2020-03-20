@@ -200,8 +200,20 @@ spec:
       resources:
         requests:
           storage: {{ .Values.function.volumes.data.size }}
+    {{- if or .Values.function.volumes.data.existingStorageClassName .Values.default_storage.existingStorageClassName }}
+      {{- if .Values.function.volumes.data.existingStorageClassName}}
+      {{- if ne .Values.function.volumes.data.existingStorageClassName "default"}}
+      storageClassName: "{{ .Values.function.volumes.data.existingStorageClassName }}"
+      {{- end }}
+      {{- else }}
+      {{- if ne .Values.default_storage.existingStorageClassName "default"}}
+      storageClassName: "{{ .Values.default_storage.existingStorageClassName }}"
+      {{- end }}
+      {{- end }}
+    {{- else }}
       {{- if or .Values.function.volumes.data.storageClass .Values.default_storage }}
       storageClassName: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-{{ .Values.function.volumes.data.name }}"
       {{- end }}
+    {{- end }}
   {{- end }}
 {{- end }}

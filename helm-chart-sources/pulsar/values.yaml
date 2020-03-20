@@ -27,6 +27,28 @@ prometheus_persistence: yes
 
 prometheus_rbac: yes
 
+# If default_storage is set, that storage class is the default for all 
+# persistent volmes created by the chart.
+#
+# You can override the default_storage storage class in the
+# volumes section of each component configuration (example: zookeeper.volumes.data.storageClass)
+# 
+# If you want to use an existing storage class as the default, then
+# set existingStorageClassName, like this:
+
+# To use an existing storage class:
+# default_storage:
+#   existingStorageClassName: <name>
+
+# To use the default storage class of the k8s cluster, use the name "default"
+# default_storage:
+#   existingStorageClassName: default
+
+# If you want the chart to create storage classes, then don't set
+# existingStorageClass name and provide configuration values
+# for the storage class. The settings vary based on cloud 
+# provider. Below are examples for AWS, GCP, and Azure.
+
 # For AWS
 # default_storage:
 #  provisioner: kubernetes.io/aws-ebs
@@ -92,6 +114,8 @@ extra:
   # Standalone functions worker
   function: no 
   # Standalone state storage
+  # Note that standalone state storage is experimental and requires a custom
+  # image
   stateStorage: no
   # DNS on proxy
   usedns: no
@@ -132,6 +156,11 @@ image:
     repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
     tag: 2.5.0
+  # Standalone state storage is experimental and requires the custom image below 
+  stateStorage:
+    repository: kafkaesqueio/pulsar-all
+    pullPolicy: IfNotPresent
+    tag: 2.4.2-k2.1
   dashboard:
     tag: 2.5.0
   grafana:
@@ -217,12 +246,25 @@ zookeeper:
     data:
       name: data
       size: 5Gi
-      #storageClass:
-      #  type: gp2
-      #  provisioner: kubernetes.io/aws-ebs
-      # fsType: ext4  
-      #  replication-type: regional-pd
-      #  zones: us-east1-b, us-east1-c, us-east1-d
+      # You can override the default_storage class for this volume. 
+      # To use an existing storage class, set existingStorageClassName.
+      # To have the chart create a storage class, leave existingStorageClassName 
+      # unset and specify the storage class parameters under storageClass. The 
+      # appropriate parameters will vary by cloud provider. See default_storage above for examples.
+      #
+      # existingStorageClassName: <name>
+      #
+      # To use the default storage class of the k8s cluster, use the name "default"
+      # existingStorageClassName: default
+      #
+      # OR (GCP example)
+      #
+      # storageClass:
+      #   provisioner: kubernetes.io/gce-pd
+      #   type: pd-ssd
+      #   fsType: ext4
+      #   extraParams:
+      #      replication-type: none
   ## Zookeeper configmap
   ## templates/zookeeper-configmap.yaml
   ##
@@ -270,13 +312,12 @@ bookkeeper:
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
-  enableStreamStorage: no 
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8000"
-  tolarations: []
+  tolerations: []
   probe:
     port: 3181
     initial: 20
@@ -290,17 +331,74 @@ bookkeeper:
     journal:
       name: journal
       size: 50Gi
+      # To override the default_storage class for this volume, set storageClass. 
+      # To use an existing storage class, set existingStorageClassName.
+      # To have the chart create a storage class, leave existingStorageClassName 
+      # unset and specify the storage class parameters. The appropriate parameters
+      # will vary by cloud provider. See default_storage above for examples.
+      #
+      # existingStorageClassName: <name>
+      #
+      # To use the default storage class of the k8s cluster, use the name "default"
+      # existingStorageClassName: default
+      #
+      # OR (GCP example)
+      #
       # storageClass:
-      #   type: gp2
-      #   provisioner: kubernetes.io/aws-ebs
-      #   fsType: ext4  
+      #   provisioner: kubernetes.io/gce-pd
+      #   type: pd-ssd
+      #   fsType: ext4
+      #   extraParams:
+      #      replication-type: none
     ledgers:
       name: ledgers
       size: 50Gi
+      # To override the default_storage class for this volume, set storageClass. 
+      # To use an existing storage class, set existingStorageClassName.
+      # To have the chart create a storage class, leave existingStorageClassName 
+      # unset and specify the storage class parameters. The appropriate parameters
+      # will vary by cloud provider. See default_storage above for examples.
+      #
+      # existingStorageClassName: <name>
+      #
+      # To use the default storage class of the k8s cluster, use the name "default"
+      # existingStorageClassName: default
+      #
+      # OR (GCP example)
+      #
       # storageClass:
-      #   type: gp2
-      #   provisioner: kubernetes.io/aws-ebs
-      #   fsType: ext4  
+      #   provisioner: kubernetes.io/gce-pd
+      #   type: pd-ssd
+      #   fsType: ext4
+      #   extraParams:
+      #      replication-type: none
+
+    # If you enable state storage on BookKeeper, a persistent volume
+    # to hold the state files (ranges)
+    ranges:
+      name: ranges
+      size: 5Gi
+    # To override the default_storage class for this volume, set storageClass. 
+    # To use an existing storage class, set existingStorageClassName.
+    # To have the chart create a storage class, leave existingStorageClassName 
+    # unset and specify the storage class parameters. The appropriate parameters
+    # will vary by cloud provider. See default_storage above for examples.
+    #
+    # existingStorageClassName: <name>
+    #
+    # To use the default storage class of the k8s cluster, use the name "default"
+    # existingStorageClassName: default
+    #
+    # OR (GCP example)
+    #
+    # storageClass:
+    #   provisioner: kubernetes.io/gce-pd
+    #   type: pd-ssd
+    #   fsType: ext4
+    #   extraParams:
+    #      replication-type: none
+
+    
   ## Bookkeeper configmap
   ## templates/bookkeeper-configmap.yaml
   ##
@@ -313,7 +411,6 @@ bookkeeper:
     # dbStorage_readAheadCacheMaxSizeMb: "2048"
     # journalMaxSizeMB: "2048"
     statsProviderClass: org.apache.bookkeeper.stats.prometheus.PrometheusMetricsProvider
-    useHostNameAsBookieID: "true"
   ## Bookkeeper configmap
   ## templates/bookkeeper-service.yaml
   ##
@@ -343,7 +440,7 @@ broker:
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8080"
-  tolarations: []
+  tolerations: []
   gracePeriod: 0
   functionsWorkerEnabled: no 
   probe:
@@ -368,11 +465,7 @@ broker:
     managedLedgerDefaultAckQuorum: "2"
     deduplicationEnabled: "true"
     exposeTopicLevelMetricsInPrometheus: "true"
-    backlogQuotaDefaultLimitGB: "1"
     backlogQuotaDefaultRetentionPolicy: "producer_exception"
-    maxProducersPerTopic: "5"
-    maxConsumersPerTopic: "5"
-    maxConsumersPerSubscription: "5"
   ## Broker service
   ## templates/broker-service.yaml
   ##
@@ -408,7 +501,14 @@ function:
     port: 6750
     initial: 40
     period: 10
+  # Only the process runtime has been tested with this chart
   runtime: "process"
+  # If state storage is enabled state storage will be enabled on Bookkeeper and the 
+  # function workers will connect to BookKeeper by default.
+  # If you enable standalone state storage (extra.stateStorage), the function workers will 
+  # connect to that
+  # Note: State storage is in developer preview
+  # Note: Standalone state storage is experimental
   enableStateStorage: no 
   #preferredZone: "us-east1-c"
   # nodeSelector:
@@ -416,7 +516,7 @@ function:
   annotations:
     prometheus.io/scrape: "false"
     prometheus.io/port: "8080"
-  tolarations: []
+  tolerations: []
   gracePeriod: 0
   resources:
     requests:
@@ -425,13 +525,28 @@ function:
   volumes:
     data:
       name: logs
-      size: 1Gi
+      size: 5Gi
+      # To override the default_storage class for this volume, set storageClass. 
+      # To use an existing storage class, set existingStorageClassName.
+      # To have the chart create a storage class, leave existingStorageClassName 
+      # unset and specify the storage class parameters. The appropriate parameters
+      # will vary by cloud provider. See default_storage above for examples.
+      #
+      # existingStorageClassName: <name>
+      #
+      # To use the default storage class of the k8s cluster, use the name "default"
+      # existingStorageClassName: default
+      #
+      # OR (GCP example)
+      #
       # storageClass:
-      #  type: gp2
-      #  provisioner: kubernetes.io/aws-ebs
-      #  fsType: ext4
-      #  replication-type: regional-pd
-      #  zones: us-east1-b, us-east1-c, us-east1-d
+      #   provisioner: kubernetes.io/gce-pd
+      #   type: pd-ssd
+      #   fsType: ext4
+      #   extraParams:
+      #      replication-type: none
+
+
   ## Function configmap
   ## templates/function-configmap.yaml
   ##
@@ -477,7 +592,7 @@ stateStorage:
   annotations:
     prometheus.io/scrape: "false"
     prometheus.io/port: "8080"
-  tolarations: []
+  tolerations: []
   gracePeriod: 0
   resources:
     requests:
@@ -487,12 +602,25 @@ stateStorage:
     data:
       name: data
       size: 5Gi
-      #storageClass:
-      #  type: pd-ssd
-      #  provisioner: kubernetes.io/gce-pd
-      #  fsType: ext4
-      #  replication-type: regional-pd
-      #  zones: us-east1-b, us-east1-c, us-east1-d
+      # To override the default_storage class for this volume, set storageClass. 
+      # To use an existing storage class, set existingStorageClassName.
+      # To have the chart create a storage class, leave existingStorageClassName 
+      # unset and specify the storage class parameters. The appropriate parameters
+      # will vary by cloud provider. See default_storage above for examples.
+      #
+      # existingStorageClassName: <name>
+      #
+      # To use the default storage class of the k8s cluster, use the name "default"
+      # existingStorageClassName: default
+      #
+      # OR (GCP example)
+      #
+      # storageClass:
+      #   provisioner: kubernetes.io/gce-pd
+      #   type: pd-ssd
+      #   fsType: ext4
+      #   extraParams:
+      #      replication-type: none
   ## StateStorage configmap
   ## templates/state-configmap.yaml
   ##
@@ -528,7 +656,7 @@ proxy:
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8080"
-  tolarations: []
+  tolerations: []
   #preferredZone: "us-east1-c"
   gracePeriod: 0
   probe:
@@ -620,7 +748,7 @@ autoRecovery:
   #nodeSelector:
   #  cloud.google.com/gke-nodepool: default-pool
   annotations: {}
-  tolarations: []
+  tolerations: []
   gracePeriod: 0
   resources:
     requests:
@@ -643,7 +771,7 @@ dashboard:
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations: {}
-  tolarations: []
+  tolerations: []
   gracePeriod: 0
   resources:
     requests:
@@ -671,7 +799,7 @@ zoonavigator:
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations: {}
-  tolarations: []
+  tolerations: []
   gracePeriod: 0
   resources:
     requests:
@@ -713,7 +841,7 @@ bastion:
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations: {}
-  tolarations: []
+  tolerations: []
   gracePeriod: 0
   resources:
     requests:
@@ -736,7 +864,7 @@ prometheus:
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations: {}
-  tolarations: []
+  tolerations: []
   gracePeriod: 0
   resources:
     requests:
@@ -771,7 +899,7 @@ grafana:
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations: {}
-  tolarations: []
+  tolerations: []
   gracePeriod: 0
   resources:
     requests:

@@ -1,4 +1,5 @@
 {{- if .Values.enableTests }}
+{{- if .Values.storageOffload.driver }}
 {{- if eq .Values.storageOffload.driver "aws-s3" }}
 apiVersion: v1
 kind: ConfigMap
@@ -63,5 +64,6 @@ spec:
       configMap:
         name: "{{ template "pulsar.fullname" . }}-s3-test-file"
         defaultMode: 0744
+{{- end }}
 {{- end }}
 {{- end }}
