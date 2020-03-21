@@ -113,9 +113,9 @@ spec:
         - name: token-proxy
           secret:
             secretName: token-proxy
-        - name: token-websocket
+        - name: token-superuser
           secret:
-            secretName: token-websocket
+            secretName: token-superuser
         {{- end }}
         {{- if .Values.proxy.initContainer }}
         - name: lib-data
@@ -248,8 +248,8 @@ spec:
           - mountPath: "/pulsar/token-proxy"
             name: token-proxy
             readOnly: true
-          - mountPath: "/pulsar/token-websocket"
-            name: token-websocket
+          - mountPath: "/pulsar/token-superuser"
+            name: token-superuser
             readOnly: true
           {{- end }}
         envFrom:

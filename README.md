@@ -146,7 +146,6 @@ You need to generate tokens with the following subjects:
 
 - admin
 - superuser
-- websocket
 - proxy
 
 Once you have created those tokens, add each as a secret:
