@@ -18,6 +18,9 @@
 #
 
 {{- if .Values.persistence }}
+{{- if .Values.extra.function }}
+{{- if not .Values.default_storage.existingStorageClassName }}
+{{- if not .Values.function.volumes.data.existingStorageClassName }}
 {{- if or .Values.function.volumes.data.storageClass .Values.default_storage}}
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
@@ -32,10 +35,8 @@ metadata:
     component: {{ .Values.function.component }}
     cluster: {{ template "pulsar.fullname" . }}
 allowVolumeExpansion: true
-{{- if .Release.IsInstall }}
 reclaimPolicy: Retain
 volumeBindingMode: WaitForFirstConsumer
-{{- end }}
 {{- if .Values.function.volumes.data.storageClass }}
 provisioner: {{ .Values.function.volumes.data.storageClass.provisioner }}
 parameters:
@@ -60,6 +61,9 @@ parameters:
   {{- if .Values.default_storage.extraParams }}
 {{ toYaml .Values.default_storage.extraParams | indent 2 }}
   {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

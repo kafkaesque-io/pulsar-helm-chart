@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: kafkaesqueio/pulsar-ops-monitor
-  tag: 0.26
+  tag: 0.3
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -20,6 +20,7 @@ prometheus:
 # Basic configuration for the monitor
 config:
   alertUrl: 'https://hooks.slack.com/services/<webhook-id>'
+  opsGenieHeartbeatUrl: 'https://api.opsgenie.com/v2/heartbeats/'
   opsGenieHeartbeatKey: 'GenieKey <key>'
   opsGenieAlertKey: 'GenieKey <key>'
   pulsarClientToken: <token>

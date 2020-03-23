@@ -4,7 +4,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-readonly CT_VERSION=v2.2.0
+readonly CT_VERSION=v2.4.0
 readonly KIND_VERSION=0.2.1
 readonly CLUSTER_NAME=pulsar-helm-test
 readonly K8S_VERSION=v1.13.4

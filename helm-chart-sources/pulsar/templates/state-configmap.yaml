@@ -35,7 +35,7 @@ data:
   authenticationEnabled: "true"
   authenticationProviders: "org.apache.pulsar.broker.authentication.AuthenticationProviderToken"
   superUserRoles: "{{ .Values.superUserRoles }}"
-  tokenPublicKey: "file:///pulsar/token-public-key/my-public.key"
+  tokenPublicKey: "file:///pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
 {{- end }}
 {{ toYaml .Values.stateStorage.configData | indent 2 }}
 {{- end }}

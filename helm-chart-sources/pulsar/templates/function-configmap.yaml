@@ -70,7 +70,11 @@ data:
     instanceLivenessCheckFreqMs: "30000"
     topicCompactionFrequencySec: "1800"
     {{- if .Values.function.enableStateStorage }}
+    {{- if .Values.extra.stateStorage }}
     stateStorageServiceUrl: "bk://{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}:4181"
+    {{- else }}
+    stateStorageServiceUrl: "bk://{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}:4181"
+    {{- end }}
     {{- end }}
     {{- if .Values.enableTokenAuth }}
     authenticationEnabled: "true"
@@ -78,7 +82,7 @@ data:
     authorizationProvider: "org.apache.pulsar.broker.authorization.PulsarAuthorizationProvider"
     authenticationProviders: [org.apache.pulsar.broker.authentication.AuthenticationProviderToken, org.apache.pulsar.broker.authentication.AuthenticationProviderTls]
     properties:
-      tokenPublicKey: "file:///pulsar/token-public-key/my-public.key"
+      tokenPublicKey: "file:///pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
     clientAuthenticationPlugin: "org.apache.pulsar.client.impl.auth.AuthenticationToken"
     clientAuthenticationParameters: "file:///pulsar/token-superuser/superuser.jwt" 
     superUserRoles: 

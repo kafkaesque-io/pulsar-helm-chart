@@ -18,6 +18,8 @@
 #
 
 {{- if .Values.persistence }}
+{{- if not .Values.default_storage.existingStorageClassName }}
+{{- if not .Values.zookeeper.volumes.data.existingStorageClassName }}
 {{- if or .Values.zookeeper.volumes.data.storageClass .Values.default_storage}}
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
@@ -32,10 +34,8 @@ metadata:
     component: {{ .Values.zookeeper.component }}
     cluster: {{ template "pulsar.fullname" . }}
 allowVolumeExpansion: true
-{{- if .Release.IsInstall }}
 reclaimPolicy: Retain
 volumeBindingMode: WaitForFirstConsumer
-{{- end }}
 {{- if .Values.zookeeper.volumes.data.storageClass }}
 provisioner: {{ .Values.zookeeper.volumes.data.storageClass.provisioner }}
 parameters:
@@ -60,6 +60,8 @@ parameters:
   {{- if .Values.default_storage.extraParams }}
 {{ toYaml .Values.default_storage.extraParams | indent 2 }}
   {{- end }}
+{{- end }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
