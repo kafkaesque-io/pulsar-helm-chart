@@ -182,3 +182,16 @@ For automated handling of publicly signed certificates, you can use a tool
 such as [cert-manager](https://cert-mananager). The following [page](https://github.com/kafkaesque-io/pulsar-helm-chart/blob/master/aws-customer-docs.md) describes how to set up cert-manager in AWS.
 
 _Originally developed from the Helm chart from the [Apache Pulsar](https://pulsar.apache.org/) project._
+
+### Release of helm chart
+
+A release is built by pushing a commit with a new version to the `release` branch. Usually, Chart.yaml files are required to be up versioned in a commit for this purpose.
+
+Since there could be multiple helm charts, we provide a script to update all required charts automatically. It can automatically upversion based on major, minor, or patch release.
+
+``` bash
+$ cd ./scripts
+$ python set-release-version.py patch
+```
+
+Please rebase the `release` branch with the latest master or a desired commit on the master, before up-version.
