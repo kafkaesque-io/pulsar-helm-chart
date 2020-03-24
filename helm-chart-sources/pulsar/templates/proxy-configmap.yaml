@@ -54,14 +54,14 @@ data:
   {{- if .Values.secrets }}
   tlsTrustCertsFilePath: /pulsar/certs/ca.crt
   {{- else }}
-  tlsTrustCertsFilePath: "/etc/ssl/certs/{{ .Values.tlsCaCert }}"
+  tlsTrustCertsFilePath: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
   {{- end }}
   tlsProtocols: "TLSv1.2,TLSv1.1"
   tlsEnabledWithBroker: "true"
   {{- if .Values.secrets }}
   brokerClientTrustCertsFilePath: /pulsar/certs/ca.crt
   {{- else }}
-  brokerClientTrustCertsFilePath: "/etc/ssl/certs/{{ .Values.tlsCaCert }}"
+  brokerClientTrustCertsFilePath: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
   {{- end }}
   brokerServicePortTls: "6651"
   webServicePortTls: "8443"

@@ -93,9 +93,26 @@ tlsSecretName: pulsar-tls
   # certificate: |
   # caCertificate: |
 
+# If you are using an external source to populate the TLS certifcate (ex cert-manager),
+# enter the path and name to the CA cert. This is required so that the components
+# within the cluster (proxy, broker, etc) can talk to each other
+#
+# If you are using self-signed certs, the CA will be contained within the tlsSecretName above,
+# so use the following settings:
+#
+# tlsCaPath: /pulsar/certs
+# tlsCaCert: ca.crt
+# 
+# If your certificate is signed by public CA (ex Let's Encrypt), then you can use
+# the standard CA store from the container OS using the following settings:
+
+tlsCaPath: /etc/ssl/certs
+tlsCaCert: ca-certificates.crt
+
 superUserRoles: superuser,admin,websocket,proxy
 proxyRoles: proxy
-tlsCaCert: ca-certificates.crt
+
+
 
 # Enable token-based authentication and authorization
 enableTokenAuth: no
