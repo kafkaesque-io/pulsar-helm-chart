@@ -185,7 +185,7 @@ _Originally developed from the Helm chart from the [Apache Pulsar](https://pulsa
 
 ### Release of helm chart
 
-A release is built by pushing a commit with a new version to the `release` branch. Usually, Chart.yaml files are required to be up versioned in a commit for this purpose.
+A release is built by pushing a commit with a new version to a release branch. Usually, Chart.yaml files are required to be up versioned in a commit for this purpose.  
 
 Since there could be multiple helm charts, we provide a script to update all required charts automatically. It can automatically upversion based on major, minor, or patch release.
 
@@ -194,4 +194,6 @@ $ cd ./scripts
 $ python set-release-version.py patch
 ```
 
-Please rebase the `release` branch with the latest master or a desired commit on the master, before up-version.
+A release branch's name must conform this regex `release[0-9].*`. This will simplify the workflow. Once you are ready to release, please commit the changes in Chart.yaml that the above script made and push to a remote release branch that conform the regex. Circl CI releas build will be automatically triggered. Therefore, it is recommended to create a new release branch for every release.
+
+An alternative is to use `tag` triggered release build that we may implement in the future.

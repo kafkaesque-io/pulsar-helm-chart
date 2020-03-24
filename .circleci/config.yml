@@ -56,4 +56,5 @@ workflows:
             tags:
               ignore: /.*/
             branches:
-              only: release
+              only:
+                - /release[0-9].*/
