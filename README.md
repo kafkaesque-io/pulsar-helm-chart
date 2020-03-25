@@ -182,18 +182,3 @@ For automated handling of publicly signed certificates, you can use a tool
 such as [cert-manager](https://cert-mananager). The following [page](https://github.com/kafkaesque-io/pulsar-helm-chart/blob/master/aws-customer-docs.md) describes how to set up cert-manager in AWS.
 
 _Originally developed from the Helm chart from the [Apache Pulsar](https://pulsar.apache.org/) project._
-
-### Release of helm chart
-
-A release is built by pushing a commit with a new version to a release branch. Usually, Chart.yaml files are required to be up versioned in a commit for this purpose.  
-
-Since there could be multiple helm charts, we provide a script to update all required charts automatically. It can automatically upversion based on major, minor, or patch release.
-
-``` bash
-$ cd ./scripts
-$ python set-release-version.py patch
-```
-
-A release branch's name must conform this regex `release[0-9].*`. This will simplify the workflow. Once you are ready to release, please commit the changes in Chart.yaml that the above script made and push to a remote release branch that conform the regex. Circl CI releas build will be automatically triggered. Therefore, it is recommended to create a new release branch for every release.
-
-An alternative is to use `tag` triggered release build that we may implement in the future.

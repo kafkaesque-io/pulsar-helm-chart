@@ -6,11 +6,12 @@
 import yaml
 import re
 import sys
+import subprocess
 
-releaseCharts = ["pulsar", "pulsar-monitor"]
+releaseCharts = ["pulsar", "pulsar-monitor", "imagepuller", "teleport"]
 chartDir = "../helm-chart-sources/"
 
-versionDict = {"major": 0, "minor": 1, "patch": 2} 
+versionDict = {"major": 0, "minor": 1, "patch": 2}
 
 def help():
     print("supported args - major, minor, or patch")
@@ -24,7 +25,7 @@ def upversion(parts, index):
         parts[2] = '0'
     elif index == 1:
         parts[2] = '0'
-    
+
     return ".".join(parts)
 
 
@@ -47,5 +48,19 @@ ver = sys.argv[1]
 if versionDict.get(ver) == None:
     help()
 
+subprocess.call(["git", "fetch", "origin", "master"])
 for c in releaseCharts:
-    update(c, ver)
+    chartSubDir = chartDir + c
+
+    #
+    # Only update the version with changes in the chart.
+    #
+    p = subprocess.Popen("git diff --raw origin/master -- " + chartSubDir, stdout=subprocess.PIPE, shell=True)
+    (output, err) = p.communicate()
+ 
+    ## Wait for the git command to terminate. Get return returncode
+    procReturnCode = p.wait()
+    if output != "" :
+        update(c, ver)
+    else:
+        print("no updates to the chart " + c)
