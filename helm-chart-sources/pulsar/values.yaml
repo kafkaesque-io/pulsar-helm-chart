@@ -134,6 +134,8 @@ extra:
   monitoring: no
   # Zoonavigator
   zoonavigator: no
+  # Pulsar manager UI for admin
+  pulsarexpress: no
   
 ## Which images to use
 image:
@@ -162,6 +164,10 @@ image:
     repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
     tag: 2.5.0
+  pulsarexpress:
+    repository: bbonnin/pulsar-express
+    tag: 0.5.1
+    pullPolicy: IfNotPresent
   # Standalone state storage is experimental and requires the custom image below 
   stateStorage:
     repository: kafkaesqueio/pulsar-all
@@ -794,6 +800,36 @@ dashboard:
     ports:
     - name: server
       port: 80
+
+## Components Stack: pulsarexpress
+## templates/pulsarexpress.yaml
+##
+pulsarexpress:
+  component: pulsarexpress
+  replicaCount: 1
+  ingress:
+    enabled: yes
+    host: ui.host.com
+    annotations: {}
+  # nodeSelector:
+  # cloud.google.com/gke-nodepool: default-pool
+  annotations: {}
+  tolerations: []
+  gracePeriod: 0
+  resources:
+    requests:
+      memory: 250Mi
+      cpu: 0.1
+  configData: {}
+  ## Pulsar Express service
+  ## templates/pulsarexpress-service.yaml
+  ##
+  service:
+    type: ClusterIP
+    annotations: {}
+    ports:
+      - name: server
+        port: 3000
 
 ## Pulsar Extra: Zoonavigator
 ## templates/zoonavigator-deployment.yaml
