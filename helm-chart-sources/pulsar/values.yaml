@@ -134,6 +134,8 @@ enableTests: no
 extra:
   # Pulsar proxy
   proxy: yes
+  # Websocket proxy
+  wsproxy: yes
   # Standalone functions worker
   function: no 
   # Standalone state storage
@@ -689,7 +691,6 @@ proxy:
   #preferredZone: "us-east1-c"
   gracePeriod: 0
   probe:
-    port: 8080
     initial: 10
     period: 10
   # Resources for the main Pulsar proxy

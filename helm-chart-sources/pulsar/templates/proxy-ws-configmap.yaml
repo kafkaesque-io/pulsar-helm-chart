@@ -17,7 +17,7 @@
 # under the License.
 #
 
-{{- if .Values.extra.proxy }}
+{{- if .Values.extra.wsproxy }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
