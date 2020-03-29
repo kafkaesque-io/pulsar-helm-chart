@@ -12,9 +12,10 @@ It includes support for:
 * WebSocket Proxy
 * Standalone Functions Workers
 * Tiered Storage
-* Independent Image Versions for Components (Zookeeper, Bookkeeper, etc), enabling controlled upgrades.
+* Independent Image Versions for Components (Zookeeper, Bookkeeper, etc), enabling controlled upgrades
+* [Pulsar Express Web UI](https://github.com/bbonnin/pulsar-express) for managing the cluster
 
-[Helm](https://helm.sh) 2.X must be installed and initialized to use the chart.
+[Helm](https://helm.sh) must be installed and initialized to use the chart. Both Helm 2 and Helm 3 are supported.
 Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
 
 _Don't want to run it yourself? Go to [Kafkaesque](https://kafkaesque.io) for fully managed Pulsar services._
@@ -36,7 +37,17 @@ To list the version of the chart in the local Helm repository:
 
 ## Installing Pulsar in a Cloud Provider
 
-Before you can install the chart, you need to configure the storage class depending on the cloud provider. Create a new file called ```storage_values.yaml``` and put one of these sample values:
+Before you can install the chart, you need to configure the storage class settings for your cloud provider. The handling of storage varies from cloud provider to cloud provider.
+
+Create a new file called ```storage_values.yaml``` for the storage class settings. To use an existing storage class (including the default one) set this value:
+
+```
+default_storage:
+  existingStorageClassName: default or <name of storage class>
+```
+For each volume of each component (Zookeeper, Bookkeeper), you can override the `default_storage` setting by specifying a different `existingStorageClassName`. This allows you to match the optimum storage type to the volume. 
+
+If you have specific storage class requirement, for example fixed IOPS disks in AWS, you can have the chart configure the storage classes for you. Here are examples from the cloud providers:
 
 ```
 # For AWS
@@ -66,31 +77,54 @@ Before you can install the chart, you need to configure the storage class depend
 #     kind: Managed
 #     cachingmode: ReadOnly
 ```
+See the [values file](https://github.com/kafkaesque-io/pulsar-helm-chart/blob/master/helm-chart-sources/pulsar/values.yaml) for more details on these settings.
 
+Once you have your storage settings in the values file, install the chart like this :
 
-Install the chart, specifying the storage values:
+Helm 2
 
-```helm install --namespace pulsar --values storage_values.yaml kafkaesque/pulsar```
+```helm install kafkaesque/pulsar --name pulsar --namespace pulsar --values storage_values.yaml```
+
+Helm 3
+
+```helm install pulsar kafkaesque/pulsar --namespace pulsar --values storage_values.yaml```
+
+**Note:** For Helm 3 you need to create the namespace prior to running the command.
 
 ## Installing Pulsar for development
 
-This chart is designed for production use. To use this chart in a development environment (ex minikube), you need to:
+This chart is designed for production use, but it can be used in development enviroments. To use this chart in a development environment (ex minikube), you need to:
 
-* Disable persistence
 * Disable anti-affinity rules that ensure components run on different nodes
 * Reduce resource requirements
+* Disable persistence (configuration and messages are not stored so are lost on restart). If you want persistence, you will have to configure storage settings that are compatible with your development enviroment as described above.
 
 For an example set of values, download this [values file](https://github.com/kafkaesque-io/pulsar-helm-chart/blob/master/examples/dev-values.yaml). Use that values file or one like it to start the cluster:
 
-```helm install --namespace pulsar --values dev-values.yaml```
+Helm 2
 
-## Accessing the Pulsar Cluster
+```helm install kafkaesque/pulsar --name pulsar --namespace pulsar --values dev-values.yaml```
 
-The default values will create a ClusterIP for the proxy you can use to interact with the cluster. To find the IP address of the proxy use:
+Helm 3
 
-```kubectl get service```
+```helm install pulsar kafkaesque/pulsar --namespace pulsar --values dev-values.yaml```
 
-If you want to use an external loadbalancer, here is an example set of values to use:
+**Note:** For Helm 3 you need to create the namespace prior to running the command.
+
+
+## Accessing the Pulsar cluster in cloud
+
+The default values will create a ClusterIP for all components. ClusterIPs are only accessible within the Kubernetes cluster. The easiest way to work with Pulsar is to log into the bastion host:
+
+```
+kubectl exec $(kubectl get pods -l component=bastion -o jsonpath="{.items[*].metadata.name}") -it -- /bin/bash
+```
+Once you are logged into the bastion, you can run Pulsar admin commands:
+
+```
+bin/pulsar-admin tenants list
+```
+For external access, you can use a load balancer. Here is an example set of values to use for load balancer on the proxy:
 
 ```
 proxy:
@@ -99,30 +133,81 @@ proxy:
     ports:
     - name: http
       port: 8080
-      nodePort: 30001
       protocol: TCP
     - name: pulsar
       port: 6650
       protocol: TCP
-      nodePort: 30002
-    - name: ws
-      port: 8000
-      protocol: TCP
-      nodePort: 30003
 ```
+
+If you are using a load balancer on the proxy, you can find the IP address using:
+
+```kubectl get service -n pulsar```
+
+## Accessing the Pulsar cluster on localhost
+
+To port forward the proxy admin and Pulsar ports to your local machine:
+
+```kubectl port-forward -n pulsar $(kubectl get pods -n pulsar -l component=proxy -o jsonpath='{.items[0].metadata.name}') 8080:8080```
+
+```kubectl port-forward -n pulsar $(kubectl get pods -n pulsar -l component=proxy -o jsonpath='{.items[0].metadata.name}') 6650:6650```
+
+Or if you would rather go directly to the broker:
+
+```kubectl port-forward -n pulsar $(kubectl get pods -n pulsar -l component=broker -o jsonpath='{.items[0].metadata.name}') 8080:8080```
+
+```kubectl port-forward -n pulsar $(kubectl get pods -n pulsar -l component=broker -o jsonpath='{.items[0].metadata.name}') 6650:6650```
+
+## Managing Pulsar using Pulsar Express
+
+[Pulsar Express](https://github.com/bbonnin/pulsar-express) is an open-source Web UI for managing Pulsar clusters. Thanks to (Bruno Bonnin)[https://twitter.com/_bruno_b_] for creating this handy tool.
+
+You can install Pulsar Express in your cluster by enabling with this values setting:
+
+```
+extra:
+  pulsarexpress: yes
+```
+
+It will be automatically configured to connect to the Pulsar cluster.
+
+### Accessing Pulsar Express on your local machine
+
+To access the Pulsar Express UI on your local machine, forward port 3000:
+
+```
+kubectl port-forward -n pulsar $(kubectl get pods -n pulsar -l component=pulsarexpress -o jsonpath='{.items[0].metadata.name}') 3000:3000
+```
+
+### Accessing Pulsar Express from cloud provider
+
+To access Pulsar Express from a cloud provider, the chart supports [Kubernetes Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/). Your Kubernetes cluster must have a running Ingress controller (ex Nginx, Traefik, etc).
+
+Set these values to configure the Ingress for Pulsar Express:
+
+```
+pulsarexpress:
+  ingress:
+    enabled: yes
+    host: pulsar-ui.example.com
+    annotations:
+      ingress.kubernetes.io/auth-secret: ui-creds
+      ingress.kubernetes.io/auth-type: basic
+```
+Pulsar Express does not have any built-in authentication capabilities. You should use authentication features of your Ingress to limit access. The example above (which has been tested with [Traefik](https://docs.traefik.io/)) uses annotations to enable basic authentication with the password stored in secret.
 
 ## Dependencies
 
 ### Authentication
-The cluster is configured to use token-based authentication. For this to work, a number of 
-values need to be stored in secrets. For information on token-based
+The chart can enable token-based authentication for your Pulsar cluster. For information on token-based
 authentication in Pulsar, go [here](https://pulsar.apache.org/docs/en/security-token-admin/).
 
-First, you need to generate a key-pair for signing the tokens using the Pulsar tokens command:
+For this to work, a number of values need to be stored in secrets prior to enabling token-based authentication. First, you need to generate a key-pair for signing the tokens using the Pulsar tokens command:
 
 ```bin/pulsar tokens create-key-pair --output-private-key my-private.key --output-public-key my-public.key```
 
-Then you need to store those keys as secrets:
+**Note:** The names of the files used in this section match the default values in the chart. If you used different names, then you will have to update the corresponding values.
+
+Then you need to store those keys as secrets.
 
 ```
 kubectl create secret generic token-private-key \
@@ -146,7 +231,6 @@ You need to generate tokens with the following subjects:
 
 - admin
 - superuser
-- websocket
 - proxy
 
 Once you have created those tokens, add each as a secret:
@@ -157,6 +241,11 @@ kubectl create secret generic token-<subject> \
  --namespace pulsar
  ```
 
+Once you have created the required secrets, you can enable token-based authentication with this setting in the values:
+
+```
+enableTokenAuth: yes
+```
 
 ### TLS
 
@@ -180,5 +269,11 @@ This is useful if you are using a self-signed certificate.
 
 For automated handling of publicly signed certificates, you can use a tool
 such as [cert-manager](https://cert-mananager). The following [page](https://github.com/kafkaesque-io/pulsar-helm-chart/blob/master/aws-customer-docs.md) describes how to set up cert-manager in AWS.
+
+Once you have created the secrets that store the cerficate info (or specified it in the values), you can enable TLS in the values:
+
+```
+enableTls: yes
+```
 
 _Originally developed from the Helm chart from the [Apache Pulsar](https://pulsar.apache.org/) project._

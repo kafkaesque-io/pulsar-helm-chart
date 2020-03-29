@@ -184,8 +184,8 @@ image:
     pullPolicy: IfNotPresent
     tag: 2.5.0
   pulsarexpress:
-    repository: bbonnin/pulsar-express
-    tag: 0.5.1
+    repository: kafkaesqueio/pulsar-express
+    tag: 0.5.1_k2
     pullPolicy: IfNotPresent
   # Standalone state storage is experimental and requires the custom image below 
   stateStorage:

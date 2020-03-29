@@ -73,14 +73,9 @@ spec:
           - configMapRef:
               name: "{{ template "pulsar.fullname" . }}-{{ .Values.pulsarexpress.component }}"
           env:
-          {{- if .Values.extra.proxy }}
           {{- if .Values.enableTls }}
           - name: PE_CONNECTION_URL
-            value: https://{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}:8443
-          {{- else }}
-          - name: PE_CONNECTION_URL
-            value: http://{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}:8080
-          {{- end }}
+            value: https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8443
           {{- else }}
           - name: PE_CONNECTION_URL
             value: http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080
@@ -91,6 +86,10 @@ spec:
               secretKeyRef:
                 name: token-superuser
                 key: superuser.jwt 
+          {{- end }}
+          {{- if .Values.extra.function }}
+          - name: PE_CONNECTION_FCT_WORKER_URL
+            value: http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:6750
           {{- end }}
       volumes:
         - name: pulsarexpress-data
