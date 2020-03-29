@@ -85,11 +85,13 @@ spec:
           - name: PE_CONNECTION_URL
             value: http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080
           {{- end }}
+          {{- if .Values.enableTokenAuth }}
           - name: PE_CONNECTION_TOKEN
             valueFrom:
               secretKeyRef:
                 name: token-superuser
                 key: superuser.jwt 
+          {{- end }}
       volumes:
         - name: pulsarexpress-data
           emptyDir: {}
