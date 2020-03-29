@@ -17,7 +17,7 @@
 # under the License.
 #
 
-{{- if .Values.extra.proxy }}
+{{- if .Values.extra.wsproxy }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -64,7 +64,7 @@ data:
   {{- if .Values.secrets }}
   tlsTrustCertsFilePath: /pulsar/certs/ca.crt
   {{- else }}
-  tlsTrustCertsFilePath: "/etc/ssl/certs/{{ .Values.tlsCaCert }}"
+  tlsTrustCertsFilePath: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
   {{- end }}
 {{- end }}
 {{ toYaml .Values.proxy.configData | indent 2 }}

@@ -37,6 +37,10 @@ spec:
       app: {{ template "pulsar.name" . }}
       release: {{ .Release.Name }}
       component: {{ .Values.proxy.component }}
+  {{- if .Values.proxy.updateStrategy }}
+  strategy:
+{{ toYaml .Values.proxy.updateStrategy | indent 4 }}
+  {{- end }}
   template:
     metadata:
       labels:
@@ -95,7 +99,7 @@ spec:
             topologyKey: "kubernetes.io/hostname"
         {{- end }}
       terminationGracePeriodSeconds: {{ .Values.proxy.gracePeriod }}
-      {{- if or (.Values.enableTls) (.Values.enableTokenAuth) }}
+      {{- if or .Values.enableTls (or .Values.enableTokenAuth .Values.proxy.initContainer) }}
       volumes:
       {{- end }}
         {{- if .Values.enableTls }}
@@ -168,7 +172,15 @@ spec:
         {{- if .Values.proxy.probe }}
         readinessProbe:
           tcpSocket:
+          {{- if .Values.proxy.probe.port }}
             port: {{ .Values.proxy.probe.port }}
+          {{- else }}
+            {{- if .Values.enableTls }}
+            port: 8443
+            {{- else }}
+            port: 8080
+            {{- end }}
+          {{- end }}
           initialDelaySeconds: {{ .Values.proxy.probe.initial }} 
           periodSeconds:  {{ .Values.proxy.probe.period }} 
         {{- end }}
@@ -188,7 +200,7 @@ spec:
         ports:
         - name: http
           containerPort: 8080
-        {{- if or .Values.enableTls .Values.enableTokenAuth }}
+        {{- if or (or .Values.enableTls .Values.enableTokenAuth) .Values.proxy.initContainer }}
         volumeMounts:
         {{- end }}
           {{- if .Values.enableTls }}
@@ -206,11 +218,12 @@ spec:
           {{- end }}
           {{- if .Values.proxy.initContainer }}
           - name: lib-data
-            mountPath: /jars
+            mountPath: "/jars"
           {{- end }}
         envFrom:
         - configMapRef:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}"
+{{- if .Values.extra.wsproxy }}
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}-ws"
         image: "{{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}"
         imagePullPolicy: {{ .Values.image.proxy.pullPolicy }}
@@ -255,6 +268,7 @@ spec:
         envFrom:
         - configMapRef:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}-ws"
+{{- end }}
 {{- if .Values.extra.wsAuthServer }}
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}-wsauth"
         image: "{{ .Values.image.wsAuthProxy.repository }}:{{ .Values.image.wsAuthProxy.tag }}"

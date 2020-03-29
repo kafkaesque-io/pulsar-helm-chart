@@ -1,11 +1,14 @@
 {{- if .Values.extra.usedns }}
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: "{{ template "pulsar.fullname" . }}-{{ .Values.dns.component }}"
 spec:
   strategy:
     type: Recreate
+  selector:
+    matchLabels:
+      app: "{{ template "pulsar.fullname" . }}-{{ .Values.dns.component }}"
   template:
     metadata:
       labels:
@@ -35,4 +38,9 @@ spec:
         - --policy=upsert-only # would prevent ExternalDNS from deleting any records, omit to enable full synchronization
         - --registry=txt
         - --txt-owner-id=my-identifier
+        {{- if eq .Values.dns.provider "digitalocean" }}
+        env:
+        - name: DO_TOKEN
+          value: "{{ .Values.dns.digitalOceanApiKey}}"
+        {{- end  }}
 {{- end }}

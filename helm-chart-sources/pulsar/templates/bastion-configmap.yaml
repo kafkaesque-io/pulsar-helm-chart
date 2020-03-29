@@ -38,7 +38,7 @@ data:
   {{- if .Values.secrets }}
   tlsTrustCertsFilePath: /pulsar/certs/ca.crt
   {{- else }}
-  tlsTrustCertsFilePath: "/etc/ssl/certs/{{ .Values.tlsCaCert }}"
+  tlsTrustCertsFilePath: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
   {{- end }}
 {{ toYaml .Values.bastion.configData | indent 2 }}
 {{- end }}
