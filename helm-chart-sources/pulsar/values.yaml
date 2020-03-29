@@ -464,6 +464,7 @@ bookkeeper:
 broker:
   component: broker
   replicaCount: 3
+  updateStrategy: {}
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
     #
@@ -682,6 +683,7 @@ proxy:
   component: proxy
   replicaCount: 3
   disableZookeeperDiscovery: yes
+  updateStrategy: {}
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations:
