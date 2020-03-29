@@ -93,9 +93,26 @@ tlsSecretName: pulsar-tls
   # certificate: |
   # caCertificate: |
 
+# If you are using an external source to populate the TLS certifcate (ex cert-manager),
+# enter the path and name to the CA cert. This is required so that the components
+# within the cluster (proxy, broker, etc) can talk to each other
+#
+# If you are using self-signed certs, the CA will be contained within the tlsSecretName above,
+# so use the following settings:
+#
+# tlsCaPath: /pulsar/certs
+# tlsCaCert: ca.crt
+# 
+# If your certificate is signed by public CA (ex Let's Encrypt), then you can use
+# the standard CA store from the container OS using the following settings:
+
+tlsCaPath: /etc/ssl/certs
+tlsCaCert: ca-certificates.crt
+
 superUserRoles: superuser,admin,websocket,proxy
 proxyRoles: proxy
-tlsCaCert: ca-certificates.crt
+
+
 
 # Enable token-based authentication and authorization
 enableTokenAuth: no
@@ -117,6 +134,8 @@ enableTests: no
 extra:
   # Pulsar proxy
   proxy: yes
+  # Websocket proxy
+  wsproxy: yes
   # Standalone functions worker
   function: no 
   # Standalone state storage
@@ -134,6 +153,8 @@ extra:
   monitoring: no
   # Zoonavigator
   zoonavigator: no
+  # Pulsar manager UI for admin
+  pulsarexpress: no
   
 ## Which images to use
 image:
@@ -162,6 +183,10 @@ image:
     repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
     tag: 2.5.0
+  pulsarexpress:
+    repository: kafkaesqueio/pulsar-express
+    tag: 0.5.1_k2
+    pullPolicy: IfNotPresent
   # Standalone state storage is experimental and requires the custom image below 
   stateStorage:
     repository: kafkaesqueio/pulsar-all
@@ -439,6 +464,7 @@ bookkeeper:
 broker:
   component: broker
   replicaCount: 3
+  updateStrategy: {}
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
     #
@@ -657,6 +683,7 @@ proxy:
   component: proxy
   replicaCount: 3
   disableZookeeperDiscovery: yes
+  updateStrategy: {}
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations:
@@ -666,7 +693,6 @@ proxy:
   #preferredZone: "us-east1-c"
   gracePeriod: 0
   probe:
-    port: 8080
     initial: 10
     period: 10
   # Resources for the main Pulsar proxy
@@ -794,6 +820,36 @@ dashboard:
     ports:
     - name: server
       port: 80
+
+## Components Stack: pulsarexpress
+## templates/pulsarexpress.yaml
+##
+pulsarexpress:
+  component: pulsarexpress
+  replicaCount: 1
+  ingress:
+    enabled: yes
+    host: ui.host.com
+    annotations: {}
+  # nodeSelector:
+  # cloud.google.com/gke-nodepool: default-pool
+  annotations: {}
+  tolerations: []
+  gracePeriod: 0
+  resources:
+    requests:
+      memory: 250Mi
+      cpu: 0.1
+  configData: {}
+  ## Pulsar Express service
+  ## templates/pulsarexpress-service.yaml
+  ##
+  service:
+    type: ClusterIP
+    annotations: {}
+    ports:
+      - name: server
+        port: 3000
 
 ## Pulsar Extra: Zoonavigator
 ## templates/zoonavigator-deployment.yaml

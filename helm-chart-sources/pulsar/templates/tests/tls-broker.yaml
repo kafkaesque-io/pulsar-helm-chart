@@ -36,7 +36,7 @@ spec:
         value: /pulsar/certs/ca.crt
       {{- else }}
       - name: tlsTrustCertsFilePath
-        value:  "/etc/ssl/certs/{{ .Values.tlsCaCert }}"
+        value:  "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
       {{- end }}
     imagePullPolicy: {{ .Values.image.bastion.pullPolicy }}
     command: ["sh", "-c"]

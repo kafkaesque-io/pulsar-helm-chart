@@ -32,7 +32,7 @@ broker:
 autoRecovery:
   resources:
     requests:
-      memory: 1Gi
+      memory: 512Mi
       cpu: 1
 
 function:
