@@ -196,7 +196,7 @@ spec:
           {{- if .Values.enableTls }}
           openssl pkcs8 -topk8 -inform PEM -outform PEM -in /pulsar/certs/tls.key -out /pulsar/tls-pk8.key -nocrypt &&
           {{- end }}
-          bin/pulsar proxy
+          exec bin/pulsar proxy
         ports:
         - name: http
           containerPort: 8080

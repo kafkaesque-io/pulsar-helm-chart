@@ -104,7 +104,7 @@ spec:
         args:
         - >
           bin/apply-config-from-env.py conf/bookkeeper.conf &&
-          bin/bookkeeper autorecovery
+          exec bin/bookkeeper autorecovery
         envFrom:
         - configMapRef:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.autoRecovery.component }}"
