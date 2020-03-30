@@ -268,7 +268,7 @@ zookeeper:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8000"
   tolerations: []
-  gracePeriod: 0
+  gracePeriod: 60
   resources:
     requests:
       memory: 1Gi
@@ -353,7 +353,7 @@ bookkeeper:
     port: 3181
     initial: 20
     period: 10
-  gracePeriod: 0
+  gracePeriod: 60
   resources:
     requests:
       memory: 2Gi
@@ -473,7 +473,7 @@ broker:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8080"
   tolerations: []
-  gracePeriod: 0
+  gracePeriod: 60
   functionsWorkerEnabled: no 
   probe:
     port: 8080
@@ -549,7 +549,7 @@ function:
     prometheus.io/scrape: "false"
     prometheus.io/port: "8080"
   tolerations: []
-  gracePeriod: 0
+  gracePeriod: 60
   resources:
     requests:
       memory: 4Gi
@@ -625,7 +625,7 @@ stateStorage:
     prometheus.io/scrape: "false"
     prometheus.io/port: "8080"
   tolerations: []
-  gracePeriod: 0
+  gracePeriod: 60
   resources:
     requests:
       memory: 1Gi
@@ -691,7 +691,7 @@ proxy:
     prometheus.io/port: "8080"
   tolerations: []
   #preferredZone: "us-east1-c"
-  gracePeriod: 0
+  gracePeriod: 60
   probe:
     initial: 10
     period: 10
@@ -781,7 +781,7 @@ autoRecovery:
   #  cloud.google.com/gke-nodepool: default-pool
   annotations: {}
   tolerations: []
-  gracePeriod: 0
+  gracePeriod: 60
   resources:
     requests:
       memory: 512Mi
@@ -804,7 +804,7 @@ dashboard:
     # cloud.google.com/gke-nodepool: default-pool
   annotations: {}
   tolerations: []
-  gracePeriod: 0
+  gracePeriod: 60
   resources:
     requests:
       memory: 1024Mi
@@ -835,7 +835,7 @@ pulsarexpress:
   # cloud.google.com/gke-nodepool: default-pool
   annotations: {}
   tolerations: []
-  gracePeriod: 0
+  gracePeriod: 60
   resources:
     requests:
       memory: 250Mi
@@ -862,7 +862,7 @@ zoonavigator:
     # cloud.google.com/gke-nodepool: default-pool
   annotations: {}
   tolerations: []
-  gracePeriod: 0
+  gracePeriod: 60
   resources:
     requests:
       memory: 128Mi
@@ -904,7 +904,7 @@ bastion:
     # cloud.google.com/gke-nodepool: default-pool
   annotations: {}
   tolerations: []
-  gracePeriod: 0
+  gracePeriod: 60
   resources:
     requests:
       memory: 256Mi
@@ -927,7 +927,7 @@ prometheus:
     # cloud.google.com/gke-nodepool: default-pool
   annotations: {}
   tolerations: []
-  gracePeriod: 0
+  gracePeriod: 60
   resources:
     requests:
       memory: 512Mi
@@ -962,7 +962,7 @@ grafana:
     # cloud.google.com/gke-nodepool: default-pool
   annotations: {}
   tolerations: []
-  gracePeriod: 0
+  gracePeriod: 60
   resources:
     requests:
       memory: 256Mi
