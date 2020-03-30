@@ -167,7 +167,7 @@ spec:
           {{- if .Values.enableTokenAuth }}
           cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
           {{- end }}
-          bin/pulsar broker
+          exec bin/pulsar broker
         ports:
         - name: http
           containerPort: 8080

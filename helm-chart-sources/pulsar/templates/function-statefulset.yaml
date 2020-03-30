@@ -150,7 +150,7 @@ spec:
           {{- if .Values.function.usePython3 }}
           /pulsar/bin/set_python_version.sh &&
           {{- end }}
-          bin/pulsar functions-worker 
+          exec bin/pulsar functions-worker
         ports:
         - name: functiontls
           containerPort: 6751
