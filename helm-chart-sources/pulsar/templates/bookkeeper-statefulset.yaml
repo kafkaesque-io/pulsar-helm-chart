@@ -113,7 +113,7 @@ spec:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}"
         image: "{{ .Values.image.bookkeeper.repository }}:{{ .Values.image.bookkeeper.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        {{- if .Values.bookkeeper.probe }}
+        {{- if .Values.bookkeeper.probe.enabled }}
         readinessProbe:
           tcpSocket:
             port: {{ .Values.bookkeeper.probe.port }}

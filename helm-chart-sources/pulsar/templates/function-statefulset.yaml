@@ -122,7 +122,7 @@ spec:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
         image: "{{ .Values.image.function.repository }}:{{ .Values.image.function.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        {{- if .Values.function.probe }}
+        {{- if .Values.function.probe.enabled }}
         readinessProbe:
           tcpSocket:
             port: {{ .Values.function.probe.port }}

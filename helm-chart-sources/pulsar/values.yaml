@@ -135,8 +135,21 @@ extra:
   # Pulsar proxy
   proxy: yes
   # Websocket proxy
+  # 
+  # This will enable a standalone WebSocket proxy that
+  # runs as part of the proxy pod. 
+  #
+  # See the broker config section for enabling WebSocket
+  # service within the broker.
   wsproxy: yes
-  # Standalone functions worker
+  # Standalone functions workers
+  #
+  # See broker config section for information on enabling 
+  # the function worker within the broker. If you should use one or the other.
+  #
+  # When enabling the standalone function worker, the proxy will be configured
+  # to forward function API calls.
+  #
   function: no 
   # Standalone state storage
   # Note that standalone state storage is experimental and requires a custom
@@ -269,6 +282,10 @@ zookeeper:
     prometheus.io/port: "8000"
   tolerations: []
   gracePeriod: 60
+  probe:
+    enabled: yes
+    initial: 10
+    period: 30
   resources:
     requests:
       memory: 1Gi
@@ -350,9 +367,10 @@ bookkeeper:
     prometheus.io/port: "8000"
   tolerations: []
   probe:
+    enabled: yes
     port: 3181
-    initial: 20
-    period: 10
+    initial: 10
+    period: 30
   gracePeriod: 60
   resources:
     requests:
@@ -474,11 +492,16 @@ broker:
     prometheus.io/port: "8080"
   tolerations: []
   gracePeriod: 60
-  functionsWorkerEnabled: no 
+  # Enable extra services in the broker
+  # These can also be enabled as standalone services
+  # See extras section above
+  functionsWorkerEnabled: no
+  webSocketServiceEnabled: no
   probe:
+    enabled: yes
     port: 8080
-    initial: 30
-    period: 10
+    initial: 10
+    period: 30
   resources:
     requests:
       memory: 2Gi
@@ -498,6 +521,7 @@ broker:
     deduplicationEnabled: "true"
     exposeTopicLevelMetricsInPrometheus: "true"
     backlogQuotaDefaultRetentionPolicy: "producer_exception"
+  
   ## Broker service
   ## templates/broker-service.yaml
   ##
@@ -530,9 +554,10 @@ function:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
   probe:
+    enabled: yes
     port: 6750
-    initial: 40
-    period: 10
+    initial: 10
+    period: 30
   # Only the process runtime has been tested with this chart
   runtime: "process"
   # If state storage is enabled state storage will be enabled on Bookkeeper and the 
@@ -615,9 +640,10 @@ stateStorage:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
   probe:
+    enabled: yes
     port: 4181
     initial: 10
-    period: 10
+    period: 30
   #preferredZone: "us-east1-c"
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
@@ -693,8 +719,9 @@ proxy:
   #preferredZone: "us-east1-c"
   gracePeriod: 60
   probe:
+    enabled: yes
     initial: 10
-    period: 10
+    period: 30
   # Resources for the main Pulsar proxy
   resources:
     requests:
