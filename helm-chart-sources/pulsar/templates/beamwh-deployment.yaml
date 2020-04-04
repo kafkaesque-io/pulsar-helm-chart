@@ -112,5 +112,27 @@ spec:
         envFrom:
         - configMapRef:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.beamwh.component }}"
-        env: []
+        env:
+          - name: ProcessMode
+            value: "broker"
+          - name: PORT
+            value: "8085"
+          - name: CLUSTER
+            value: {{ .Values.dnsName }}
+          - name: SuperRoles
+            value: {{ .Values.tokenServer.allowedRoles }}
+          - name: PulsarPublicKey
+            value: "/pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
+          - name: PulsarPrivateKey
+            value: "/pulsar/token-private-key/{{ .Values.tokenPrivateKeyFile }}"
+          - name: PbDbType
+            value: {{ .Values.beamwh.dbType }}
+          - name: DbName
+            value: {{ .Values.beamwh.dbName }}
+          - name: DbPassword
+            value: {{ .Values.beamwh.dbPassword }}
+          - name: DbConnectionStr
+            value: {{ .Values.beamwh.dbConnectionStr }}
+          - name: PbDbInterval
+            value: {{ .Values.beamwh.dbRefreshInterval }}
 {{- end }}

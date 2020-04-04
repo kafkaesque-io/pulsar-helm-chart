@@ -348,7 +348,26 @@ spec:
             readOnly: true
         args: ["-mode", "http"]
         env:
+          - name: ProcessMode
+            value: "http"
+          - name: PORT
+            value: "8085"
+          - name: CLUSTER
+            value: "{{ .Values.dnsName }}"
           - name: SuperRoles
             value: {{ .Values.tokenServer.allowedRoles }}
+          - name: PulsarPublicKey
+            value: "/pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
+          - name: PulsarPrivateKey
+            value: "/pulsar/token-private-key/{{ .Values.tokenPrivateKeyFile }}"
+          - name: PbDbType
+            value: {{ .Values.pulsarBeam.dbType }}
+          - name: DbName
+            value: {{ .Values.pulsarBeam.dbName }}
+          - name: DbPassword
+            value: {{ .Values.pulsarBeam.dbPassword }}
+          - name: DbConnectionStr
+            value: {{ .Values.pulsarBeam.dbConnectionStr }}
+
 {{- end }}
 {{- end }}

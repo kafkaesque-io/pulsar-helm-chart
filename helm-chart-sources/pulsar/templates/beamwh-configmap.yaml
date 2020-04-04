@@ -30,14 +30,4 @@ metadata:
     heritage: {{ .Release.Service }}
     component: {{ .Values.beamwh.component }}
     cluster: {{ template "pulsar.fullname" . }}
-data:
-  pulsar-beam.yml: |-
-    CLUSTER: {{ .Values.dnsName | quote }}
-    PbDbType: {{ .Values.beamwh.dbType | default "inmemory" }}
-    PbDbInterval: {{ .Values.beamwh.dbRefreshInterval | default "10s" }}
-    DbConnectionStr: {{ .Values.beamwh.dbConnectionStr | default "" }}
-    DbName: {{ .Values.beamwh.dbName  | default "" }}
-    DbPassword: {{ .Values.beamwh.dbPassword | default "" }}
-    PulsarPublicKey: "/pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
-    PulsarPrivateKey: "/pulsar/token-private-key/{{ .Values.tokenPrivateKeyFile }}"
 {{- end }}
