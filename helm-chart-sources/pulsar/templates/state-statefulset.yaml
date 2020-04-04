@@ -100,7 +100,7 @@ spec:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}"
         image: "{{ .Values.image.stateStorage.repository }}:{{ .Values.image.stateStorage.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        {{- if .Values.stateStorage.probe }}
+        {{- if .Values.stateStorage.probe.enabled }}
         readinessProbe:
           tcpSocket:
             port: {{ .Values.stateStorage.probe.port }}

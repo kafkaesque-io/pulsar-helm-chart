@@ -113,18 +113,20 @@ spec:
         envFrom:
         - configMapRef:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}"
+        {{- if .Values.zookeeper.probe.enabled }}
         readinessProbe:
           exec:
             command:
             - "bin/pulsar-zookeeper-ruok.sh"
-          initialDelaySeconds: 5
-          timeoutSeconds: 5
+          initialDelaySeconds: {{ .Values.zookeeper.probe.initial }}
+          timeoutSeconds: {{ .Values.zookeeper.probe.period }}
         livenessProbe:
           exec:
             command:
             - "bin/pulsar-zookeeper-ruok.sh"
-          initialDelaySeconds: 15
-          timeoutSeconds: 5
+          initialDelaySeconds: {{ .Values.zookeeper.probe.initial }}
+          timeoutSeconds: {{ .Values.zookeeper.probe.period }}
+        {{- end }}
         volumeMounts:
         - name: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-{{ .Values.zookeeper.volumes.data.name }}"
           mountPath: /pulsar/data

@@ -37,8 +37,13 @@ data:
     {{- $global := . }}
     {{ range $i, $e := until (.Values.zookeeper.replicaCount | int) }}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}{{ end }}
   clusterName: {{ template "pulsar.fullname" . }}
-  functionsWorkerEnabled: "{{ .Values.broker.functionsWorkerEnabled }}"
+  {{- if .Values.broker.functionsWorkerEnabled }}
+  functionsWorkerEnabled: "true"
   PF_pulsarFunctionsCluster: {{ template "pulsar.fullname" . }}
+  {{- end }}
+  {{- if .Values.broker.webSocketServiceEnabled }}
+  webSocketServiceEnabled: "true"
+  {{- end }}
   allowAutoTopicCreationType: "non-partitioned"
   {{- if .Values.enableTokenAuth }}
   PF_clientAuthenticationPlugin: "org.apache.pulsar.client.impl.auth.AuthenticationToken"

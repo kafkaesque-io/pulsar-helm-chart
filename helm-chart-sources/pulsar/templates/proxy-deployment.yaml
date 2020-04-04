@@ -169,7 +169,7 @@ spec:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}"
         image: "{{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}"
         imagePullPolicy: {{ .Values.image.proxy.pullPolicy }}
-        {{- if .Values.proxy.probe }}
+        {{- if .Values.proxy.probe.enabled }}
         readinessProbe:
           tcpSocket:
           {{- if .Values.proxy.probe.port }}
