@@ -136,17 +136,25 @@ spec:
         readinessProbe:
           exec:
             command:
-            - /pulsar/bin/pulsar-admin
-            - brokers 
-            - healthcheck
+            - "/bin/sh"
+            - "-c"
+            {{- if .Values.enableTokenAuth }}
+            - "curl --fail -H \"Authorization: Bearer $(cat /pulsar/token-superuser/superuser.jwt | tr -d '\r')\" http://localhost:8080/admin/v2/brokers/health"
+            {{- else }}
+            - "curl --fail http://localhost:8080/admin/v2/brokers/health"
+            {{- end }}
           initialDelaySeconds: {{ .Values.broker.probe.initial }} 
           periodSeconds:  {{ .Values.broker.probe.period }} 
         livenessProbe:
           exec:
             command:
-            - /pulsar/bin/pulsar-admin
-            - brokers 
-            - healthcheck
+            - "/bin/sh"
+            - "-c"
+            {{- if .Values.enableTokenAuth }}
+            - "curl --fail -H \"Authorization: Bearer $(cat /pulsar/token-superuser/superuser.jwt | tr -d '\r')\" http://localhost:8080/admin/v2/brokers/health"
+            {{- else }}
+            - "curl --fail http://localhost:8080/admin/v2/brokers/health"
+            {{- end }}
           initialDelaySeconds: {{ .Values.broker.probe.initial }} 
           periodSeconds: {{ .Values.broker.probe.period }} 
         {{- end }}
