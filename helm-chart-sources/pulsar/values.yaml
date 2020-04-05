@@ -162,6 +162,10 @@ extra:
   autoRecovery: yes
   # Bastion pod for administrative commands
   bastion: yes
+  # Pulsar-beam webhook brokers
+  beamwh: no
+  # Pulsar-beam http component and rest api
+  pulsarBeam: no
   # Monitoring stack (prometheus, grafana, and dashboard)
   monitoring: no
   # Zoonavigator
@@ -196,6 +200,14 @@ image:
     repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
     tag: 2.5.0
+  beamwh:
+    repository: kafkaesqueio/pulsar-beam
+    pullPolicy: IfNotPresent
+    tag: 0.23.2
+  pulsarBeam:
+    repository: kafkaesqueio/pulsar-beam
+    pullPolicy: IfNotPresent
+    tag: 0.23.2
   pulsarexpress:
     repository: kafkaesqueio/pulsar-express
     tag: 0.5.1_k2
@@ -944,6 +956,27 @@ bastion:
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
+
+## Pulsar-beam webhook broker(s)
+## templates/beamwh-deployment.yaml
+##
+beamwh:
+  component: beamwh
+  replicaCount: 1
+  annotations: {}
+  tolerations: []
+  gracePeriod: 60
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 0.5
+  dbType: "inmemory"
+  dbRefreshInterval: "60s"
+  ## Beamwh configmap
+  ## templates/beamwh-configmap.yaml
+  ##
+  configData: {}
+  
 ## Monitoring Stack: Prometheus
 ## templates/prometheus-deployment.yaml
 ##

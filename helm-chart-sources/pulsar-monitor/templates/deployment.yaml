@@ -21,6 +21,7 @@ spec:
         prometheus.io/path: /metrics
         prometheus.io/port: "{{ .Values.service.port }}"
         prometheus.io/scrape: "true"
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       {{- end }}
     spec:
     {{- with .Values.imagePullSecrets }}

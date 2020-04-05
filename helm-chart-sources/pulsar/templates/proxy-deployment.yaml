@@ -325,4 +325,49 @@ spec:
           - name: ROLES
             value: {{ .Values.tokenServer.allowedRoles }}
 {{- end }}
+{{- if .Values.extra.pulsarBeam }}
+      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}-pulsarbeam"
+        image: "{{ .Values.image.pulsarBeam.repository }}:{{ .Values.image.pulsarBeam.tag }}"
+        imagePullPolicy: {{ .Values.image.pulsarBeam.pullPolicy }}
+      {{- if .Values.proxy.beamResources }}
+        resources:
+{{ toYaml .Values.proxy.beamResources | indent 10 }}
+      {{- end }}
+        ports:
+        - name: pulsarbeam
+          containerPort: 8085
+        volumeMounts:
+          - name: certs
+            readOnly: true
+            mountPath: /pulsar/certs
+          - mountPath: "/pulsar/token-private-key"
+            name: token-private-key
+            readOnly: true
+          - mountPath: "/pulsar/token-public-key"
+            name: token-public-key
+            readOnly: true
+        args: ["-mode", "http"]
+        env:
+          - name: ProcessMode
+            value: "http"
+          - name: PORT
+            value: "8085"
+          - name: CLUSTER
+            value: "{{ .Values.dnsName }}"
+          - name: SuperRoles
+            value: {{ .Values.tokenServer.allowedRoles }}
+          - name: PulsarPublicKey
+            value: "/pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
+          - name: PulsarPrivateKey
+            value: "/pulsar/token-private-key/{{ .Values.tokenPrivateKeyFile }}"
+          - name: PbDbType
+            value: {{ .Values.pulsarBeam.dbType }}
+          - name: DbName
+            value: {{ .Values.pulsarBeam.dbName }}
+          - name: DbPassword
+            value: {{ .Values.pulsarBeam.dbPassword }}
+          - name: DbConnectionStr
+            value: {{ .Values.pulsarBeam.dbConnectionStr }}
+
+{{- end }}
 {{- end }}
