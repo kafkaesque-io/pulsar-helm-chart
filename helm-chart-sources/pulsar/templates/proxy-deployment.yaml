@@ -368,6 +368,13 @@ spec:
             value: {{ .Values.pulsarBeam.dbPassword }}
           - name: DbConnectionStr
             value: {{ .Values.pulsarBeam.dbConnectionStr }}
-
+          - name: CertFile
+            value: /pulsar/certs/tls.crt
+          - name: KeyFile
+            value: /pulsar/certs/tls.key
+          - name: TrustStore
+            value: {{ .Values.pulsarBeam.trustStore }}
+          - name: PulsarClusters
+            value: "pulsar+ssl://{{ .Values.dnsName }}:6651"
 {{- end }}
 {{- end }}
