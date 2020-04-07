@@ -17,9 +17,17 @@
 # under the License.
 #
 
+{{- if .Values.extra.beamwh }}
 apiVersion: v1
-appVersion: "1.0"
-description: Apache Pulsar Helm chart for Kubernetes
-name: pulsar
-icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
-version: 1.0.16
+kind: ConfigMap
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.beamwh.component }}"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "pulsar.name" . }}
+    chart: {{ template "pulsar.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.beamwh.component }}
+    cluster: {{ template "pulsar.fullname" . }}
+{{- end }}

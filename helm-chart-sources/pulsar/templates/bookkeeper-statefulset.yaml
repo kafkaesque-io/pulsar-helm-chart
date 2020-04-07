@@ -66,6 +66,7 @@ spec:
       affinity:
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
+          {{- if .Values.antiAffinity.host.enabled }}
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
@@ -82,6 +83,27 @@ spec:
                 values:
                 - {{ .Values.bookkeeper.component }}
             topologyKey: "kubernetes.io/hostname"
+          {{- end }}
+          {{- if .Values.antiAffinity.zone.enabled }}
+          preferredDuringSchedulingIgnoredDuringExecution: 
+          - weight: 100  
+            podAffinityTerm:
+              topologyKey: failure-domain.beta.kubernetes.io/zone
+              labelSelector:
+                matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                  - "{{ template "pulsar.name" . }}"
+                - key: "release"
+                  operator: In
+                  values:
+                  - {{ .Release.Name }}
+                - key: "component"
+                  operator: In
+                  values:
+                  - {{ .Values.bookkeeper.component }}
+          {{- end }}
         {{- end }}
       terminationGracePeriodSeconds: {{ .Values.bookkeeper.gracePeriod }}
       initContainers:
@@ -113,7 +135,7 @@ spec:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}"
         image: "{{ .Values.image.bookkeeper.repository }}:{{ .Values.image.bookkeeper.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        {{- if .Values.bookkeeper.probe }}
+        {{- if .Values.bookkeeper.probe.enabled }}
         readinessProbe:
           tcpSocket:
             port: {{ .Values.bookkeeper.probe.port }}
@@ -129,7 +151,7 @@ spec:
         - >
           bin/apply-config-from-env.py conf/bookkeeper.conf &&
           bin/apply-config-from-env.py conf/pulsar_env.sh &&
-          bin/pulsar bookie
+          exec bin/pulsar bookie
         ports:
         - name: client
           containerPort: 3181

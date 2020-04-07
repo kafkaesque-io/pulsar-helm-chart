@@ -81,6 +81,7 @@ spec:
         {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
+          {{- if .Values.antiAffinity.host.enabled }}
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
@@ -97,6 +98,27 @@ spec:
                 values:
                 - {{ .Values.proxy.component }}
             topologyKey: "kubernetes.io/hostname"
+          {{- end }}
+          {{- if .Values.antiAffinity.zone.enabled }}
+          preferredDuringSchedulingIgnoredDuringExecution: 
+          - weight: 100  
+            podAffinityTerm:
+              topologyKey: failure-domain.beta.kubernetes.io/zone
+              labelSelector:
+                matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                  - "{{ template "pulsar.name" . }}"
+                - key: "release"
+                  operator: In
+                  values:
+                  - {{ .Release.Name }}
+                - key: "component"
+                  operator: In
+                  values:
+                  - {{ .Values.proxy.component }}
+          {{- end }} 
         {{- end }}
       terminationGracePeriodSeconds: {{ .Values.proxy.gracePeriod }}
       {{- if or .Values.enableTls (or .Values.enableTokenAuth .Values.proxy.initContainer) }}
@@ -169,7 +191,7 @@ spec:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}"
         image: "{{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}"
         imagePullPolicy: {{ .Values.image.proxy.pullPolicy }}
-        {{- if .Values.proxy.probe }}
+        {{- if .Values.proxy.probe.enabled }}
         readinessProbe:
           tcpSocket:
           {{- if .Values.proxy.probe.port }}
@@ -196,7 +218,7 @@ spec:
           {{- if .Values.enableTls }}
           openssl pkcs8 -topk8 -inform PEM -outform PEM -in /pulsar/certs/tls.key -out /pulsar/tls-pk8.key -nocrypt &&
           {{- end }}
-          bin/pulsar proxy
+          exec bin/pulsar proxy
         ports:
         - name: http
           containerPort: 8080
@@ -324,5 +346,108 @@ spec:
         env:
           - name: ROLES
             value: {{ .Values.tokenServer.allowedRoles }}
+{{- end }}
+{{- if .Values.extra.pulsarBeam }}
+      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}-pulsarbeam"
+        image: "{{ .Values.image.pulsarBeam.repository }}:{{ .Values.image.pulsarBeam.tag }}"
+        imagePullPolicy: {{ .Values.image.pulsarBeam.pullPolicy }}
+      {{- if .Values.proxy.beamResources }}
+        resources:
+{{ toYaml .Values.proxy.beamResources | indent 10 }}
+      {{- end }}
+        ports:
+        - name: pulsarbeam
+          containerPort: 8085
+        volumeMounts:
+          {{- if .Values.enableTls }}
+          - name: certs
+            readOnly: true
+            mountPath: /pulsar/certs
+          {{- end }}
+          {{- if .Values.enableTokenAuth }}
+          - mountPath: "/pulsar/token-private-key"
+            name: token-private-key
+            readOnly: true
+          - mountPath: "/pulsar/token-public-key"
+            name: token-public-key
+            readOnly: true
+          {{- end }}
+        args: ["-mode", "http"]
+        env:
+          - name: ProcessMode
+            value: "http"
+          - name: PORT
+            value: "8085"
+          - name: CLUSTER
+            value: "{{ .Values.dnsName }}"
+          - name: SuperRoles
+            value: {{ .Values.tokenServer.allowedRoles }}
+          {{- if .Values.enableTokenAuth }}
+          - name: PulsarPublicKey
+            value: "/pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
+          - name: PulsarPrivateKey
+            value: "/pulsar/token-private-key/{{ .Values.tokenPrivateKeyFile }}"
+          {{- end }}
+          - name: PbDbType
+            value: {{ .Values.pulsarBeam.dbType }}
+          - name: DbName
+            value: {{ .Values.pulsarBeam.dbName }}
+          - name: DbPassword
+            value: {{ .Values.pulsarBeam.dbPassword }}
+          - name: DbConnectionStr
+            value: {{ .Values.pulsarBeam.dbConnectionStr }}
+          - name: CertFile
+            value: /pulsar/certs/tls.crt
+          - name: KeyFile
+            value: /pulsar/certs/tls.key
+          - name: TrustStore
+            value: {{ .Values.pulsarBeam.trustStore }}
+          - name: PulsarClusters
+            value: "pulsar+ssl://{{ .Values.dnsName }}:6651"
+{{- end }}
+{{- if .Values.extra.burnell }}
+      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}-burnell"
+        image: "{{ .Values.image.burnell.repository }}:{{ .Values.image.burnell.tag }}"
+        imagePullPolicy: {{ .Values.image.burnell.pullPolicy }}
+      {{- if .Values.proxy.burnellResources }}
+        resources:
+{{ toYaml .Values.proxy.burnellResources | indent 10 }}
+      {{- end }}
+        ports:
+        - name: burnell
+          containerPort: 8964
+        volumeMounts:
+          - name: certs
+            readOnly: true
+            mountPath: /pulsar/certs
+          - mountPath: "/pulsar/token-private-key"
+            name: token-private-key
+            readOnly: true
+          - mountPath: "/pulsar/token-public-key"
+            name: token-public-key
+            readOnly: true
+        env:
+          - name: PORT
+            value: "8964"
+          - name: CLUSTER
+            value: "{{ .Values.dnsName }}"
+          - name: SuperRoles
+            value: {{ .Values.tokenServer.allowedRoles }}
+          - name: PulsarPublicKey
+            value: "/pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
+          - name: PulsarPrivateKey
+            value: "/pulsar/token-private-key/{{ .Values.tokenPrivateKeyFile }}"
+          - name: PulsarToken
+            value: {{ .Values.burnell.token }}
+          - name: PulsarURL
+            value: "pulsar+ssl://{{ .Values.dnsName }}:6651"
+          - name: CertFile
+            value: /pulsar/certs/tls.crt
+          - name: KeyFile
+            value: /pulsar/certs/tls.key
+          - name: TrustStore
+            value: {{ .Values.burnell.trustStore }}
+          - name: FederatedPromURL
+            value: {{ .Values.burnell.federatedPromUrl }}
 {{- end }}
 {{- end }}

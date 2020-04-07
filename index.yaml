@@ -1,6 +1,57 @@
 apiVersion: v1
 entries:
+  imagepuller:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2019-12-15T20:21:43.960624756Z"
+    description: Pull container images to your nodes so that they are already present
+      when containers are launched
+    digest: 53e16e29d89bdd2fb9bf19aa43cdf6f49f56f056b53bf120d26d141e23c90f2b
+    name: imagepuller
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/imagepuller-1.0.0/imagepuller-1.0.0.tgz
+    version: 1.0.0
   pulsar:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-03-29T20:50:49.783736982Z"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: 71261e0fc2ee0adb3ce20302df2e5f52c59bd8dd958180c235606650089f18c5
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.15/pulsar-1.0.15.tgz
+    version: 1.0.15
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-03-23T21:12:15.259571866Z"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: 57b397f6bc32c82686ca4c2dd1ec6b80f3c9de6adfc0758de0ce313971c317ce
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.14/pulsar-1.0.14.tgz
+    version: 1.0.14
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-03-01T15:43:56.393391189Z"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: 37cdea42d4468571b7fa657c3a8b88f788dd312dc86667645a172c47c089859e
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.12/pulsar-1.0.12.tgz
+    version: 1.0.12
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-02-19T22:07:18.364004951Z"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: 45bc99d4605f09c08184dc02ce9b0c4533d4525579078570d6fbd3bf12f17a44
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.11/pulsar-1.0.11.tgz
+    version: 1.0.11
   - apiVersion: v1
     appVersion: "1.0"
     created: "2020-02-17T17:09:50.940397251Z"
@@ -11,7 +62,66 @@ entries:
     urls:
     - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.10/pulsar-1.0.10.tgz
     version: 1.0.10
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-02-13T18:26:04.871203294Z"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: 33b5af90ab825bfaaa59267aa0767fa58d489196ab7bf6c023eb818b891f6f46
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.9/pulsar-1.0.9.tgz
+    version: 1.0.9
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-01-22T01:05:04.908432363Z"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: a4f75996d0552b41cecf8c618f7655eb249f6cdff4ad7f3276ba0bd30a573e3c
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.8/pulsar-1.0.8.tgz
+    version: 1.0.8
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2019-12-16T22:06:58.82664844Z"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: 643ed28a36539d5f51e203c01db5c96a5de1955ddaf90d41d522d6fd2374644f
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.7/pulsar-1.0.7.tgz
+    version: 1.0.7
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2019-12-16T16:14:18.244750411Z"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: 25d516642ffa4d20350dd45c862c0b1b9ef32889d1d5145679cce333a789c8c2
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.6/pulsar-1.0.6.tgz
+    version: 1.0.6
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2019-12-15T20:21:44.094442418Z"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: d4d0f42afe1420c70a114e8423eda7226c95a59c7805756fc3853e8d9dfe0896
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.5/pulsar-1.0.5.tgz
+    version: 1.0.5
   pulsar-monitor:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-03-23T21:12:15.359420401Z"
+    description: A Helm chart for the Pulsar Monitor application
+    digest: 61635b847617624c4bf5a6cacec10b8e5fde85cea4e1e41a6d88efc54212f79a
+    name: pulsar-monitor
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-monitor-0.1.1/pulsar-monitor-0.1.1.tgz
+    version: 0.1.1
   - apiVersion: v1
     appVersion: "1.0"
     created: "2020-02-13T18:26:04.997372481Z"
@@ -29,15 +139,4 @@ entries:
     urls:
     - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/teleport-1.0.0/teleport-1.0.0.tgz
     version: 1.0.0
-  imagepuller:
-  - apiVersion: v1
-    appVersion: "1.0"
-    created: "2019-12-15T20:21:43.960624756Z"
-    description: Pull container images to your nodes so that they are already present
-      when containers are launched
-    digest: 53e16e29d89bdd2fb9bf19aa43cdf6f49f56f056b53bf120d26d141e23c90f2b
-    name: imagepuller
-    urls:
-    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/imagepuller-1.0.0/imagepuller-1.0.0.tgz
-    version: 1.0.0
-generated: "2020-02-17T17:09:50.712354673Z"
+generated: "2020-02-19T22:07:18.145853311Z"

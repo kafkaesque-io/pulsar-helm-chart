@@ -77,6 +77,7 @@ spec:
         {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
+          {{- if .Values.antiAffinity.host.enabled }}
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
@@ -93,6 +94,27 @@ spec:
                 values:
                 - {{ .Values.broker.component }}
             topologyKey: "kubernetes.io/hostname"
+          {{- end }}
+          {{- if .Values.antiAffinity.zone.enabled }}
+          preferredDuringSchedulingIgnoredDuringExecution: 
+          - weight: 100  
+            podAffinityTerm:
+              topologyKey: failure-domain.beta.kubernetes.io/zone
+              labelSelector:
+                matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                  - "{{ template "pulsar.name" . }}"
+                - key: "release"
+                  operator: In
+                  values:
+                  - {{ .Release.Name }}
+                - key: "component"
+                  operator: In
+                  values:
+                  - {{ .Values.broker.component }}
+          {{- end }}  
         {{- end }}
       terminationGracePeriodSeconds: {{ .Values.broker.gracePeriod }}
       volumes:
@@ -132,21 +154,29 @@ spec:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
         image: "{{ .Values.image.broker.repository }}:{{ .Values.image.broker.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        {{- if .Values.broker.probe }}
+        {{- if .Values.broker.probe.enabled }}
         readinessProbe:
           exec:
             command:
-            - /pulsar/bin/pulsar-admin
-            - brokers 
-            - healthcheck
+            - "/bin/sh"
+            - "-c"
+            {{- if .Values.enableTokenAuth }}
+            - "curl --fail -H \"Authorization: Bearer $(cat /pulsar/token-superuser/superuser.jwt | tr -d '\r')\" http://localhost:8080/admin/v2/brokers/health"
+            {{- else }}
+            - "curl --fail http://localhost:8080/admin/v2/brokers/health"
+            {{- end }}
           initialDelaySeconds: {{ .Values.broker.probe.initial }} 
           periodSeconds:  {{ .Values.broker.probe.period }} 
         livenessProbe:
           exec:
             command:
-            - /pulsar/bin/pulsar-admin
-            - brokers 
-            - healthcheck
+            - "/bin/sh"
+            - "-c"
+            {{- if .Values.enableTokenAuth }}
+            - "curl --fail -H \"Authorization: Bearer $(cat /pulsar/token-superuser/superuser.jwt | tr -d '\r')\" http://localhost:8080/admin/v2/brokers/health"
+            {{- else }}
+            - "curl --fail http://localhost:8080/admin/v2/brokers/health"
+            {{- end }}
           initialDelaySeconds: {{ .Values.broker.probe.initial }} 
           periodSeconds: {{ .Values.broker.probe.period }} 
         {{- end }}
@@ -167,7 +197,7 @@ spec:
           {{- if .Values.enableTokenAuth }}
           cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
           {{- end }}
-          bin/pulsar broker
+          exec bin/pulsar broker
         ports:
         - name: http
           containerPort: 8080
