@@ -81,6 +81,7 @@ spec:
         {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
+          {{- if .Values.antiAffinity.host.enabled }}
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
@@ -97,6 +98,27 @@ spec:
                 values:
                 - {{ .Values.proxy.component }}
             topologyKey: "kubernetes.io/hostname"
+          {{- end }}
+          {{- if .Values.antiAffinity.zone.enabled }}
+          preferredDuringSchedulingIgnoredDuringExecution: 
+          - weight: 100  
+            podAffinityTerm:
+              topologyKey: failure-domain.beta.kubernetes.io/zone
+              labelSelector:
+                matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                  - "{{ template "pulsar.name" . }}"
+                - key: "release"
+                  operator: In
+                  values:
+                  - {{ .Release.Name }}
+                - key: "component"
+                  operator: In
+                  values:
+                  - {{ .Values.proxy.component }}
+          {{- end }} 
         {{- end }}
       terminationGracePeriodSeconds: {{ .Values.proxy.gracePeriod }}
       {{- if or .Values.enableTls (or .Values.enableTokenAuth .Values.proxy.initContainer) }}
@@ -337,15 +359,19 @@ spec:
         - name: pulsarbeam
           containerPort: 8085
         volumeMounts:
+          {{- if .Values.enableTls }}
           - name: certs
             readOnly: true
             mountPath: /pulsar/certs
+          {{- end }}
+          {{- if .Values.enableTokenAuth }}
           - mountPath: "/pulsar/token-private-key"
             name: token-private-key
             readOnly: true
           - mountPath: "/pulsar/token-public-key"
             name: token-public-key
             readOnly: true
+          {{- end }}
         args: ["-mode", "http"]
         env:
           - name: ProcessMode
@@ -356,10 +382,12 @@ spec:
             value: "{{ .Values.dnsName }}"
           - name: SuperRoles
             value: {{ .Values.tokenServer.allowedRoles }}
+          {{- if .Values.enableTokenAuth }}
           - name: PulsarPublicKey
             value: "/pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
           - name: PulsarPrivateKey
             value: "/pulsar/token-private-key/{{ .Values.tokenPrivateKeyFile }}"
+          {{- end }}
           - name: PbDbType
             value: {{ .Values.pulsarBeam.dbType }}
           - name: DbName

@@ -76,6 +76,11 @@ prometheus_rbac: yes
 #     kind: Managed
 #     cachingmode: ReadOnly
 
+# TLS
+# When you enable TLS and are using a proxy, you need to expose the 
+# TLS-enabled ports. To allow TLS connections only, remove the plain-text ports.
+# See the proxy section for details.
+
 enableTls: no
 tlsSecretName: pulsar-tls
 
@@ -123,9 +128,24 @@ tokenPublicKeyFile: my-public.key
 # Token private key file name
 tokenPrivateKeyFile: my-private.key
 
-# Turn on anti affinity rules so that pods don't get scheduled on the same node
-# In development environments with a single node, this need to be disabled
+# Turn on anti affinity rules so that replica pods are spread for 
+# high availablity.
+# In development environments (ex. Minikube) with a single node, this needs to be disabled
 enableAntiAffinity: yes
+
+# Settings for anti-affinity. Host antiAffinity ensures that 
+# replica pods are scheduled on different hosts. The
+# number of hosts >= number of replicas
+#
+# Zone antiAffinity distributes replica pods across availability 
+# zones. This is a "soft" requirement, so that in the event of 
+# a failure of a zone, pods will run in a different zone
+antiAffinity:
+  host:
+    enabled: yes
+  zone:
+    enabled: no
+  
 
 # Install Helm tests (run with helm test <release>)
 enableTests: no
@@ -162,20 +182,40 @@ extra:
   autoRecovery: yes
   # Bastion pod for administrative commands
   bastion: yes
-  # Pulsar-beam webhook brokers
+  # Pulsar Beam webhook brokers
   beamwh: no
-  # Pulsar-beam http component and rest api
+  # Pulsar Beam http component and rest api
+  # For external access via the proxy you need to expose
+  # the Pulsar Beam port. See the proxy section for details.
   pulsarBeam: no
   # burnell - various Pulsar proxy
   burnell: no
-  # Monitoring stack (prometheus, grafana, and dashboard)
-  monitoring: no
-  # Zoonavigator
-  zoonavigator: no
   # Pulsar manager UI for admin
   pulsarexpress: no
+  # Zoonavigator for debugging Zookeeper
+  zoonavigator: no
+  #
+  # DEPRECATED
+  # Support for the monitoring extra is deprecated
+  # and will be removed in a future release.
+  #
+  # Maintaining Helm support for prometheus and grafana in this chart
+  # makes little sense when there are stable charts that are
+  # actively maintained that do a better job. The Prometheus 
+  # Operator Helm chart is recommended for monitoring since it 
+  # has a rich feature set and the latest versions and features.
+  #
+  # The pulsar dashboard is deprecated by the Pulsar project. This 
+  # chart includes Pulsar Express as an alternative.
+  #
+  # Monitoring stack (prometheus, grafana, and dashboard)
+  monitoring: no
   
 ## Which images to use
+# When upgrading a Pulsar cluster, it is recommended to upgrade the 
+# components one at a time (zookeeper, bookkeeper, broker, etc). 
+# This section allows for targeted upgrades of each component.
+#
 image:
   broker:
     # If not using tiered storage, you can use the smaller pulsar image for the broker
@@ -770,16 +810,30 @@ proxy:
   #   ports:
   #   - name: http
   #     port: 8080
-  #     nodePort: 30001
   #     protocol: TCP
   #   - name: pulsar
   #     port: 6650
   #     protocol: TCP
-  #     nodePort: 30002
   #   - name: ws
   #     port: 8000
   #     protocol: TCP
-  #     nodePort: 30003
+
+  # If you are enabling TLS, add these ports:
+  #   - name: https
+  #     port: 8443
+  #     protocol: TCP
+  #   - name: pulsarssl
+  #     port: 6651
+  #     protocol: TCP
+  #   - name: wss
+  #     port: 8001
+  #     protocol: TCP
+
+  # If you are enabling Pulsar Beam, add this port:
+  #   - name: pulsarbeam
+  #     port: 8085
+  #     protocol: TCP
+
 
   ## Proxy cluster service
   ## templates/proxy-service.yaml

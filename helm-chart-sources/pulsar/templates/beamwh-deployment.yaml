@@ -59,6 +59,48 @@ spec:
       tolerations:
 {{ toYaml .Values.beamwh.tolerations | indent 8 }}
     {{- end }}
+     affinity:
+        {{- if .Values.enableAntiAffinity }}
+        podAntiAffinity:
+          {{- if .Values.antiAffinity.host.enabled }}
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: "app"
+                operator: In
+                values:
+                - "{{ template "pulsar.name" . }}"
+              - key: "release"
+                operator: In
+                values:
+                - {{ .Release.Name }}
+              - key: "component"
+                operator: In
+                values:
+                - {{ .Values.beamwh.component }}
+            topologyKey: "kubernetes.io/hostname"
+          {{- end }}
+          {{- if .Values.antiAffinity.zone.enabled }}
+          preferredDuringSchedulingIgnoredDuringExecution: 
+          - weight: 100  
+            podAffinityTerm:
+              topologyKey: failure-domain.beta.kubernetes.io/zone
+              labelSelector:
+                matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                  - "{{ template "pulsar.name" . }}"
+                - key: "release"
+                  operator: In
+                  values:
+                  - {{ .Release.Name }}
+                - key: "component"
+                  operator: In
+                  values:
+                  - {{ .Values.beamwh.component }}
+          {{- end }}
+        {{- end }}
       terminationGracePeriodSeconds: {{ .Values.beamwh.gracePeriod }}
       volumes:
         {{- if .Values.enableTokenAuth }}
@@ -121,10 +163,12 @@ spec:
             value: {{ .Values.dnsName }}
           - name: SuperRoles
             value: {{ .Values.tokenServer.allowedRoles }}
+          {{- if .Values.enableTokenAuth }}
           - name: PulsarPublicKey
             value: "/pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
           - name: PulsarPrivateKey
             value: "/pulsar/token-private-key/{{ .Values.tokenPrivateKeyFile }}"
+          {{- end }}
           - name: PbDbType
             value: {{ .Values.beamwh.dbType }}
           - name: DbName
