@@ -405,4 +405,49 @@ spec:
           - name: PulsarClusters
             value: "pulsar+ssl://{{ .Values.dnsName }}:6651"
 {{- end }}
+{{- if .Values.extra.burnell }}
+      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}-burnell"
+        image: "{{ .Values.image.burnell.repository }}:{{ .Values.image.burnell.tag }}"
+        imagePullPolicy: {{ .Values.image.burnell.pullPolicy }}
+      {{- if .Values.proxy.burnellResources }}
+        resources:
+{{ toYaml .Values.proxy.burnellResources | indent 10 }}
+      {{- end }}
+        ports:
+        - name: burnell
+          containerPort: 8964
+        volumeMounts:
+          - name: certs
+            readOnly: true
+            mountPath: /pulsar/certs
+          - mountPath: "/pulsar/token-private-key"
+            name: token-private-key
+            readOnly: true
+          - mountPath: "/pulsar/token-public-key"
+            name: token-public-key
+            readOnly: true
+        env:
+          - name: PORT
+            value: "8964"
+          - name: CLUSTER
+            value: "{{ .Values.dnsName }}"
+          - name: SuperRoles
+            value: {{ .Values.tokenServer.allowedRoles }}
+          - name: PulsarPublicKey
+            value: "/pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
+          - name: PulsarPrivateKey
+            value: "/pulsar/token-private-key/{{ .Values.tokenPrivateKeyFile }}"
+          - name: PulsarToken
+            value: {{ .Values.burnell.token }}
+          - name: PulsarURL
+            value: "pulsar+ssl://{{ .Values.dnsName }}:6651"
+          - name: CertFile
+            value: /pulsar/certs/tls.crt
+          - name: KeyFile
+            value: /pulsar/certs/tls.key
+          - name: TrustStore
+            value: {{ .Values.burnell.trustStore }}
+          - name: FederatedPromURL
+            value: {{ .Values.burnell.federatedPromUrl }}
+{{- end }}
 {{- end }}

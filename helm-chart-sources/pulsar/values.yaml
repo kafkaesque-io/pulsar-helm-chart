@@ -188,6 +188,8 @@ extra:
   # For external access via the proxy you need to expose
   # the Pulsar Beam port. See the proxy section for details.
   pulsarBeam: no
+  # burnell - various Pulsar proxy
+  burnell: no
   # Pulsar manager UI for admin
   pulsarexpress: no
   # Zoonavigator for debugging Zookeeper
@@ -243,11 +245,15 @@ image:
   beamwh:
     repository: kafkaesqueio/pulsar-beam
     pullPolicy: IfNotPresent
-    tag: 0.23.2
+    tag: 0.23.4
   pulsarBeam:
     repository: kafkaesqueio/pulsar-beam
     pullPolicy: IfNotPresent
-    tag: 0.23.2
+    tag: 0.23.4
+  burnell:
+    repository: kafkaesqueio/burnell
+    pullPolicy: IfNotPresent
+    tag: 0.1.4
   pulsarexpress:
     repository: kafkaesqueio/pulsar-express
     tag: 0.5.1_k2

@@ -180,5 +180,5 @@ spec:
           - name: PbDbInterval
             value: {{ .Values.beamwh.dbRefreshInterval }}
           - name: TrustStore
-            value: {{ .Values.pulsarBeam.trustStore }}
+            value: {{ .Values.beamwh.trustStore }}
 {{- end }}

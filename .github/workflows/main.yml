@@ -1,8 +1,8 @@
 name: ci 
 on:
   push:
-    branches:
-      - none
+    branches-ignore:
+      - '**'
   #pull_request:
   # Also trigger on page_build, as well as release created events
   # page_build:
