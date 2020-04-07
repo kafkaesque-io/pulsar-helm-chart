@@ -388,5 +388,21 @@ spec:
           - name: PulsarPrivateKey
             value: "/pulsar/token-private-key/{{ .Values.tokenPrivateKeyFile }}"
           {{- end }}
+          - name: PbDbType
+            value: {{ .Values.pulsarBeam.dbType }}
+          - name: DbName
+            value: {{ .Values.pulsarBeam.dbName }}
+          - name: DbPassword
+            value: {{ .Values.pulsarBeam.dbPassword }}
+          - name: DbConnectionStr
+            value: {{ .Values.pulsarBeam.dbConnectionStr }}
+          - name: CertFile
+            value: /pulsar/certs/tls.crt
+          - name: KeyFile
+            value: /pulsar/certs/tls.key
+          - name: TrustStore
+            value: {{ .Values.pulsarBeam.trustStore }}
+          - name: PulsarClusters
+            value: "pulsar+ssl://{{ .Values.dnsName }}:6651"
 {{- end }}
 {{- end }}
