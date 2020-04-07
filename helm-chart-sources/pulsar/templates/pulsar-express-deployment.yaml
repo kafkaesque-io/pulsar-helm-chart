@@ -47,6 +47,10 @@ spec:
       annotations:
 {{ toYaml .Values.pulsarexpress.annotations | indent 8 }}
     spec:
+    {{- if (.Values.nodeSelector) and (eq .Values.pulsarexpress.nodeSelector false) }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
     {{- if .Values.pulsarexpress.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.pulsarexpress.nodeSelector | indent 8 }}
