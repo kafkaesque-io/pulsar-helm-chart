@@ -135,4 +135,6 @@ spec:
             value: {{ .Values.beamwh.dbConnectionStr }}
           - name: PbDbInterval
             value: {{ .Values.beamwh.dbRefreshInterval }}
+          - name: TrustStore
+            value: {{ .Values.pulsarBeam.trustStore }}
 {{- end }}
