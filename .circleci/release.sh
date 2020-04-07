@@ -81,7 +81,7 @@ update_index() {
     git config user.email "$GIT_EMAIL"
     git config user.name "$GIT_USERNAME"
 
-    git checkout master 
+    git checkout --force master 
     cp --force .cr-index/index.yaml index.yaml
     git add index.yaml
     git commit --message="Update index.yaml [ci skip]" --signoff
