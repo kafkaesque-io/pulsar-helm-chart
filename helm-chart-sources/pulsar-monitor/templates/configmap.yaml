@@ -30,7 +30,9 @@ data:
     pulsarTopicConfig:
         {{- toYaml .Values.topicConfigs | nindent 8 }}
     pulsarPerfConfig:
-      intervalSeconds: 120
+      intervalSeconds: {{ .Values.pulsarTopicsIntervalSeconds | default 120 }}
       token: {{ .Values.config.pulsarClientToken }}
       topicCfgs:
         {{- toYaml .Values.pulsarTopics | nindent 8 }}
+    websocketConfig:
+      {{- toYaml .Values.pulsarWebSocketConfigs | nindent 8 }}
