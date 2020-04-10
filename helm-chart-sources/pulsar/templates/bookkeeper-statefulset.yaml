@@ -50,6 +50,9 @@ spec:
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
 {{ toYaml .Values.bookkeeper.annotations | indent 8 }}
+      {{- if .Values.restartOnConfigMapChange.enabled }}
+        checksum/config: {{ include (print $.Template.BasePath "/bookkeeper-configmap.yaml") . | sha256sum }}
+      {{- end }}
     spec:
     {{- if (.Values.nodeSelector) and (eq .Values.bookkeeper.nodeSelector false) }}
       nodeSelector:

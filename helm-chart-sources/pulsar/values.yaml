@@ -150,6 +150,13 @@ antiAffinity:
 # Install Helm tests (run with helm test <release>)
 enableTests: no
 
+# By default, Kubernetes will not restart pods when only their
+# configmap is changed. This setting will restart pods when their
+# configmap is changed using an annotation that calculates the
+# checksum of the configmap
+restartOnConfigMapChange:
+  enabled: no
+
 ## which extra components to deploy
 extra:
   # Pulsar proxy
