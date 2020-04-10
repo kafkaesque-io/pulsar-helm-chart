@@ -402,8 +402,12 @@ spec:
             value: /pulsar/certs/tls.key
           - name: TrustStore
             value: {{ .Values.pulsarBeam.trustStore }}
+          - name: PulsarBrokerURL
+            value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
           - name: PulsarClusters
-            value: "pulsar+ssl://{{ .Values.dnsName }}:6651"
+            value: "pulsar+ssl://{{ .Values.dnsName }}:6651,{{ .Values.pulsarBeam.allowedPulsarURLs }}"
+          - name: LogLevel
+            value: {{ .Values.pulsarBeam.logLevel | default "info" }}
 {{- end }}
 {{- if .Values.extra.burnell }}
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}-burnell"

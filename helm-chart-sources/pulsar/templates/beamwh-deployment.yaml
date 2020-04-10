@@ -59,7 +59,7 @@ spec:
       tolerations:
 {{ toYaml .Values.beamwh.tolerations | indent 8 }}
     {{- end }}
-     affinity:
+      affinity:
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
           {{- if .Values.antiAffinity.host.enabled }}
@@ -179,6 +179,10 @@ spec:
             value: {{ .Values.beamwh.dbConnectionStr }}
           - name: PbDbInterval
             value: {{ .Values.beamwh.dbRefreshInterval }}
+          - name: PulsarBrokerURL
+            value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
           - name: TrustStore
             value: {{ .Values.beamwh.trustStore }}
+          - name: LogLevel
+            value: {{ .Values.beamwh.logLevel | default "info" }}
 {{- end }}

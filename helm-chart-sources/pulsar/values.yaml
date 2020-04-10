@@ -249,11 +249,11 @@ image:
   beamwh:
     repository: kafkaesqueio/pulsar-beam
     pullPolicy: IfNotPresent
-    tag: 0.23.4
+    tag: 0.23.12
   pulsarBeam:
     repository: kafkaesqueio/pulsar-beam
     pullPolicy: IfNotPresent
-    tag: 0.23.4
+    tag: 0.23.12
   burnell:
     repository: kafkaesqueio/burnell
     pullPolicy: IfNotPresent
