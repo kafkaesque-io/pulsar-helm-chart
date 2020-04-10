@@ -153,7 +153,7 @@ spec:
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
         image: "{{ .Values.image.broker.repository }}:{{ .Values.image.broker.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.broker.pullPolicy }}
         {{- if .Values.broker.probe.enabled }}
         readinessProbe:
           exec:

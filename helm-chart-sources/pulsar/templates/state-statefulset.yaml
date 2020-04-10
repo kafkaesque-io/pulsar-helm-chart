@@ -121,7 +121,7 @@ spec:
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}"
         image: "{{ .Values.image.stateStorage.repository }}:{{ .Values.image.stateStorage.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.stateStorage.pullPolicy }}
         {{- if .Values.stateStorage.probe.enabled }}
         readinessProbe:
           tcpSocket:

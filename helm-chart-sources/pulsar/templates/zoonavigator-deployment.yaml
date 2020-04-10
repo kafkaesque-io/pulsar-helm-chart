@@ -63,7 +63,7 @@ spec:
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.zoonavigator.component }}-web"
         image: "{{ .Values.zoonavigator.image.repository.web }}:{{ .Values.image.zoonavigator.tag }}"
-        imagePullPolicy: {{ .Values.zoonavigator.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.zoonavigator.image.zoonavigator.pullPolicy }}
       {{- if .Values.zoonavigator.resources }}
         resources:
 {{ toYaml .Values.zoonavigator.resources | indent 10 }}
@@ -85,7 +85,7 @@ spec:
         {{- end }}
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.zoonavigator.component }}-api"
         image: "{{ .Values.zoonavigator.image.repository.api }}:{{ .Values.image.zoonavigator.tag }}"
-        imagePullPolicy: {{ .Values.zoonavigator.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.zoonavigator.image.zoonavigator.pullPolicy }}
       {{- if .Values.zoonavigator.resources }}
         resources:
 {{ toYaml .Values.zoonavigator.resources | indent 10 }}

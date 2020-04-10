@@ -122,7 +122,7 @@ spec:
       # metadata is in zookeeper
       - name: pulsar-bookkeeper-metaformat
         image: "{{ .Values.image.bookkeeper.repository }}:{{ .Values.image.bookkeeper.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.bookkeeper.pullPolicy }}
         command: ["sh", "-c"]
         args:
         - >
@@ -134,7 +134,7 @@ spec:
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}"
         image: "{{ .Values.image.bookkeeper.repository }}:{{ .Values.image.bookkeeper.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.bookkeeper.pullPolicy }}
         {{- if .Values.bookkeeper.probe.enabled }}
         readinessProbe:
           tcpSocket:
