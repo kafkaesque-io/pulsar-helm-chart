@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: kafkaesqueio/pulsar-ops-monitor
-  tag: 0.31
+  tag: 0.32
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -65,6 +65,15 @@ pulsarTopics: []
   #     MovingWindowSeconds: 600
   #     CeilingInMovingWindow: 5
 
+pulsarWebSocketConfigs: []
+  # - latencyBudgetMs: 640
+  #  name: websocket_topic_useast1_gcp
+  #  intervalSeconds: 60
+  #  cluster: useast1.gcp.kafkaesque.io
+  #  topicName: persistent/ming-luo/local-useast1-gcp/websocket-latency-measure
+  #  scheme: "wss://"
+  #  port: "8001"
+  #  alertPolicy:
 
 serviceAccount:
   # Specifies whether a service account should be created
