@@ -47,8 +47,8 @@ spec:
         release: {{ .Release.Name }}
         component: {{ .Values.broker.component }}
         cluster: {{ template "pulsar.fullname" . }}
-      {{- if .Values.restartOnConfigMapChange.enabled }}
       annotations:
+      {{- if .Values.restartOnConfigMapChange.enabled }}
         checksum/config: {{ include (print $.Template.BasePath "/broker-configmap.yaml") . | sha256sum }}
       {{- end }}
 {{ toYaml .Values.broker.annotations | indent 8 }}

@@ -48,8 +48,8 @@ spec:
         release: {{ .Release.Name }}
         component: {{ .Values.proxy.component }}
         cluster: {{ template "pulsar.fullname" . }}
-      {{- if .Values.restartOnConfigMapChange.enabled }}
       annotations:
+      {{- if .Values.restartOnConfigMapChange.enabled }}
         checksum/config: {{ include (print $.Template.BasePath "/proxy-configmap.yaml") . | sha256sum }}
       {{- end }}
 {{ toYaml .Values.proxy.annotations | indent 8 }}

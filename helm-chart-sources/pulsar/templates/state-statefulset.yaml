@@ -48,8 +48,8 @@ spec:
         release: {{ .Release.Name }}
         component: {{ .Values.stateStorage.component }}
         cluster: {{ template "pulsar.fullname" . }}
-      {{- if .Values.restartOnConfigMapChange.enabled }}
       annotations:
+      {{- if .Values.restartOnConfigMapChange.enabled }}
         checksum/config: {{ include (print $.Template.BasePath "/state-configmap.yaml") . | sha256sum }}
       {{- end }}
 {{ toYaml .Values.stateStorage.annotations | indent 8 }}
