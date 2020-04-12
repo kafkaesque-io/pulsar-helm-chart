@@ -552,7 +552,11 @@ bookkeeper:
 broker:
   component: broker
   replicaCount: 3
-  updateStrategy: {}
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
     #
@@ -780,7 +784,11 @@ proxy:
   component: proxy
   replicaCount: 3
   disableZookeeperDiscovery: yes
-  updateStrategy: {}
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations:
