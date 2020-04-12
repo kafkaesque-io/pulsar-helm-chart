@@ -114,8 +114,11 @@ spec:
           {{- if .Values.enableTokenAuth }}
           cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
           {{- end }}
+          apt-get update &&
+          apt-get install vim tcpdump -y &&
+          echo "PATH=\$PATH:/pulsar/bin" >> /root/.bashrc &&
           bin/apply-config-from-env.py conf/client.conf &&
-          exec sleep 10000000000
+          exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
         envFrom:
         - configMapRef:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.bastion.component }}"
