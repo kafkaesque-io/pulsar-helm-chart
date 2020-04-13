@@ -49,7 +49,9 @@ spec:
         component: {{ .Values.function.component }}
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
+      {{- if .Values.restartOnConfigMapChange.enabled }}
         checksum/config: {{ include (print $.Template.BasePath "/function-configmap.yaml") . | sha256sum }}
+      {{- end }}
 {{ toYaml .Values.function.annotations | indent 8 }}
     spec:
       serviceAccountName: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
@@ -143,7 +145,7 @@ spec:
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
         image: "{{ .Values.image.function.repository }}:{{ .Values.image.function.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.function.pullPolicy }}
         {{- if .Values.function.probe.enabled }}
         readinessProbe:
           tcpSocket:

@@ -47,6 +47,10 @@ spec:
       annotations:
 {{ toYaml .Values.pulsarexpress.annotations | indent 8 }}
     spec:
+    {{- if (.Values.nodeSelector) and (eq .Values.pulsarexpress.nodeSelector false) }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
     {{- if .Values.pulsarexpress.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.pulsarexpress.nodeSelector | indent 8 }}
@@ -90,6 +94,11 @@ spec:
           {{- if .Values.extra.function }}
           - name: PE_CONNECTION_FCT_WORKER_URL
             value: http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:6750
+          {{- else }}
+          {{- if .Values.broker.functionsWorkerEnabled }}
+          - name: PE_CONNECTION_FCT_WORKER_URL
+            value: http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080
+          {{- end }}
           {{- end }}
       volumes:
         - name: pulsarexpress-data

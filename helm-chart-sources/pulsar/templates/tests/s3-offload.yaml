@@ -7,9 +7,18 @@ metadata:
   name: "{{ template "pulsar.fullname" . }}-s3-test-file"
 data:
   test.sh: |-
-    #!/bin/sh
+    #!/bin/bash
 
-    set -e
+    exit_if_error() {
+      local exit_code=$1
+      shift
+      [[ $exit_code ]] &&               # do nothing if no error code passed
+        ((exit_code != 0)) && {         # do nothing if error code is 0
+          printf 'ERROR: %s\n' "$@" >&2 # we can use better logging here
+          exit "$exit_code"             # we could also check to make sure
+                                        # error code is numeric when passed
+        }
+    }
 
     ADM_CMD=/pulsar/bin/pulsar-admin
     PERF_CMD=/pulsar/bin/pulsar-perf
@@ -17,20 +26,33 @@ data:
     TOPIC=public/default/offload
     SUBSCRIPTION=sub
 
-    # Create subscription
-    $ADM_CMD topics create-subscription -s $SUBSCRIPTION $TOPIC 
+    echo "Create subscription"
+    $ADM_CMD topics create-subscription -s $SUBSCRIPTION $TOPIC
+    exit_if_error $? "Create subscription failed"
 
-    # Publish enough messages to trigger offload
-    $PERF_CMD produce -s 10 -r 200 -m 14000 $TOPIC 
+    echo "Publish enough messages to allow offload"
+    $PERF_CMD produce -s 10 -r 200 -m 14000 $TOPIC
+    exit_if_error $? "Publishing messages failed"
 
-    # Make sure some ledgers are offloaded
+    echo "Manually trigger offload"
+    $ADM_CMD topics offload -s 1 public/default/offload
+    exit_if_error $? "Manually triggering offload failed"
+
+    echo "Make sure some ledgers are offloaded"
     $ADM_CMD topics stats-internal $TOPIC  | grep '"offloaded" : true'
+    exit_if_error $? "Checking for offloaded=true failed"
 
-    # Consume offload messages
-    $CLIENT_CMD consume -n 14000 -s $SUBSCRIPTION $TOPIC 
+    echo "Consume offload messages"
+    $CLIENT_CMD consume -n 14000 -s $SUBSCRIPTION $TOPIC > /dev/null
+    exit_if_error $? "Consuming messages failed"
 
-    # Delete topic
-    $ADM_CMD topics delete $TOPIC 
+    echo "Delete topic"
+    $ADM_CMD topics delete $TOPIC
+    exit_if_error $? "Deleting the topic failed"
+
+    # If we made it to here, all good
+    exit 0
+
 ---
 apiVersion: v1
 kind: Pod

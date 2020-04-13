@@ -36,7 +36,7 @@ spec:
       initContainers:
       - name: wait-zookeeper-ready
         image: "{{ .Values.image.zookeeper.repository }}:{{ .Values.image.zookeeper.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.zookeeper.pullPolicy }}
         command: ["sh", "-c"]
         args:
           - >-
@@ -46,7 +46,7 @@ spec:
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeperMetadata.component }}"
         image: "{{ .Values.image.zookeeper.repository }}:{{ .Values.image.zookeeper.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.zookeeper.pullPolicy }}
       {{- if .Values.zookeeperMetadata.resources }}
         resources:
 {{ toYaml .Values.zookeeperMetadata.resources | indent 10 }}

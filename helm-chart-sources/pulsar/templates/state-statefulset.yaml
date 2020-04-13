@@ -49,7 +49,9 @@ spec:
         component: {{ .Values.stateStorage.component }}
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
+      {{- if .Values.restartOnConfigMapChange.enabled }}
         checksum/config: {{ include (print $.Template.BasePath "/state-configmap.yaml") . | sha256sum }}
+      {{- end }}
 {{ toYaml .Values.stateStorage.annotations | indent 8 }}
     spec:
       {{- if (.Values.nodeSelector) and (eq .Values.stateStorage.nodeSelector false) }}
@@ -121,7 +123,7 @@ spec:
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}"
         image: "{{ .Values.image.stateStorage.repository }}:{{ .Values.image.stateStorage.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.stateStorage.pullPolicy }}
         {{- if .Values.stateStorage.probe.enabled }}
         readinessProbe:
           tcpSocket:

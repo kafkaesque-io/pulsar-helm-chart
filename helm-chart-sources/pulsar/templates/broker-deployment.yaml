@@ -48,7 +48,9 @@ spec:
         component: {{ .Values.broker.component }}
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
+      {{- if .Values.restartOnConfigMapChange.enabled }}
         checksum/config: {{ include (print $.Template.BasePath "/broker-configmap.yaml") . | sha256sum }}
+      {{- end }}
 {{ toYaml .Values.broker.annotations | indent 8 }}
     spec:
     {{- if (.Values.nodeSelector) and (eq .Values.broker.nodeSelector false) }}
@@ -153,7 +155,7 @@ spec:
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
         image: "{{ .Values.image.broker.repository }}:{{ .Values.image.broker.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.broker.pullPolicy }}
         {{- if .Values.broker.probe.enabled }}
         readinessProbe:
           exec:

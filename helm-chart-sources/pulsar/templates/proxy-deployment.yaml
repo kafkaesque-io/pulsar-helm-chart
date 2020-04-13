@@ -49,7 +49,9 @@ spec:
         component: {{ .Values.proxy.component }}
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
+      {{- if .Values.restartOnConfigMapChange.enabled }}
         checksum/config: {{ include (print $.Template.BasePath "/proxy-configmap.yaml") . | sha256sum }}
+      {{- end }}
 {{ toYaml .Values.proxy.annotations | indent 8 }}
     spec:
       {{- if .Values.extra.kubectlProxy }}
