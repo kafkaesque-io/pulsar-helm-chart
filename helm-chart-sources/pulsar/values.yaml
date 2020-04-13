@@ -595,7 +595,6 @@ broker:
     deduplicationEnabled: "true"
     exposeTopicLevelMetricsInPrometheus: "true"
     backlogQuotaDefaultRetentionPolicy: "producer_exception"
-    supportedNamespaceBundleSplitAlgorithms: "range_equally_divide,topic_count_equally_divide"
   
   ## Broker service
   ## templates/broker-service.yaml
