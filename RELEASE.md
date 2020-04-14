@@ -11,6 +11,21 @@ CircleCI is being used to release a new version of the Kafkaesque Pulsar Helm Ch
 
 # How to Release a new Version
 
+## How to trigger a release build
+
+A release is built by pushing a commit with a new version to a release branch, or a release tag to remote. Usually, Chart.yaml files are required to be up versioned in a commit for this purpose.  
+
+## Up version charts
+
+Since there could be multiple helm charts, we provide a script to update all required charts automatically. It can automatically upversion based on major, minor, or patch release. The script only updates the `version` under Chart.yaml if the local subfolder of `./helm-chart-sources` differs from `origin master`.
+
+``` bash
+$ cd ./scripts
+$ python set-release-version.py patch
+```
+
+A release branch's name or a release tag must conform this regex `release[0-9].*`. This will simplify the workflow. Circl CI release build will be automatically triggered based on a remote release branch or tag is pushed.
+
 For a new Helm Chart release the version of the Helm Chart should be updated in the *Chart.yaml*. The chart-releaser tool will handle the packaging of the new version, will push it to the Github repo as a new [release](https://github.com/kafkaesque-io/pulsar-helm-chart/releases) and update the index file to reflect the new version.
 
 # How to Install a New Release
