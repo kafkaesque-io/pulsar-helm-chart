@@ -366,14 +366,6 @@ spec:
             readOnly: true
             mountPath: /pulsar/certs
           {{- end }}
-          {{- if .Values.enableTokenAuth }}
-          - mountPath: "/pulsar/token-private-key"
-            name: token-private-key
-            readOnly: true
-          - mountPath: "/pulsar/token-public-key"
-            name: token-public-key
-            readOnly: true
-          {{- end }}
         args: ["-mode", "http"]
         env:
           - name: ProcessMode
@@ -383,33 +375,34 @@ spec:
           - name: CLUSTER
             value: "{{ .Values.dnsName }}"
           - name: SuperRoles
-            value: {{ .Values.tokenServer.allowedRoles }}
+            value: {{ .Values.superUserRoles }}
           {{- if .Values.enableTokenAuth }}
           - name: PulsarPublicKey
             value: "/pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
           - name: PulsarPrivateKey
             value: "/pulsar/token-private-key/{{ .Values.tokenPrivateKeyFile }}"
+          - name: DbPassword
+            valueFrom:
+              secretKeyRef:
+                name: token-proxy
+                key: proxy.jwt
           {{- end }}
           - name: PbDbType
-            value: {{ .Values.pulsarBeam.dbType }}
+            value: {{ .Values.pulsarBeam.dbType | default "pulsarAsDb"}}
           - name: DbName
-            value: {{ .Values.pulsarBeam.dbName }}
-          - name: DbPassword
-            value: {{ .Values.pulsarBeam.dbPassword }}
-          - name: DbConnectionStr
-            value: {{ .Values.pulsarBeam.dbConnectionStr }}
+            value: {{ .Values.pulsarBeam.dbName | default "persistent://public/default/beamConfig" }}
+          - name: LogLevel
+            value: {{ .Values.pulsarBeam.logLevel | default "info" }}
+          - name: PulsarBrokerURL
+            value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
+          {{- if .Values.enableTls }}
           - name: CertFile
             value: /pulsar/certs/tls.crt
           - name: KeyFile
             value: /pulsar/certs/tls.key
           - name: TrustStore
             value: {{ .Values.pulsarBeam.trustStore }}
-          - name: PulsarBrokerURL
-            value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
-          - name: PulsarClusters
-            value: "pulsar+ssl://{{ .Values.dnsName }}:6651,{{ .Values.pulsarBeam.allowedPulsarURLs }}"
-          - name: LogLevel
-            value: {{ .Values.pulsarBeam.logLevel | default "info" }}
+          {{- end }}
 {{- end }}
 {{- if .Values.extra.burnell }}
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}-burnell"
@@ -438,7 +431,7 @@ spec:
           - name: CLUSTER
             value: "{{ .Values.dnsName }}"
           - name: SuperRoles
-            value: {{ .Values.tokenServer.allowedRoles }}
+            value: {{ .Values.superUserRoles }}
           - name: PulsarPublicKey
             value: "/pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
           - name: PulsarPrivateKey

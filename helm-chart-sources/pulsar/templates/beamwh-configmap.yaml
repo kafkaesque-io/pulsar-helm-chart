@@ -17,17 +17,17 @@
 # under the License.
 #
 
-{{- if .Values.extra.beamwh }}
+{{- if .Values.extra.pulsarBeam }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "{{ template "pulsar.fullname" . }}-{{ .Values.beamwh.component }}"
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.pulsarBeam.component }}"
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    component: {{ .Values.beamwh.component }}
+    component: {{ .Values.pulsarBeam.component }}
     cluster: {{ template "pulsar.fullname" . }}
 {{- end }}

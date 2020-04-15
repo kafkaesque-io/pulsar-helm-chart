@@ -189,11 +189,10 @@ extra:
   autoRecovery: yes
   # Bastion pod for administrative commands
   bastion: yes
-  # Pulsar Beam webhook brokers
-  beamwh: no
-  # Pulsar Beam http component and rest api
-  # For external access via the proxy you need to expose
-  # the Pulsar Beam port. See the proxy section for details.
+  # Pulsar Beam for HTTP interface
+  # Pulsar Beam depends on the proxy pod, so you must enable
+  # that to use Beam. You need to expose the Pulsar Beam
+  # port on the proxy. See the proxy section for details.
   pulsarBeam: no
   # burnell - various Pulsar proxy
   burnell: no
@@ -253,10 +252,6 @@ image:
     repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
     tag: 2.5.0
-  beamwh:
-    repository: kafkaesqueio/pulsar-beam
-    pullPolicy: IfNotPresent
-    tag: 0.23.12
   pulsarBeam:
     repository: kafkaesqueio/pulsar-beam
     pullPolicy: IfNotPresent
@@ -1037,25 +1032,19 @@ bastion:
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
 
-## Pulsar-beam webhook broker(s)
+## Pulsar Beam
 ## templates/beamwh-deployment.yaml
 ##
-beamwh:
-  component: beamwh
+pulsarBeam:
+  component: pulsarbeam
   replicaCount: 1
-  annotations: {}
-  tolerations: []
-  gracePeriod: 60
   resources:
     requests:
       memory: 256Mi
       cpu: 0.5
-  dbType: "inmemory"
-  dbRefreshInterval: "60s"
-  ## Beamwh configmap
-  ## templates/beamwh-configmap.yaml
-  ##
-  configData: {}
+  annotations: {}
+  tolerations: []
+  gracePeriod: 60
   
 ## Monitoring Stack: Prometheus
 ## templates/prometheus-deployment.yaml

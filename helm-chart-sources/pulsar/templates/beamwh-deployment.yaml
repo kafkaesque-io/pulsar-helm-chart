@@ -17,47 +17,47 @@
 # under the License.
 #
 
-{{- if .Values.extra.beamwh }}
+{{- if .Values.extra.pulsarBeam }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "{{ template "pulsar.fullname" . }}-{{ .Values.beamwh.component }}"
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.pulsarBeam.component }}"
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    component: {{ .Values.beamwh.component }}
+    component: {{ .Values.pulsarBeam.component }}
     cluster: {{ template "pulsar.fullname" . }}
 spec:
-  replicas: {{ .Values.beamwh.replicaCount }}
+  replicas: {{ .Values.pulsarBeam.replicaCount }}
   selector:
     matchLabels:
       app: {{ template "pulsar.name" . }}
       release: {{ .Release.Name }}
-      component: {{ .Values.beamwh.component }}
+      component: {{ .Values.pulsarBeam.component }}
   template:
     metadata:
       labels:
         app: {{ template "pulsar.name" . }}
         release: {{ .Release.Name }}
-        component: {{ .Values.beamwh.component }}
+        component: {{ .Values.pulsarBeam.component }}
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
-{{ toYaml .Values.beamwh.annotations | indent 8 }}
+{{ toYaml .Values.pulsarBeam.annotations | indent 8 }}
     spec:
-    {{- if (.Values.nodeSelector) and (eq .Values.beamwh.nodeSelector false) }}
+    {{- if (.Values.nodeSelector) and (eq .Values.pulsarBeam.nodeSelector false) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
     {{- end }}
-    {{- if .Values.beamwh.nodeSelector }}
+    {{- if .Values.pulsarBeam.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.beamwh.nodeSelector | indent 8 }}
+{{ toYaml .Values.pulsarBeam.nodeSelector | indent 8 }}
     {{- end }}
-    {{- if .Values.beamwh.tolerations }}
+    {{- if .Values.pulsarBeam.tolerations }}
       tolerations:
-{{ toYaml .Values.beamwh.tolerations | indent 8 }}
+{{ toYaml .Values.pulsarBeam.tolerations | indent 8 }}
     {{- end }}
       affinity:
         {{- if .Values.enableAntiAffinity }}
@@ -77,7 +77,7 @@ spec:
               - key: "component"
                 operator: In
                 values:
-                - {{ .Values.beamwh.component }}
+                - {{ .Values.pulsarBeam.component }}
             topologyKey: "kubernetes.io/hostname"
           {{- end }}
           {{- if .Values.antiAffinity.zone.enabled }}
@@ -98,62 +98,34 @@ spec:
                 - key: "component"
                   operator: In
                   values:
-                  - {{ .Values.beamwh.component }}
+                  - {{ .Values.pulsarBeam.component }}
           {{- end }}
         {{- end }}
-      terminationGracePeriodSeconds: {{ .Values.beamwh.gracePeriod }}
+      terminationGracePeriodSeconds: {{ .Values.pulsarBeam.gracePeriod | default 60 }}
       volumes:
-        {{- if .Values.enableTokenAuth }}
-        - name: token-private-key
-          secret:
-            secretName: token-private-key
-        - name: token-public-key
-          secret:
-            secretName: token-public-key
-        - name: token-admin
-          secret:
-            secretName: token-admin
-        - name: token-superuser
-          secret:
-            secretName: token-superuser
-        {{- end }}
         {{- if .Values.enableTls }}
         - name: certs
           secret:
             secretName: "{{ .Values.tlsSecretName }}" 
         {{- end }}
       containers:
-      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.beamwh.component }}"
-        image: "{{ .Values.image.beamwh.repository }}:{{ .Values.image.beamwh.tag }}"
-        imagePullPolicy: {{ .Values.image.beamwh.pullPolicy }}
-      {{- if .Values.beamwh.resources }}
+      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.pulsarBeam.component }}"
+        image: "{{ .Values.image.pulsarBeam.repository }}:{{ .Values.image.pulsarBeam.tag }}"
+        imagePullPolicy: {{ .Values.image.pulsarBeam.pullPolicy }}
+      {{- if .Values.pulsarBeam.resources }}
         resources:
-{{ toYaml .Values.beamwh.resources | indent 10 }}
+{{ toYaml .Values.pulsarBeam.resources | indent 10 }}
       {{- end }}
         args: ["-mode", "broker"]
         volumeMounts:
-          {{- if .Values.enableTokenAuth }}
-          - mountPath: "/pulsar/token-private-key"
-            name: token-private-key
-            readOnly: true
-          - mountPath: "/pulsar/token-public-key"
-            name: token-public-key
-            readOnly: true
-          - mountPath: "/pulsar/token-admin"
-            name: token-admin
-            readOnly: true
-          - mountPath: "/pulsar/token-superuser"
-            name: token-superuser
-            readOnly: true
-          {{- end }}
           {{- if .Values.enableTls }}
           - name: certs
             readOnly: true
             mountPath: /pulsar/certs
-            {{- end }}
+          {{- end }}
         envFrom:
         - configMapRef:
-            name: "{{ template "pulsar.fullname" . }}-{{ .Values.beamwh.component }}"
+            name: "{{ template "pulsar.fullname" . }}-{{ .Values.pulsarBeam.component }}"
         env:
           - name: ProcessMode
             value: "broker"
@@ -168,21 +140,26 @@ spec:
             value: "/pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
           - name: PulsarPrivateKey
             value: "/pulsar/token-private-key/{{ .Values.tokenPrivateKeyFile }}"
+          - name: DbPassword
+            valueFrom:
+              secretKeyRef:
+                name: token-superuser
+                key: superuser.jwt
           {{- end }}
           - name: PbDbType
-            value: {{ .Values.beamwh.dbType }}
+            value: {{ .Values.pulsarBeam.dbType | default "pulsarAsDb"}}
           - name: DbName
-            value: {{ .Values.beamwh.dbName }}
-          - name: DbPassword
-            value: {{ .Values.beamwh.dbPassword }}
-          - name: DbConnectionStr
-            value: {{ .Values.beamwh.dbConnectionStr }}
-          - name: PbDbInterval
-            value: {{ .Values.beamwh.dbRefreshInterval }}
+            value: {{ .Values.pulsarBeam.dbName | default "persistent://public/default/beamConfig" }}
+          - name: LogLevel
+            value: {{ .Values.pulsarBeam.logLevel | default "info" }}
           - name: PulsarBrokerURL
             value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
+          {{- if .Values.enableTls }}
+          - name: CertFile
+            value: /pulsar/certs/tls.crt
+          - name: KeyFile
+            value: /pulsar/certs/tls.key
           - name: TrustStore
-            value: {{ .Values.beamwh.trustStore }}
-          - name: LogLevel
-            value: {{ .Values.beamwh.logLevel | default "info" }}
+            value: {{ .Values.pulsarBeam.trustStore }}
+          {{- end }}
 {{- end }}
