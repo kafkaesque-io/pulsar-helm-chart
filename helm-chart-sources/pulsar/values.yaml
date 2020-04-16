@@ -521,9 +521,6 @@ bookkeeper:
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
-    # dbStorage_writeCacheMaxSizeMb: "2048"
-    # dbStorage_readAheadCacheMaxSizeMb: "2048"
-    # journalMaxSizeMB: "2048"
     statsProviderClass: org.apache.bookkeeper.stats.prometheus.PrometheusMetricsProvider
   ## Bookkeeper configmap
   ## templates/bookkeeper-service.yaml
@@ -883,7 +880,10 @@ dns:
   component: dns
   provider: aws
   domainFilter: example.com 
-  hostAnnotations: 
+  hostAnnotations:
+  # Trying to create CNAME records (ex AWS NLB)
+  # Need to add TXT prefix to prevent conflicts
+  # txtPrefix: k8s-
 
 ## Pulsar Extra: Bookkeeper auto-recovery
 ## templates/autorecovery-deployment.yaml

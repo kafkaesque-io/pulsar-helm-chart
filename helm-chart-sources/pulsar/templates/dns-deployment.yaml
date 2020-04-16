@@ -38,6 +38,9 @@ spec:
         - --policy=upsert-only # would prevent ExternalDNS from deleting any records, omit to enable full synchronization
         - --registry=txt
         - --txt-owner-id=my-identifier
+        {{- if .Values.dns.txtPrefix }}
+        - --txt-prefix={{ .Values.dns.txtPrefix }}
+        {{- end }}
         {{- if eq .Values.dns.provider "digitalocean" }}
         env:
         - name: DO_TOKEN
