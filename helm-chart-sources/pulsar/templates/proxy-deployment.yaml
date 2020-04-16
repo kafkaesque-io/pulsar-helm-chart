@@ -433,8 +433,8 @@ spec:
         env:
           - name: PORT
             value: "8964"
-          - name: CLUSTER
-            value: "{{ .Values.dnsName }}"
+          - name: ClusterName
+            value: "{{ template "pulsar.fullname" . }}"
           - name: SuperRoles
             value: {{ .Values.superUserRoles }}
           - name: PulsarPublicKey
@@ -444,14 +444,20 @@ spec:
           - name: PulsarToken
             value: {{ .Values.burnell.token }}
           - name: PulsarURL
-            value: "pulsar+ssl://{{ .Values.dnsName }}:6651"
+            value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
+          {{- if .Values.enableTls }}
           - name: CertFile
             value: /pulsar/certs/tls.crt
           - name: KeyFile
             value: /pulsar/certs/tls.key
           - name: TrustStore
             value: {{ .Values.burnell.trustStore }}
+          {{- end }}
           - name: FederatedPromURL
             value: {{ .Values.burnell.federatedPromUrl }}
+          - name: ProxyURL
+            value: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080/admin/v2"
+          - name: AdminRestPrefix
+            value: {{ .Values.burnell.adminRestAPIPrefix | default "/admin/v2" }}
 {{- end }}
 {{- end }}
