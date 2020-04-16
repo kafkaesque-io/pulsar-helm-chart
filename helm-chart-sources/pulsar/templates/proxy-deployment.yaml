@@ -386,6 +386,11 @@ spec:
               secretKeyRef:
                 name: token-proxy
                 key: proxy.jwt
+          - name: HTTPAuthImpl
+            value: "JWT"
+          {{- else }}
+          - name: HTTPAuthImpl
+            value: "noauth"
           {{- end }}
           - name: PbDbType
             value: {{ .Values.pulsarBeam.dbType | default "pulsarAsDb"}}

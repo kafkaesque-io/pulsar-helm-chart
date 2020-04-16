@@ -152,6 +152,13 @@ spec:
             value: {{ .Values.pulsarBeam.dbName | default "persistent://public/default/beamConfig" }}
           - name: LogLevel
             value: {{ .Values.pulsarBeam.logLevel | default "info" }}
+          {{- if .Values.enableTokenAuth }}
+          - name: HTTPAuthImpl
+            value: "JWT"
+          {{- else }}
+          - name: HTTPAuthImpl
+            value: "noauth"
+          {{- end }}
           - name: PulsarBrokerURL
             value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
           {{- if .Values.enableTls }}
