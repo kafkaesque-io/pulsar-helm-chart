@@ -36,9 +36,9 @@ spec:
       app: {{ template "pulsar.name" . }}
       release: {{ .Release.Name }}
       component: {{ .Values.broker.component }}
-{{- if .Values.proxy.updateStrategy }}
+{{- if .Values.broker.updateStrategy }}
   strategy:
-{{ toYaml .Values.proxy.updateStrategy | indent 4 }}
+{{ toYaml .Values.broker.updateStrategy | indent 4 }}
   {{- end }}
   template:
     metadata:
