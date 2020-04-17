@@ -864,7 +864,11 @@ proxy:
       port: 8000
       protocol: TCP
 
-
+  ingress:
+    enabled: no
+    host: admin.host.com
+    enableWebSocket: no
+    wssPortOnProxy: 8001
 
   ## Proxy PodDisruptionBudget
   ## templates/proxy-pdb.yaml
