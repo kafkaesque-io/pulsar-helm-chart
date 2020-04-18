@@ -366,6 +366,14 @@ spec:
             readOnly: true
             mountPath: /pulsar/certs
           {{- end }}
+          {{- if .Values.enableTokenAuth }}
+          - mountPath: "/pulsar/token-private-key"
+            name: token-private-key
+            readOnly: true
+          - mountPath: "/pulsar/token-public-key"
+            name: token-public-key
+            readOnly: true
+          {{- end }}          
         args: ["-mode", "http"]
         env:
           - name: ProcessMode
@@ -384,8 +392,8 @@ spec:
           - name: DbPassword
             valueFrom:
               secretKeyRef:
-                name: token-proxy
-                key: proxy.jwt
+                name: token-superuser
+                key: superuser.jwt
           - name: HTTPAuthImpl
             value: "JWT"
           {{- else }}
@@ -421,15 +429,19 @@ spec:
         - name: burnell
           containerPort: 8964
         volumeMounts:
+          {{- if .Values.enableTls }}
           - name: certs
             readOnly: true
             mountPath: /pulsar/certs
+          {{- end }}
+          {{- if .Values.enableTokenAuth }}
           - mountPath: "/pulsar/token-private-key"
             name: token-private-key
             readOnly: true
           - mountPath: "/pulsar/token-public-key"
             name: token-public-key
             readOnly: true
+          {{- end }} 
         env:
           - name: PORT
             value: "8964"
@@ -444,7 +456,7 @@ spec:
           - name: PulsarToken
             value: {{ .Values.burnell.token }}
           - name: PulsarURL
-            value: "pulsar+ssl://{{ template "pulsar.fullname" . }}:6651"
+            value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
           - name: CertFile
             value: /pulsar/certs/tls.crt
           - name: KeyFile

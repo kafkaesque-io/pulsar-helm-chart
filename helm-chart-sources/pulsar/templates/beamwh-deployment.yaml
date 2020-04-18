@@ -108,6 +108,14 @@ spec:
           secret:
             secretName: "{{ .Values.tlsSecretName }}" 
         {{- end }}
+        {{- if .Values.enableTokenAuth }}
+        - name: token-private-key
+          secret:
+            secretName: token-private-key
+        - name: token-public-key
+          secret:
+            secretName: token-public-key
+        {{- end }}
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.pulsarBeam.component }}"
         image: "{{ .Values.image.pulsarBeam.repository }}:{{ .Values.image.pulsarBeam.tag }}"
@@ -122,6 +130,14 @@ spec:
           - name: certs
             readOnly: true
             mountPath: /pulsar/certs
+          {{- end }}
+          {{- if .Values.enableTokenAuth }}
+          - mountPath: "/pulsar/token-private-key"
+            name: token-private-key
+            readOnly: true
+          - mountPath: "/pulsar/token-public-key"
+            name: token-public-key
+            readOnly: true
           {{- end }}
         envFrom:
         - configMapRef:
