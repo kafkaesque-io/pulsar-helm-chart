@@ -373,7 +373,7 @@ spec:
           - name: PORT
             value: "8085"
           - name: CLUSTER
-            value: "{{ .Values.dnsName }}"
+            value: "{{ template "pulsar.fullname" . }}"
           - name: SuperRoles
             value: {{ .Values.superUserRoles }}
           {{- if .Values.enableTokenAuth }}
@@ -434,7 +434,7 @@ spec:
           - name: PORT
             value: "8964"
           - name: CLUSTER
-            value: "{{ .Values.dnsName }}"
+            value: "{{ template "pulsar.fullname" . }}"
           - name: SuperRoles
             value: {{ .Values.superUserRoles }}
           - name: PulsarPublicKey
@@ -444,7 +444,7 @@ spec:
           - name: PulsarToken
             value: {{ .Values.burnell.token }}
           - name: PulsarURL
-            value: "pulsar+ssl://{{ .Values.dnsName }}:6651"
+            value: "pulsar+ssl://{{ template "pulsar.fullname" . }}:6651"
           - name: CertFile
             value: /pulsar/certs/tls.crt
           - name: KeyFile
