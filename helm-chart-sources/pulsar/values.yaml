@@ -148,7 +148,10 @@ antiAffinity:
   
 
 # Install Helm tests (run with helm test <release>)
+# Enable basic tests
 enableTests: no
+# Also enabled extended tests
+enableExtendedTests: no
 
 # By default, Kubernetes will not restart pods when only their
 # configmap is changed. This setting will restart pods when their
@@ -586,6 +589,7 @@ broker:
     managedLedgerDefaultAckQuorum: "2"
     deduplicationEnabled: "true"
     exposeTopicLevelMetricsInPrometheus: "true"
+    exposeConsumerLevelMetricsInPrometheus: "true"
     backlogQuotaDefaultRetentionPolicy: "producer_exception"
   
   ## Broker service
@@ -989,6 +993,7 @@ zoonavigator:
     repository: 
       web: elkozmon/zoonavigator-web
       api: elkozmon/zoonavigator-api
+    tag: 0.6.0
     pullPolicy: IfNotPresent
 
   ## Zoonavigator service
