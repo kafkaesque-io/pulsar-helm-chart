@@ -366,6 +366,14 @@ spec:
             readOnly: true
             mountPath: /pulsar/certs
           {{- end }}
+          {{- if .Values.enableTokenAuth }}
+          - mountPath: "/pulsar/token-private-key"
+            name: token-private-key
+            readOnly: true
+          - mountPath: "/pulsar/token-public-key"
+            name: token-public-key
+            readOnly: true
+          {{- end }}          
         args: ["-mode", "http"]
         env:
           - name: ProcessMode
@@ -373,7 +381,7 @@ spec:
           - name: PORT
             value: "8085"
           - name: CLUSTER
-            value: "{{ .Values.dnsName }}"
+            value: "{{ template "pulsar.fullname" . }}"
           - name: SuperRoles
             value: {{ .Values.superUserRoles }}
           {{- if .Values.enableTokenAuth }}
@@ -384,8 +392,8 @@ spec:
           - name: DbPassword
             valueFrom:
               secretKeyRef:
-                name: token-proxy
-                key: proxy.jwt
+                name: token-superuser
+                key: superuser.jwt
           - name: HTTPAuthImpl
             value: "JWT"
           {{- else }}
@@ -421,15 +429,19 @@ spec:
         - name: burnell
           containerPort: 8964
         volumeMounts:
+          {{- if .Values.enableTls }}
           - name: certs
             readOnly: true
             mountPath: /pulsar/certs
+          {{- end }}
+          {{- if .Values.enableTokenAuth }}
           - mountPath: "/pulsar/token-private-key"
             name: token-private-key
             readOnly: true
           - mountPath: "/pulsar/token-public-key"
             name: token-public-key
             readOnly: true
+          {{- end }} 
         env:
           - name: PORT
             value: "8964"
@@ -442,6 +454,11 @@ spec:
           - name: PulsarPrivateKey
             value: "/pulsar/token-private-key/{{ .Values.tokenPrivateKeyFile }}"
           - name: PulsarToken
+            valueFrom:
+              secretKeyRef:
+                name: token-superuser
+                key: superuser.jwt
+          - name: HTTPAuthImpl
             value: {{ .Values.burnell.token }}
           - name: PulsarURL
             value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
@@ -455,9 +472,16 @@ spec:
           {{- end }}
           - name: FederatedPromURL
             value: {{ .Values.burnell.federatedPromUrl }}
+          - name: TenantManagmentTopic
+            value: {{ .Values.burnell.tenantDbTopic | default "persistent://public/default/tenant-management" }}
+          - name: LogLevel
+            value: {{ .Values.burnell.logLevel | default "info" }}
+          - name: LogServerPort
+            value: {{ .Values.burnell.logServerPort | default ":4040" }}
           - name: ProxyURL
             value: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080/admin/v2"
           - name: AdminRestPrefix
             value: {{ .Values.burnell.adminRestAPIPrefix | default "/admin/v2" }}
+
 {{- end }}
 {{- end }}
