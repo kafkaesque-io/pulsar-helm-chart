@@ -445,8 +445,10 @@ spec:
         env:
           - name: PORT
             value: "8964"
-          - name: CLUSTER
+          - name: ClusterName
             value: "{{ template "pulsar.fullname" . }}"
+          - name: ProxyURL
+            value: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080{{ .Values.burnell.AdminRestPrefix | default "/admin/v2/" }}"
           - name: SuperRoles
             value: {{ .Values.superUserRoles }}
           - name: PulsarPublicKey
@@ -465,5 +467,11 @@ spec:
             value: {{ .Values.burnell.trustStore }}
           - name: FederatedPromURL
             value: {{ .Values.burnell.federatedPromUrl }}
+          - name: TenantManagmentTopic
+            value: {{ .Values.burnell.tenantDbTopic | default "persistent://public/default/tenant-management" }}
+          - name: LogLevel
+            value: {{ .Values.burnell.logLevel | default "info" }}
+          - name: LogServerPort
+            value: {{ .Values.burnell.logServerPort | default ":4040" }}
 {{- end }}
 {{- end }}

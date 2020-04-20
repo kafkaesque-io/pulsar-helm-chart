@@ -258,8 +258,8 @@ image:
     tag: 0.23.12
   burnell:
     repository: kafkaesqueio/burnell
-    pullPolicy: IfNotPresent
-    tag: 0.1.4
+    pullPolicy: Always
+    tag: 0.2.2
   pulsarexpress:
     repository: kafkaesqueio/pulsar-express
     tag: 0.5.1_k2
