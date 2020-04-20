@@ -454,6 +454,11 @@ spec:
           - name: PulsarPrivateKey
             value: "/pulsar/token-private-key/{{ .Values.tokenPrivateKeyFile }}"
           - name: PulsarToken
+            valueFrom:
+              secretKeyRef:
+                name: token-superuser
+                key: superuser.jwt
+          - name: HTTPAuthImpl
             value: {{ .Values.burnell.token }}
           - name: PulsarURL
             value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
