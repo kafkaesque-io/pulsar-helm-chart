@@ -444,6 +444,8 @@ spec:
             value: "8964"
           - name: ClusterName
             value: "{{ template "pulsar.fullname" . }}"
+          - name: ProxyURL
+            value: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080{{ .Values.burnell.AdminRestPrefix | default "/admin/v2/" }}"
           - name: SuperRoles
             value: {{ .Values.superUserRoles }}
           - name: PulsarPublicKey
