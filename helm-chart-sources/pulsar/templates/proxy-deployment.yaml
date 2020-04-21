@@ -84,7 +84,11 @@ spec:
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
           {{- if .Values.antiAffinity.host.enabled }}
+          {{- if eq .Values.antiAffinity.host.mode "preferred" }}
+          preferredDuringSchedulingIgnoredDuringExecution:
+          {{- else }}
           requiredDuringSchedulingIgnoredDuringExecution:
+          {{- end }}
           - labelSelector:
               matchExpressions:
               - key: "app"

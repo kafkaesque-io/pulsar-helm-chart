@@ -53,12 +53,16 @@ data:
   authPlugin: "org.apache.pulsar.client.impl.auth.AuthenticationToken"
   authorizationEnabled: "true"
   authenticationEnabled: "true"
-  authenticationProviders: "org.apache.pulsar.broker.authentication.AuthenticationProviderToken,org.apache.pulsar.broker.authentication.AuthenticationProviderTls"
   proxyRoles: "{{ .Values.proxyRoles }}"
   superUserRoles: "{{ .Values.superUserRoles }}" 
   tokenPublicKey: "file:///pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
   brokerClientAuthenticationPlugin: "org.apache.pulsar.client.impl.auth.AuthenticationToken"
   brokerClientAuthenticationParameters: "file:///pulsar/token-superuser/superuser.jwt"
+  {{- if .Values.proxy.extraAuthProvider }}
+  authenticationProviders: "org.apache.pulsar.broker.authentication.AuthenticationProviderToken,{{ .Values.proxy.extraAuthProvider }}"
+  {{- else }}
+  authenticationProviders: "org.apache.pulsar.broker.authentication.AuthenticationProviderToken"
+  {{- end }}
   {{- end }}
 {{- if .Values.enableTls }}
   PF_useTls: "true"

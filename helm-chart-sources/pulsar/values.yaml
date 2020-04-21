@@ -135,7 +135,9 @@ enableAntiAffinity: yes
 
 # Settings for anti-affinity. Host antiAffinity ensures that 
 # replica pods are scheduled on different hosts. The
-# number of hosts >= number of replicas
+# number of hosts >= number of replicas. By default, this is 
+# required, but you can set mode to "preferred" to make 
+# this a preferred scheduling setting for deployments only (broker, proxy)
 #
 # Zone antiAffinity distributes replica pods across availability 
 # zones. This is a "soft" requirement, so that in the event of 
@@ -143,6 +145,7 @@ enableAntiAffinity: yes
 antiAffinity:
   host:
     enabled: yes
+    mode: "required"
   zone:
     enabled: no
   
@@ -332,6 +335,7 @@ storageOffload: {}
   # driver: google-cloud-storage
   # gcsServiceAccountSecret: pulsar-gcp-sa-secret # pragma: allowlist secret
   # gcsServiceAccountJsonFile: kafkaesque-223201-f12856532197.json
+ 
 
 ## Pulsar: Zookeeper cluster
 ## templates/zookeeper-statefulset.yaml
