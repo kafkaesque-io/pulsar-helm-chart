@@ -449,7 +449,7 @@ spec:
         env:
           - name: PORT
             value: "8964"
-          - name: CLUSTER
+          - name: ClusterName
             value: "{{ template "pulsar.fullname" . }}"
           - name: SuperRoles
             value: {{ .Values.superUserRoles }}
@@ -458,16 +458,34 @@ spec:
           - name: PulsarPrivateKey
             value: "/pulsar/token-private-key/{{ .Values.tokenPrivateKeyFile }}"
           - name: PulsarToken
+            valueFrom:
+              secretKeyRef:
+                name: token-superuser
+                key: superuser.jwt
+          - name: HTTPAuthImpl
             value: {{ .Values.burnell.token }}
           - name: PulsarURL
             value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
+          {{- if .Values.enableTls }}
           - name: CertFile
             value: /pulsar/certs/tls.crt
           - name: KeyFile
             value: /pulsar/certs/tls.key
           - name: TrustStore
             value: {{ .Values.burnell.trustStore }}
+          {{- end }}
           - name: FederatedPromURL
             value: {{ .Values.burnell.federatedPromUrl }}
+          - name: TenantManagmentTopic
+            value: {{ .Values.burnell.tenantDbTopic | default "persistent://public/default/tenant-management" }}
+          - name: LogLevel
+            value: {{ .Values.burnell.logLevel | default "info" }}
+          - name: LogServerPort
+            value: {{ .Values.burnell.logServerPort | default ":4040" }}
+          - name: ProxyURL
+            value: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080/admin/v2"
+          - name: AdminRestPrefix
+            value: {{ .Values.burnell.adminRestAPIPrefix | default "/admin/v2" }}
+
 {{- end }}
 {{- end }}
