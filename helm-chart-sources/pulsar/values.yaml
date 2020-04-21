@@ -408,7 +408,7 @@ zookeeper:
 
 ## Pulsar Zookeeper metadata. The metadata will be deployed as
 ## soon as the las zookeeper node is reachable. The deployment
-## of other components that depends o zookeeper, such as the
+## of other components that depends on zookeeper, such as the
 ## bookkeeper nodes, broker nodes, etc will only start to be
 ## deployed when the zookeeper cluster is ready and with the
 ## metadata deployed
