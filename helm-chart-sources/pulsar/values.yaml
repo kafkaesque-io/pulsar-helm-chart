@@ -1026,6 +1026,7 @@ zoonavigator:
 ##
 bastion:
   component: bastion
+  installDebugTools: no
   replicaCount: 1
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool

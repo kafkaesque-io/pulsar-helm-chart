@@ -114,9 +114,11 @@ spec:
           {{- if .Values.enableTokenAuth }}
           cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
           {{- end }}
+          {{- if .Values.bastion.installDebugTools }}
           apt-get update &&
           apt-get install vim tcpdump -y &&
           echo "PATH=\$PATH:/pulsar/bin" >> /root/.bashrc &&
+          {{- end }}
           bin/apply-config-from-env.py conf/client.conf &&
           exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
         envFrom:
