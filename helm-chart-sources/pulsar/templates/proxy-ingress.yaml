@@ -14,7 +14,7 @@ metadata:
   annotations:
     ingress.kubernetes.io/protocol: https
     {{- if .Values.proxy.ingress.annotations }}
-    {{- toYaml .Values.proxy.ingress.annotations | indent 4 }}
+{{ toYaml .Values.proxy.ingress.annotations | indent 4 }}
     {{- end }}
 spec:
   rules:

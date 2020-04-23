@@ -398,7 +398,6 @@ zookeeper:
   ##
   service:
     annotations:
-      service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
     ports:
     - name: server
       port: 2888
@@ -534,7 +533,6 @@ bookkeeper:
   ##
   service:
     annotations:
-      publishNotReadyAddresses: "true"
     ports:
     - name: server
       port: 3181
