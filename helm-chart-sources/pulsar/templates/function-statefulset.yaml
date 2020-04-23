@@ -215,6 +215,27 @@ spec:
             subPath: functions_worker.yml
           - name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-{{ .Values.function.volumes.data.name }}"
             mountPath: /pulsar/logs
+{{- if .Values.extra.burnellLogCollector }}
+      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-burnell"
+        image: "{{ .Values.image.burnellLogCollector.repository }}:{{ .Values.image.burnellLogCollector.tag }}"
+        imagePullPolicy: {{ .Values.image.burnellLogCollector.pullPolicy }}
+        {{- if .Values.function.burnellLogCollectorResources }}
+        resources:
+{{ toYaml .Values.function.burnellLogCollectorResources | indent 10 }}
+        {{- end }}
+        ports:
+        - name: burnelllog
+          containerPort: 4040
+        env:
+          - name: LogServerPort
+            value: ":4040"
+          - name: FunctionLogPathPrefix
+            value: "/pulsar/log/functions/"
+        volumeMounts:
+          - name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-{{ .Values.function.volumes.data.name }}"
+            mountPath: /pulsar/logs
+            readOnly: true
+{{- end }}
   {{- if .Values.persistence }}
   volumeClaimTemplates:
   - metadata:

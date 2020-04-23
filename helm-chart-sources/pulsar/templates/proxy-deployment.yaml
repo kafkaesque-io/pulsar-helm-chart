@@ -486,6 +486,7 @@ spec:
             value: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080/admin/v2"
           - name: AdminRestPrefix
             value: {{ .Values.burnell.adminRestAPIPrefix | default "/admin/v2" }}
-
+          - name: FunctionWorkerDomain
+            value: ".{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}.{{ .Release.Namespace }}.svc.cluster.local"
 {{- end }}
 {{- end }}

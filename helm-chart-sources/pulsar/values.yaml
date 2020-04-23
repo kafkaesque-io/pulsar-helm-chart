@@ -266,6 +266,10 @@ image:
     repository: kafkaesqueio/burnell
     pullPolicy: Always
     tag: 0.2.2
+  burnellLogCollector:
+    repository: kafkaesqueio/burnell-logcollector
+    pullPolicy: IfNotPresent
+    tag: 0.2.0
   pulsarexpress:
     repository: kafkaesqueio/pulsar-express
     tag: 0.5.1_k2
