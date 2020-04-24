@@ -66,6 +66,10 @@ spec:
 {{ toYaml .Values.zookeeper.tolerations | indent 8 }}
     {{- end }}
       affinity:
+        {{- if .Values.zookeeper.nodeAffinity }}
+        nodeAffinity:
+{{ toYaml .Values.zookeeper.nodeAffinity | indent 10 }}
+        {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
           {{- if .Values.antiAffinity.host.enabled }}

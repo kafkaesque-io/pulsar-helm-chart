@@ -67,6 +67,10 @@ spec:
 {{ toYaml .Values.bookkeeper.tolerations | indent 8 }}
     {{- end }}
       affinity:
+        {{- if .Values.bookkeeper.nodeAffinity }}
+        nodeAffinity:
+{{ toYaml .Values.bookkeeper.nodeAffinity | indent 10 }}
+        {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
           {{- if .Values.antiAffinity.host.enabled }}

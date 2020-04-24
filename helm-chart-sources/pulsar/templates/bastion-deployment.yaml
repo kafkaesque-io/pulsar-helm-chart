@@ -55,10 +55,15 @@ spec:
       nodeSelector:
 {{ toYaml .Values.bastion.nodeSelector | indent 8 }}
     {{- end }}
-    {{- if .Values.bastion.tolerations }}
+      {{- if .Values.bastion.nodeAffinity }}
+      affinity:
+        nodeAffinity:
+{{ toYaml .Values.bastion.nodeAffinity | indent 10 }}
+      {{- end }}
+      {{- if .Values.bastion.tolerations }}
       tolerations:
 {{ toYaml .Values.bastion.tolerations | indent 8 }}
-    {{- end }}
+      {{- end }}
       terminationGracePeriodSeconds: {{ .Values.bastion.gracePeriod }}
       volumes:
         {{- if .Values.enableTokenAuth }}

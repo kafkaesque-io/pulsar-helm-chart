@@ -60,6 +60,10 @@ spec:
 {{ toYaml .Values.autoRecovery.tolerations | indent 8 }}
     {{- end }}
       affinity:
+      {{- if .Values.autoRecovery.nodeAffinity }}
+        nodeAffinity:
+{{ toYaml .Values.autoRecovery.nodeAffinity | indent 10 }}
+        {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
           {{- if .Values.antiAffinity.host.enabled }}

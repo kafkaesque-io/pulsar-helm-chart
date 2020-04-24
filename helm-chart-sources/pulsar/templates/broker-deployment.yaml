@@ -66,16 +66,9 @@ spec:
 {{ toYaml .Values.broker.tolerations | indent 8 }}
     {{- end }}
       affinity:
-        {{- if .Values.broker.preferredZone }}
+        {{- if .Values.broker.nodeAffinity }}
         nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            preference:
-              matchExpressions:
-              - key: failure-domain.beta.kubernetes.io
-                operator: In
-                values:
-                - {{ .Values.broker.preferredZone }} 
+{{ toYaml .Values.broker.nodeAffinity | indent 10 }}
         {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:

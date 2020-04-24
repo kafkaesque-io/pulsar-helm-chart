@@ -47,6 +47,11 @@ spec:
       annotations:
 {{ toYaml .Values.zoonavigator.annotations | indent 8 }}
     spec:
+    {{- if .Values.zoonavigator.nodeAffinity }}
+      affinity:
+        nodeAffinity:
+{{ toYaml .Values.zoonavigator.nodeAffinity | indent 10 }}
+      {{- end }}
     {{- if (.Values.nodeSelector) and (eq .Values.zoonavigator.nodeSelector false) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}

@@ -47,6 +47,11 @@ spec:
       annotations:
 {{ toYaml .Values.pulsarexpress.annotations | indent 8 }}
     spec:
+    {{- if .Values.pulsarexpress.nodeAffinity }}
+      affinity:
+        nodeAffinity:
+{{ toYaml .Values.pulsarexpress.nodeAffinity | indent 10 }}
+      {{- end }}
     {{- if (.Values.nodeSelector) and (eq .Values.pulsarexpress.nodeSelector false) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
