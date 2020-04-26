@@ -30,7 +30,11 @@ metadata:
     component: {{ .Values.bookkeeper.component }}
     cluster: {{ template "pulsar.fullname" . }}
   annotations:
+    publishNotReadyAddresses: "true"
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+    {{- if .Values.bookkeeper.service.annotations }}
 {{ toYaml .Values.bookkeeper.service.annotations | indent 4 }}
+    {{- end }}
 spec:
   ports:
   {{- if .Values.function.enableStateStorage }}

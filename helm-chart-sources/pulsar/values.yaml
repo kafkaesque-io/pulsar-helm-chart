@@ -135,7 +135,9 @@ enableAntiAffinity: yes
 
 # Settings for anti-affinity. Host antiAffinity ensures that 
 # replica pods are scheduled on different hosts. The
-# number of hosts >= number of replicas
+# number of hosts >= number of replicas. By default, this is 
+# required, but you can set mode to "preferred" to make 
+# this a preferred scheduling setting for deployments only (broker, proxy)
 #
 # Zone antiAffinity distributes replica pods across availability 
 # zones. This is a "soft" requirement, so that in the event of 
@@ -143,12 +145,16 @@ enableAntiAffinity: yes
 antiAffinity:
   host:
     enabled: yes
+    mode: "required"
   zone:
     enabled: no
   
 
 # Install Helm tests (run with helm test <release>)
+# Enable basic tests
 enableTests: no
+# Also enabled extended tests
+enableExtendedTests: no
 
 # By default, Kubernetes will not restart pods when only their
 # configmap is changed. This setting will restart pods when their
@@ -333,6 +339,7 @@ storageOffload: {}
   # driver: google-cloud-storage
   # gcsServiceAccountSecret: pulsar-gcp-sa-secret # pragma: allowlist secret
   # gcsServiceAccountJsonFile: kafkaesque-223201-f12856532197.json
+ 
 
 ## Pulsar: Zookeeper cluster
 ## templates/zookeeper-statefulset.yaml
@@ -345,6 +352,15 @@ zookeeper:
   podManagementPolicy: OrderedReady
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
+  # nodeAffinity:
+  #   preferredDuringSchedulingIgnoredDuringExecution:
+  #   - weight: 1
+  #     preference:
+  #       matchExpressions:
+  #       - key: failure-domain.beta.kubernetes.io/region
+  #         operator: In
+  #         values:
+  #         - region1
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8000"
@@ -395,7 +411,6 @@ zookeeper:
   ##
   service:
     annotations:
-      service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
     ports:
     - name: server
       port: 2888
@@ -430,6 +445,14 @@ bookkeeper:
   podManagementPolicy: OrderedReady
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
+  # nodeAffinity: 
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: nodeppool
+  #         operator: In
+  #         values:
+  #         - pulsar
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8000"
@@ -531,7 +554,6 @@ bookkeeper:
   ##
   service:
     annotations:
-      publishNotReadyAddresses: "true"
     ports:
     - name: server
       port: 3181
@@ -556,7 +578,14 @@ broker:
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
     #
-  #preferredZone: "us-east1-c"
+  # nodeAffinity: 
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: nodeppool
+  #         operator: In
+  #         values:
+  #         - pulsar
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8080"
@@ -590,6 +619,7 @@ broker:
     managedLedgerDefaultAckQuorum: "2"
     deduplicationEnabled: "true"
     exposeTopicLevelMetricsInPrometheus: "true"
+    exposeConsumerLevelMetricsInPrometheus: "true"
     backlogQuotaDefaultRetentionPolicy: "producer_exception"
   
   ## Broker service
@@ -637,7 +667,14 @@ function:
   # Note: State storage is in developer preview
   # Note: Standalone state storage is experimental
   enableStateStorage: no 
-  #preferredZone: "us-east1-c"
+  # nodeAffinity: 
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: nodeppool
+  #         operator: In
+  #         values:
+  #         - pulsar
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations:
@@ -714,7 +751,14 @@ stateStorage:
     port: 4181
     initial: 10
     period: 30
-  #preferredZone: "us-east1-c"
+  # nodeAffinity: 
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: nodeppool
+  #         operator: In
+  #         values:
+  #         - pulsar
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations:
@@ -790,7 +834,14 @@ proxy:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8080"
   tolerations: []
-  #preferredZone: "us-east1-c"
+  # nodeAffinity: 
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: nodeppool
+  #         operator: In
+  #         values:
+  #         - pulsar
   gracePeriod: 60
   probe:
     enabled: yes
@@ -892,6 +943,14 @@ dns:
   # Trying to create CNAME records (ex AWS NLB)
   # Need to add TXT prefix to prevent conflicts
   # txtPrefix: k8s-
+  # nodeAffinity: 
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: nodeppool
+  #         operator: In
+  #         values:
+  #         - pulsar
 
 ## Pulsar Extra: Bookkeeper auto-recovery
 ## templates/autorecovery-deployment.yaml
@@ -901,6 +960,14 @@ autoRecovery:
   replicaCount: 1
   #nodeSelector:
   #  cloud.google.com/gke-nodepool: default-pool
+  # nodeAffinity: 
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: nodeppool
+  #         operator: In
+  #         values:
+  #         - pulsar
   annotations: {}
   tolerations: []
   gracePeriod: 60
@@ -955,6 +1022,14 @@ pulsarexpress:
     annotations: {}
   # nodeSelector:
   # cloud.google.com/gke-nodepool: default-pool
+  # nodeAffinity: 
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: nodeppool
+  #         operator: In
+  #         values:
+  #         - pulsar
   annotations: {}
   tolerations: []
   gracePeriod: 60
@@ -982,6 +1057,14 @@ zoonavigator:
   autoConnect: true
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
+  # nodeAffinity: 
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: nodeppool
+  #         operator: In
+  #         values:
+  #         - pulsar
   annotations: {}
   tolerations: []
   gracePeriod: 60
@@ -993,6 +1076,7 @@ zoonavigator:
     repository: 
       web: elkozmon/zoonavigator-web
       api: elkozmon/zoonavigator-api
+    tag: 0.6.0
     pullPolicy: IfNotPresent
 
   ## Zoonavigator service
@@ -1021,9 +1105,18 @@ zoonavigator:
 ##
 bastion:
   component: bastion
+  installDebugTools: no
   replicaCount: 1
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
+  # nodeAffinity: 
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: nodeppool
+  #         operator: In
+  #         values:
+  #         - pulsar
   annotations: {}
   tolerations: []
   gracePeriod: 60
@@ -1053,6 +1146,14 @@ pulsarBeam:
   annotations: {}
   tolerations: []
   gracePeriod: 60
+  # nodeAffinity: 
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: nodeppool
+  #         operator: In
+  #         values:
+  #         - pulsar
   
 ## Monitoring Stack: Prometheus
 ## templates/prometheus-deployment.yaml

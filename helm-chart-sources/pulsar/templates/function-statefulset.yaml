@@ -68,16 +68,9 @@ spec:
 {{ toYaml .Values.function.tolerations | indent 8 }}
       {{- end }}
       affinity:
-        {{- if .Values.function.preferredZone }}
+        {{- if .Values.function.nodeAffinity }}
         nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            preference:
-              matchExpressions:
-              - key: failure-domain.beta.kubernetes.io
-                operator: In
-                values:
-                - {{ .Values.function.preferredZone }}
+{{ toYaml .Values.function.nodeAffinity | indent 10 }}
         {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:

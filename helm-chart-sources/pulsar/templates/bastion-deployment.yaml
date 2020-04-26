@@ -55,10 +55,15 @@ spec:
       nodeSelector:
 {{ toYaml .Values.bastion.nodeSelector | indent 8 }}
     {{- end }}
-    {{- if .Values.bastion.tolerations }}
+      {{- if .Values.bastion.nodeAffinity }}
+      affinity:
+        nodeAffinity:
+{{ toYaml .Values.bastion.nodeAffinity | indent 10 }}
+      {{- end }}
+      {{- if .Values.bastion.tolerations }}
       tolerations:
 {{ toYaml .Values.bastion.tolerations | indent 8 }}
-    {{- end }}
+      {{- end }}
       terminationGracePeriodSeconds: {{ .Values.bastion.gracePeriod }}
       volumes:
         {{- if .Values.enableTokenAuth }}
@@ -114,9 +119,11 @@ spec:
           {{- if .Values.enableTokenAuth }}
           cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
           {{- end }}
+          {{- if .Values.bastion.installDebugTools }}
           apt-get update &&
           apt-get install vim tcpdump -y &&
           echo "PATH=\$PATH:/pulsar/bin" >> /root/.bashrc &&
+          {{- end }}
           bin/apply-config-from-env.py conf/client.conf &&
           exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
         envFrom:
