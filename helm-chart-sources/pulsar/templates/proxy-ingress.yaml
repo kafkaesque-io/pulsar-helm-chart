@@ -27,7 +27,7 @@ spec:
               {{- if .Values.enableTls }}
               servicePort: 8443
               {{- else }}
-              servicePort: 8443
+              servicePort: 8080
               {{- end }}
           {{- if .Values.proxy.ingress.enableWebSocket }}
           - path: /ws
