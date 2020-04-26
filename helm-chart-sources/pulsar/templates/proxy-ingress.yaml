@@ -12,7 +12,9 @@ metadata:
     component: {{ .Values.proxy.component }}
     cluster: {{ template "pulsar.fullname" . }}
   annotations:
+    {{- if .Values.enableTls }}
     ingress.kubernetes.io/protocol: https
+    {{- end }}
     {{- if .Values.proxy.ingress.annotations }}
 {{ toYaml .Values.proxy.ingress.annotations | indent 4 }}
     {{- end }}
