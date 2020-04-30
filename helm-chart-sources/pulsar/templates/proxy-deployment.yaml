@@ -403,15 +403,22 @@ spec:
             value: {{ .Values.pulsarBeam.dbName | default "persistent://public/default/beamConfig" }}
           - name: LogLevel
             value: {{ .Values.pulsarBeam.logLevel | default "info" }}
-          - name: PulsarBrokerURL
-            value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
           {{- if .Values.enableTls }}
           - name: CertFile
             value: /pulsar/certs/tls.crt
           - name: KeyFile
             value: /pulsar/certs/tls.key
           - name: TrustStore
-            value: {{ .Values.pulsarBeam.trustStore }}
+            {{- if .Values.secrets }}
+            value: /pulsar/certs/ca.crt
+            {{- else }}
+            value: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
+            {{- end }}
+          - name: PulsarBrokerURL
+            value: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}:6651"
+          {{- else }}
+          - name: PulsarBrokerURL
+            value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}:6650"
           {{- end }}
 {{- end }}
 {{- if .Values.extra.burnell }}
