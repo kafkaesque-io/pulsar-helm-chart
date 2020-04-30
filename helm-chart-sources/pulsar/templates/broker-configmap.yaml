@@ -40,6 +40,10 @@ data:
   {{- if .Values.broker.functionsWorkerEnabled }}
   functionsWorkerEnabled: "true"
   PF_pulsarFunctionsCluster: {{ template "pulsar.fullname" . }}
+  # Since function worker connects on localhost, we can always non-TLS ports
+  # when running with the broker
+  PF_pulsarServiceUrl: "pulsar://localhost:6650"
+  PF_pulsarWebServiceUrl: "http://localhost:8080"
   {{- end }}
   {{- if .Values.broker.webSocketServiceEnabled }}
   webSocketServiceEnabled: "true"
@@ -65,7 +69,6 @@ data:
   {{- end }}
   {{- end }}
 {{- if .Values.enableTls }}
-  PF_useTls: "true"
   tlsEnabled: "true"
   tlsCertificateFilePath: /pulsar/certs/tls.crt
   tlsKeyFilePath: /pulsar/tls-pk8.key
@@ -82,11 +85,6 @@ data:
   {{- else }}
   brokerClientTrustCertsFilePath: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
   {{- end }}
-  PF_pulsarServiceUrl: "pulsar+ssl://localhost:6651"
-  PF_pulsarWebServiceUrl: "https://localhost:8443"
-{{- else }}
-  PF_pulsarServiceUrl: "pulsar://localhost:6650"
-  PF_pulsarWebServiceUrl: "http://localhost:8080"
 {{- end }}
 {{- if .Values.storageOffload.driver }}
 {{- if eq .Values.storageOffload.driver "aws-s3" }}

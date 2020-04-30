@@ -108,13 +108,23 @@ spec:
                 key: superuser.jwt 
           {{- end }}
           {{- if .Values.extra.function }}
+            {{- if .Values.enableTls }}
           - name: PE_CONNECTION_FCT_WORKER_URL
-            value: http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:6750
+            value: https://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:8443
+            {{- else }}
+          - name: PE_CONNECTION_FCT_WORKER_URL
+            value: http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:8080
+            {{- end }}
           {{- else }}
-          {{- if .Values.broker.functionsWorkerEnabled }}
+            {{- if .Values.broker.functionsWorkerEnabled }}
+              {{- if .Values.enableTls }}
+          - name: PE_CONNECTION_FCT_WORKER_URL
+            value: https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8443
+              {{- else }}
           - name: PE_CONNECTION_FCT_WORKER_URL
             value: http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080
-          {{- end }}
+              {{- end }}
+            {{- end }}
           {{- end }}
       volumes:
         - name: pulsarexpress-data
