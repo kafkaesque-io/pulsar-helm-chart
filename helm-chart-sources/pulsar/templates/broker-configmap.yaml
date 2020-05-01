@@ -85,6 +85,30 @@ data:
   {{- else }}
   brokerClientTrustCertsFilePath: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
   {{- end }}
+  {{- if .Values.tls.bookkeeper.enabled}}
+  bookkeeperTLSClientAuthentication: "true"
+  bookkeeperTLSKeyFileType: "PEM"
+  bookkeeperTLSKeyFilePath: "/pulsar/tls-pk8.key"
+  bookkeeperTLSCertificateFilePath: "/pulsar/certs/tls.crt"
+  {{- if .Values.secrets }}
+  bookkeeperTLSTrustCertsFilePath: /pulsar/certs/ca.crt
+  {{- else }}
+  bookkeeperTLSTrustCertsFilePath: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
+  {{- end }}
+  bookkeeperTLSTrustCertTypes: "PEM"
+  PULSAR_PREFIX_bookkeeperTLSClientAuthentication: "true"
+  PULSAR_PREFIX_bookkeeperTLSKeyFileType: "PEM"
+  PULSAR_PREFIX_bookkeeperTLSKeyFilePath: "/pulsar/tls-pk8.key"
+  PULSAR_PREFIX_bookkeeperTLSCertificateFilePath: "/pulsar/certs/tls.crt"
+  PULSAR_PREFIX_bookkeeperTLSTrustCertTypes: "PEM"
+  {{- if .Values.secrets }}
+  PULSAR_PREFIX_bookkeeperTLSTrustCertsFilePath: /pulsar/certs/ca.crt
+  {{- else }}
+  PULSAR_PREFIX_bookkeeperTLSTrustCertsFilePath: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
+  {{- end }}
+  # See this BookKeeper PR for why this is necessary: https://github.com/apache/bookkeeper/pull/2300
+  bookkeeperUseV2WireProtocol: "false"
+  {{- end }}
 {{- end }}
 {{- if .Values.storageOffload.driver }}
 {{- if eq .Values.storageOffload.driver "aws-s3" }}

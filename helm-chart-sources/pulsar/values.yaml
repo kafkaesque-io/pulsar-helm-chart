@@ -78,11 +78,17 @@ prometheus_rbac: yes
 
 # TLS
 # When you enable TLS and are using a proxy, you need to expose the 
-# TLS-enabled ports. To allow TLS connections only, remove the plain-text ports.
-# See the proxy section for details.
+# TLS-enabled ports on the service. To allow TLS connections only, remove the plain-text ports.
+# See the proxy and broker sections for details.
 
 enableTls: no
 tlsSecretName: pulsar-tls
+
+# By default, TLS is enabled on the client-facing components (broker, proxy, websocket proxy, standalone function worker).
+# For added security, you can also enable TLS on the internal components (zookeeper, bookkeeper)
+tls:
+  bookkeeper:
+    enabled: no
 
 # secrets:
   ## If you're providing your own certificates, please use this to add the certificates as secrets
@@ -625,6 +631,13 @@ broker:
   ## Broker service
   ## templates/broker-service.yaml
   ##
+  # If you are enabling TLS, make sure these ports are on the port list:
+  #   - name: https
+  #     port: 8443
+  #     protocol: TCP
+  #   - name: pulsarssl
+  #     port: 6651
+  # To only allow TLS connections, remove the plain-text ports (http, pulsar)
   service:
     annotations: {}
     type: ClusterIP
@@ -884,7 +897,7 @@ proxy:
   #   - name: ws
   #     port: 8000
   #     protocol: TCP
-
+  #
   # If you are enabling TLS, add these ports:
   #   - name: https
   #     port: 8443
@@ -895,12 +908,15 @@ proxy:
   #   - name: wss
   #     port: 8001
   #     protocol: TCP
-
+  #
+  # To only use TLS, remove the plain text ports from the list (http, pulsar, ws)
+  #
   # If you are enabling Pulsar Beam, add this port:
   #   - name: pulsarbeam
   #     port: 8085
   #     protocol: TCP
-
+  #
+  # Pulsar Beam uses the same port for whether TLS is enabled or not
 
   ## Proxy cluster service
   ## templates/proxy-service.yaml

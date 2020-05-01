@@ -158,6 +158,9 @@ spec:
         - >
           bin/apply-config-from-env.py conf/bookkeeper.conf &&
           bin/apply-config-from-env.py conf/pulsar_env.sh &&
+          {{- if and .Values.enableTls .Values.tls.bookkeeper.enabled }}
+          openssl pkcs8 -topk8 -inform PEM -outform PEM -in /pulsar/certs/tls.key -out /pulsar/tls-pk8.key -nocrypt &&
+          {{- end }}
           exec bin/pulsar bookie
         ports:
         - name: client
@@ -166,6 +169,11 @@ spec:
         - configMapRef:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}"
         volumeMounts:
+        {{- if and .Values.enableTls .Values.tls.bookkeeper.enabled}}
+        - name: certs
+          readOnly: true
+          mountPath: /pulsar/certs
+        {{- end }}
         - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
           mountPath: /pulsar/data/bookkeeper/journal
         {{- if and .Values.bookkeeper.volumes.ranges .Values.function.enableStateStorage}}
@@ -176,8 +184,13 @@ spec:
         {{- end }}
         - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
           mountPath: /pulsar/data/bookkeeper/ledgers
-        {{- if not .Values.persistence }}
       volumes:
+      {{- if and .Values.enableTls .Values.tls.bookkeeper.enabled}}
+      - name: certs
+        secret:
+          secretName: "{{ .Values.tlsSecretName }}" 
+      {{- end }}
+      {{- if not .Values.persistence }}
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
         emptyDir: {}
       {{- if and .Values.bookkeeper.volumes.ranges .Values.function.enableStateStorage}}
