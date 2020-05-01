@@ -265,7 +265,7 @@ image:
   burnell:
     repository: kafkaesqueio/burnell
     pullPolicy: Always
-    tag: 0.2.2
+    tag: 0.2.6
   burnellLogCollector:
     repository: kafkaesqueio/burnell-logcollector
     pullPolicy: IfNotPresent

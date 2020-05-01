@@ -444,6 +444,10 @@ spec:
             value: "8964"
           - name: ClusterName
             value: "{{ template "pulsar.fullname" . }}"
+          - name: BrokerProxyURL
+            value: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080"
+          - name: FunctionProxyURL
+            value: "http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:6750"
           - name: SuperRoles
             value: {{ .Values.superUserRoles }}
           - name: PulsarPublicKey
@@ -475,8 +479,6 @@ spec:
             value: {{ .Values.burnell.logLevel | default "info" }}
           - name: LogServerPort
             value: {{ .Values.burnell.logServerPort | default ":4040" }}
-          - name: ProxyURL
-            value: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080/admin/v2"
           - name: AdminRestPrefix
             value: {{ .Values.burnell.adminRestAPIPrefix | default "/admin/v2" }}
           - name: FunctionWorkerDomain
