@@ -1155,6 +1155,8 @@ bastion:
 ## templates/beamwh-deployment.yaml
 ##
 pulsarBeam:
+  tlsCaPath: /etc/ssl
+  tlsCaCert: cert.pem
   component: pulsarbeam
   replicaCount: 1
   resources:

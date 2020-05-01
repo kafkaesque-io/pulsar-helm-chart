@@ -404,6 +404,8 @@ spec:
           - name: LogLevel
             value: {{ .Values.pulsarBeam.logLevel | default "info" }}
           {{- if .Values.enableTls }}
+          - name: PulsarTLSValidateHostname
+            value: "false"
           - name: CertFile
             value: /pulsar/certs/tls.crt
           - name: KeyFile
@@ -412,7 +414,7 @@ spec:
             {{- if .Values.secrets }}
             value: /pulsar/certs/ca.crt
             {{- else }}
-            value: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
+            value: "{{ .Values.pulsarBeam.tlsCaPath }}/{{ .Values.pulsarBeam.tlsCaCert }}"
             {{- end }}
           - name: PulsarBrokerURL
             value: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}:6651"
