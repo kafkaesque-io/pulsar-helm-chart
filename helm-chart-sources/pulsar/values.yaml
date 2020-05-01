@@ -87,6 +87,8 @@ tlsSecretName: pulsar-tls
 # By default, TLS is enabled on the client-facing components (broker, proxy, websocket proxy, standalone function worker).
 # For added security, you can also enable TLS on the internal components (zookeeper, bookkeeper)
 tls:
+  zookeeper:
+    enabled: no
   bookkeeper:
     enabled: no
 
