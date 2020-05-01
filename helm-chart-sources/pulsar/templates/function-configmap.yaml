@@ -48,7 +48,6 @@ data:
     tlsTrustCertsFilePath: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
     {{- end }}
     tlsKeyFilePath: "/pulsar/tls-pk8.key"
-    tlsAllowInsecureConnection: "true"
     pulsarServiceUrl: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6651"
     pulsarWebServiceUrl: "https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8443" 
     {{- else }}

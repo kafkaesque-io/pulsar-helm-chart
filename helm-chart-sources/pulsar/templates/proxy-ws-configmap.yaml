@@ -60,7 +60,6 @@ data:
   brokerClientTlsEnabled: "true"
   tlsCertificateFilePath: /pulsar/certs/tls.crt
   tlsKeyFilePath: /pulsar/tls-pk8.key
-  tlsAllowInsecureConnection: "true"
   {{- if .Values.secrets }}
   tlsTrustCertsFilePath: /pulsar/certs/ca.crt
   {{- else }}
