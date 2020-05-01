@@ -43,4 +43,18 @@ data:
   PULSAR_PREFIX_extraServerComponents: org.apache.bookkeeper.stream.server.StreamStorageLifecycleComponent
     {{- end }}
   {{- end }}
+  {{- if .Values.tls.bookkeeper.enabled}}
+  PULSAR_PREFIX_tlsProvider: OpenSSL
+  PULSAR_PREFIX_tlsProviderFactoryClass: org.apache.bookkeeper.tls.TLSContextFactory
+  PULSAR_PREFIX_tlsCertificatePath: /pulsar/certs/tls.crt
+  PULSAR_PREFIX_tlsKeyStoreType: PEM
+  PULSAR_PREFIX_tlsKeyStore: /pulsar/tls-pk8.key
+  PULSAR_PREFIX_tlsTrustStoreType: PEM
+  PULSAR_PREFIX_bookkeeperTLSClientAuthentication: "true"
+  {{- if .Values.secrets }}
+  PULSAR_PREFIX_bookkeeperTLSTrustCertsFilePath: /pulsar/certs/ca.crt
+  {{- else }}
+  PULSAR_PREFIX_bookkeeperTLSTrustCertsFilePath: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
+  {{- end }}
+  {{- end }}
 {{ toYaml .Values.bookkeeper.configData | indent 2 }}
