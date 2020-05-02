@@ -120,7 +120,13 @@ spec:
         {{- if .Values.enableTls }}
         - name: certs
           secret:
-            secretName: "{{ .Values.tlsSecretName }}" 
+            secretName: "{{ .Values.tlsSecretName }}"
+          {{- if .Values.tls.zookeeper.enabled}}
+        - name: certconverter
+          configMap: 
+            name: "{{ template "pulsar.fullname" . }}-certconverter-configmap"
+            defaultMode: 0755
+          {{- end }}
         {{- end }}
         {{- if .Values.enableTokenAuth }}
         - name: token-public-key
@@ -216,6 +222,9 @@ spec:
           {{- if .Values.enableTokenAuth }}
           cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
           {{- end }}
+          {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
+          /pulsar/tools/certconverter.sh &&
+          {{- end }}
           exec bin/pulsar broker
         ports:
         - name: http
@@ -227,6 +236,10 @@ spec:
           - name: certs
             readOnly: true
             mountPath: /pulsar/certs
+            {{- if .Values.tls.zookeeper.enabled}}
+          - name: certconverter
+            mountPath: /pulsar/tools
+            {{- end }}
           {{- end }}
           {{- if .Values.broker.initContainer }}
           - name: lib-data

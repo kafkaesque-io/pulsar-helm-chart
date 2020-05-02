@@ -84,11 +84,22 @@ prometheus_rbac: yes
 enableTls: no
 tlsSecretName: pulsar-tls
 
-# By default, TLS is enabled on the client-facing components (broker, proxy, websocket proxy, standalone function worker).
+# By default, TLS is enabled on the client- or admin-facing components (broker, proxy, websocket 
+# proxy, standalone function worker).
 # For added security, you can also enable TLS on the internal components (zookeeper, bookkeeper)
 tls:
+  # Enable TLS between ZooKeeper nodes (quorum TLS), between BookKeeper and ZooKeeper, and between
+  # broker and ZooKeeper.
+  # Note: The configured certificate must allow for both server and client use since it is used 
+  #       for mTLS. This should be in certficate:
+  #
+  # X509v3 Extended Key Usage: 
+  #               TLS Web Server Authentication, TLS Web Client Authentication
+  # If using cert-manager, make sure your certficate includes:
+  #   
   zookeeper:
     enabled: no
+  # Enabled TLS between broker and BookKeeper
   bookkeeper:
     enabled: no
 
@@ -424,7 +435,7 @@ zookeeper:
       port: 2888
     - name: leader-election
       port: 3888
-    - name: stats
+    - name: client
       port: 2181
   ## Zookeeper PodDisruptionBudget
   ## templates/zookeeper-pdb.yaml

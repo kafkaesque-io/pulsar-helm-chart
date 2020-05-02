@@ -38,12 +38,17 @@ data:
   brokerWebServiceURLTLS: "https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8443"
   {{- end }}
   zookeeperServers:
-    {{- $global := . }}
-    {{ range $i, $e := until (.Values.zookeeper.replicaCount | int) }}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}{{ end }}
+    {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
+    {{ include "pulsar.zkConnectStringTls" . }}
+    {{- else }}
+    {{ include "pulsar.zkConnectString" . }}
+    {{- end }}
   configurationStoreServers:
-    {{- $global := . }}
-    {{ range $i, $e := until (.Values.zookeeper.replicaCount | int) }}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}{{ end }}
-  clusterName: {{ template "pulsar.fullname" . }}
+    {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
+    {{ include "pulsar.zkConnectStringTls" . }}
+    {{- else }}
+    {{ include "pulsar.zkConnectString" . }}
+    {{- end }}
   {{- if .Values.extra.function }}
   functionWorkerWebServiceURL: "http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:6750"
   {{- end }}

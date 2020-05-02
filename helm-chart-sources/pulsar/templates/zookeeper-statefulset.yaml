@@ -140,8 +140,7 @@ spec:
         env:
         - name: ZOOKEEPER_SERVERS
           value:
-            {{- $global := . }}
-            {{ range $i, $e := until (.Values.zookeeper.replicaCount | int) }}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}{{ end }}
+            {{ include "pulsar.zkServers" . }}
         envFrom:
         - configMapRef:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}"
