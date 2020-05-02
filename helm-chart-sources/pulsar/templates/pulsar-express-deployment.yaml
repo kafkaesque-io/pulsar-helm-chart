@@ -94,7 +94,7 @@ spec:
             {{- if .Values.secrets }}
             value: /pulsar/certs/ca.crt
             {{- else }}
-            value: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
+            value: "{{ .Values.pulsarexpress.tlsCaPath }}/{{ .Values.pulsarexpress.tlsCaCert }}"
             {{- end }}
           {{- else }}
           - name: PE_CONNECTION_URL
@@ -110,10 +110,10 @@ spec:
           {{- if .Values.extra.function }}
             {{- if .Values.enableTls }}
           - name: PE_CONNECTION_FCT_WORKER_URL
-            value: https://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:8443
+            value: https://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:6751
             {{- else }}
           - name: PE_CONNECTION_FCT_WORKER_URL
-            value: http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:8080
+            value: http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:6750
             {{- end }}
           {{- else }}
             {{- if .Values.broker.functionsWorkerEnabled }}

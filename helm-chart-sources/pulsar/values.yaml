@@ -1034,6 +1034,8 @@ dashboard:
 pulsarexpress:
   component: pulsarexpress
   replicaCount: 1
+  tlsCaPath: /etc/ssl
+  tlsCaCert: cert.pem
   ingress:
     enabled: yes
     host: ui.host.com
