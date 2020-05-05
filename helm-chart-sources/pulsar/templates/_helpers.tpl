@@ -38,8 +38,7 @@ Create chart name and version as used by the chart label.
 
 {{- define "pulsar.zkConnectString" -}}
 {{- $global := . -}}
-{{- $port := "2181" -}}
-{{- range $i, $e := until (.Values.zookeeper.replicaCount | int) -}}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}:{{ $port }}{{ end }}
+{{- range $i, $e := until (.Values.zookeeper.replicaCount | int) -}}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}{{ end }}
 {{- end -}}
 
 {{- define "pulsar.zkConnectStringTls" -}}
