@@ -953,6 +953,7 @@ proxy:
     host: admin.host.com
     enableWebSocket: no
     wssPortOnProxy: 8001
+    enableBurnell: no
 
   ## Proxy PodDisruptionBudget
   ## templates/proxy-pdb.yaml
