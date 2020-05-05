@@ -17,7 +17,12 @@ data:
     name=pulsar
     crtFile=/pulsar/certs/tls.crt
     keyFile=/pulsar/certs/tls.key
+    
+    {{- if .Values.secrets }}
     caFile=/pulsar/certs/ca.crt
+    {{- else }}
+    caFile={{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}
+    {{- end }}
     p12File=/pulsar/tls.p12
     keyStoreFile=/pulsar/tls.keystore.jks
     trustStoreFile=/pulsar/tls.truststore.jks
