@@ -13,13 +13,20 @@ CircleCI is being used to release a new version of the Kafkaesque Pulsar Helm Ch
 
 The release process is automated using CircleCI. It uses the [chart-releaser](https://github.com/helm/chart-releaser) tool.
 
-For a new Helm Chart release the version of the Helm Chart should be updated in the *Chart.yaml*. Do this for each chart that has changed and commit to **master**. This is important. If you don't change the version and the chart has changed, the downstream release process will fail.
+For a new Helm Chart release the version of the Helm Chart needs to be updated in the *Chart.yaml*. Do this for each chart that has changed and commit to **release**. This is important. If you don't change the version and the chart has changed, the release process will fail.
 
 To trigger a release:
 ```
 git fetch
 git checkout release
 git rebase origin/master
+```
+
+Now update the versions in the *Chart.yaml* for each chart that has changed. Then push the change to origin:
+
+```
+git add .
+git commit -m "Updating versions"
 git push origin release
 ```
 
@@ -28,6 +35,15 @@ The chart-releaser tool will handle the packaging of the new version, will push 
 You should verify that the new chart version are present in the index.yaml:
 
 https://helm.kafkaesque.io/index.yaml
+
+Once you have verified that the release was successful, update **master** with the new versions:
+
+```
+git checkout master
+git merge release
+git pull
+git push
+```
 
 
 # How to Install a New Release
