@@ -78,11 +78,30 @@ prometheus_rbac: yes
 
 # TLS
 # When you enable TLS and are using a proxy, you need to expose the 
-# TLS-enabled ports. To allow TLS connections only, remove the plain-text ports.
-# See the proxy section for details.
+# TLS-enabled ports on the service. To allow TLS connections only, remove the plain-text ports.
+# See the proxy and broker sections for details.
 
 enableTls: no
 tlsSecretName: pulsar-tls
+
+# By default, TLS is enabled on the client- or admin-facing components (broker, proxy, websocket 
+# proxy, standalone function worker).
+# For added security, you can also enable TLS on the internal components (zookeeper, bookkeeper)
+tls:
+  # Enable TLS between ZooKeeper nodes (quorum TLS), between BookKeeper and ZooKeeper, and between
+  # broker and ZooKeeper.
+  # Note: The configured certificate must allow for both server and client use since it is used 
+  #       for mTLS. This should be in certficate:
+  #
+  # X509v3 Extended Key Usage: 
+  #               TLS Web Server Authentication, TLS Web Client Authentication
+  # If using cert-manager, make sure your certficate includes:
+  #   
+  zookeeper:
+    enabled: no
+  # Enabled TLS between broker and BookKeeper
+  bookkeeper:
+    enabled: no
 
 # secrets:
   ## If you're providing your own certificates, please use this to add the certificates as secrets
@@ -261,7 +280,7 @@ image:
   pulsarBeam:
     repository: kafkaesqueio/pulsar-beam
     pullPolicy: IfNotPresent
-    tag: 0.23.12
+    tag: 0.23.21
   burnell:
     repository: kafkaesqueio/burnell
     pullPolicy: Always
@@ -272,7 +291,7 @@ image:
     tag: 0.2.0
   pulsarexpress:
     repository: kafkaesqueio/pulsar-express
-    tag: 0.5.1_k2
+    tag: 0.5.1_k3
     pullPolicy: IfNotPresent
   # Standalone state storage is experimental and requires the custom image below 
   stateStorage:
@@ -416,7 +435,7 @@ zookeeper:
       port: 2888
     - name: leader-election
       port: 3888
-    - name: stats
+    - name: client
       port: 2181
   ## Zookeeper PodDisruptionBudget
   ## templates/zookeeper-pdb.yaml
@@ -625,6 +644,13 @@ broker:
   ## Broker service
   ## templates/broker-service.yaml
   ##
+  # If you are enabling TLS, make sure these ports are on the port list:
+  #   - name: https
+  #     port: 8443
+  #     protocol: TCP
+  #   - name: pulsarssl
+  #     port: 6651
+  # To only allow TLS connections, remove the plain-text ports (http, pulsar)
   service:
     annotations: {}
     type: ClusterIP
@@ -884,7 +910,7 @@ proxy:
   #   - name: ws
   #     port: 8000
   #     protocol: TCP
-
+  #
   # If you are enabling TLS, add these ports:
   #   - name: https
   #     port: 8443
@@ -895,12 +921,15 @@ proxy:
   #   - name: wss
   #     port: 8001
   #     protocol: TCP
-
+  #
+  # To only use TLS, remove the plain text ports from the list (http, pulsar, ws)
+  #
   # If you are enabling Pulsar Beam, add this port:
   #   - name: pulsarbeam
   #     port: 8085
   #     protocol: TCP
-
+  #
+  # Pulsar Beam uses the same port for whether TLS is enabled or not
 
   ## Proxy cluster service
   ## templates/proxy-service.yaml
@@ -924,6 +953,7 @@ proxy:
     host: admin.host.com
     enableWebSocket: no
     wssPortOnProxy: 8001
+    enableBurnell: no
 
   ## Proxy PodDisruptionBudget
   ## templates/proxy-pdb.yaml
@@ -1016,6 +1046,8 @@ dashboard:
 pulsarexpress:
   component: pulsarexpress
   replicaCount: 1
+  tlsCaPath: /etc/ssl
+  tlsCaCert: cert.pem
   ingress:
     enabled: yes
     host: ui.host.com
@@ -1071,7 +1103,7 @@ zoonavigator:
   resources:
     requests:
       memory: 128Mi
-      cpu: 0.2
+      cpu: 0.1
   image:
     repository: 
       web: elkozmon/zoonavigator-web
@@ -1137,6 +1169,8 @@ bastion:
 ## templates/beamwh-deployment.yaml
 ##
 pulsarBeam:
+  tlsCaPath: /etc/ssl
+  tlsCaCert: cert.pem
   component: pulsarbeam
   replicaCount: 1
   resources:
@@ -1146,6 +1180,7 @@ pulsarBeam:
   annotations: {}
   tolerations: []
   gracePeriod: 60
+  # logLevel: debug
   # nodeAffinity: 
   #   requiredDuringSchedulingIgnoredDuringExecution:
   #     nodeSelectorTerms:

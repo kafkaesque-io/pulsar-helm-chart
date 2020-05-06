@@ -12,7 +12,10 @@ metadata:
     component: {{ .Values.proxy.component }}
     cluster: {{ template "pulsar.fullname" . }}
   annotations:
+    {{- if .Values.enableTls }}
     ingress.kubernetes.io/protocol: https
+    {{- end }}
+    traefik.ingress.kubernetes.io/rule-type: PathPrefixStrip
     {{- if .Values.proxy.ingress.annotations }}
 {{ toYaml .Values.proxy.ingress.annotations | indent 4 }}
     {{- end }}
@@ -38,5 +41,11 @@ spec:
               {{- else }}
               servicePort: 8000
               {{- end }}
+          {{- end }}
+          {{- if .Values.proxy.ingress.enableBurnell }}
+          - path: /br
+            backend:
+              serviceName: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}"
+              servicePort: 8964
           {{- end }}
 {{- end }}

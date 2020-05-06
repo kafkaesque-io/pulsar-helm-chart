@@ -126,7 +126,13 @@ spec:
         {{- if .Values.enableTls }}
         - name: certs
           secret:
-            secretName: "{{ .Values.tlsSecretName }}"           
+            secretName: "{{ .Values.tlsSecretName }}"
+         {{- if .Values.tls.zookeeper.enabled}}
+        - name: certconverter
+          configMap: 
+            name: "{{ template "pulsar.fullname" . }}-certconverter-configmap"
+            defaultMode: 0755
+          {{- end }}           
         {{- end }}
         {{- if .Values.enableTokenAuth }}
         - name: token-public-key
@@ -217,6 +223,9 @@ spec:
           {{- if .Values.enableTls }}
           openssl pkcs8 -topk8 -inform PEM -outform PEM -in /pulsar/certs/tls.key -out /pulsar/tls-pk8.key -nocrypt &&
           {{- end }}
+          {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
+          /pulsar/tools/certconverter.sh &&
+          {{- end }}
           exec bin/pulsar proxy
         ports:
         - name: http
@@ -228,6 +237,10 @@ spec:
           - name: certs
             readOnly: true
             mountPath: /pulsar/certs
+            {{- if .Values.tls.zookeeper.enabled}}
+          - name: certconverter
+            mountPath: /pulsar/tools
+            {{- end }}
           {{- end }}
           {{- if .Values.enableTokenAuth }}
           - mountPath: "/pulsar/token-public-key"
@@ -263,6 +276,9 @@ spec:
           {{- if .Values.enableTls }}
           openssl pkcs8 -topk8 -inform PEM -outform PEM -in /pulsar/certs/tls.key -out /pulsar/tls-pk8.key -nocrypt &&
           {{- end }}
+          {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
+          /pulsar/tools/certconverter.sh &&
+          {{- end }}
           bin/pulsar websocket
         ports:
         - name: http
@@ -274,6 +290,10 @@ spec:
           - name: certs
             readOnly: true
             mountPath: /pulsar/certs
+            {{- if .Values.tls.zookeeper.enabled}}
+          - name: certconverter
+            mountPath: /pulsar/tools
+            {{- end }}
           {{- end }}
           {{- if .Values.enableTokenAuth }}
           - mountPath: "/pulsar/token-public-key"
@@ -403,15 +423,24 @@ spec:
             value: {{ .Values.pulsarBeam.dbName | default "persistent://public/default/beamConfig" }}
           - name: LogLevel
             value: {{ .Values.pulsarBeam.logLevel | default "info" }}
-          - name: PulsarBrokerURL
-            value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
           {{- if .Values.enableTls }}
+          - name: PulsarTLSValidateHostname
+            value: "false"
           - name: CertFile
             value: /pulsar/certs/tls.crt
           - name: KeyFile
             value: /pulsar/certs/tls.key
           - name: TrustStore
-            value: {{ .Values.pulsarBeam.trustStore }}
+            {{- if .Values.secrets }}
+            value: /pulsar/certs/ca.crt
+            {{- else }}
+            value: "{{ .Values.pulsarBeam.tlsCaPath }}/{{ .Values.pulsarBeam.tlsCaCert }}"
+            {{- end }}
+          - name: PulsarBrokerURL
+            value: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}:6651"
+          {{- else }}
+          - name: PulsarBrokerURL
+            value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}:6650"
           {{- end }}
 {{- end }}
 {{- if .Values.extra.burnell }}

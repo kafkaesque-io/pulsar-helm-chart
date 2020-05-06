@@ -30,4 +30,12 @@ metadata:
     component: {{ .Values.zookeeper.component }}
     cluster: {{ template "pulsar.fullname" . }}
 data:
+  {{- if and .Values.enableTls .Values.tls.zookeeper.enabled}}
+  PULSAR_PREFIX_serverCnxnFactory: org.apache.zookeeper.server.NettyServerCnxnFactory
+  serverCnxnFactory: org.apache.zookeeper.server.NettyServerCnxnFactory
+  secureClientPort: "2281"
+  PULSAR_PREFIX_secureClientPort: "2281"
+  sslQuorum: "true"
+  PULSAR_PREFIX_sslQuorum: "true"
+  {{- end }}
 {{ toYaml .Values.zookeeper.configData | indent 2 }}

@@ -130,6 +130,12 @@ spec:
         - name: certs
           secret:
             secretName: "{{ .Values.tlsSecretName }}"
+         {{- if .Values.tls.zookeeper.enabled}}
+        - name: certconverter
+          configMap: 
+            name: "{{ template "pulsar.fullname" . }}-certconverter-configmap"
+            defaultMode: 0755
+          {{- end }}
         {{- end }}
       {{- if not .Values.persistence }}
         - name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-{{ .Values.function.volumes.data.name }}"
@@ -167,6 +173,9 @@ spec:
           {{- if .Values.function.usePython3 }}
           /pulsar/bin/set_python_version.sh &&
           {{- end }}
+          {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
+          /pulsar/tools/certconverter.sh &&
+          {{- end }}
           exec bin/pulsar functions-worker
         ports:
         - name: functiontls
@@ -202,6 +211,10 @@ spec:
           - name: certs
             readOnly: true
             mountPath: /pulsar/certs
+            {{- if .Values.tls.zookeeper.enabled}}
+          - name: certconverter
+            mountPath: /pulsar/tools
+            {{- end }}
           {{- end }}
           - name: config-volume
             mountPath: /pulsar/funcconf/functions_worker.yml

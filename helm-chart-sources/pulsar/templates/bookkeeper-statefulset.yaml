@@ -158,6 +158,12 @@ spec:
         - >
           bin/apply-config-from-env.py conf/bookkeeper.conf &&
           bin/apply-config-from-env.py conf/pulsar_env.sh &&
+          {{- if and .Values.enableTls .Values.tls.bookkeeper.enabled }}
+          openssl pkcs8 -topk8 -inform PEM -outform PEM -in /pulsar/certs/tls.key -out /pulsar/tls-pk8.key -nocrypt &&
+          {{- end }}
+          {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
+          /pulsar/tools/certconverter.sh &&
+          {{- end }}
           exec bin/pulsar bookie
         ports:
         - name: client
@@ -166,6 +172,15 @@ spec:
         - configMapRef:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}"
         volumeMounts:
+        {{- if .Values.enableTls}}
+        - name: certs
+          readOnly: true
+          mountPath: /pulsar/certs
+          {{- if .Values.tls.zookeeper.enabled}}
+        - name: certconverter
+          mountPath: /pulsar/tools
+          {{- end }}
+        {{- end }}
         - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
           mountPath: /pulsar/data/bookkeeper/journal
         {{- if and .Values.bookkeeper.volumes.ranges .Values.function.enableStateStorage}}
@@ -176,8 +191,19 @@ spec:
         {{- end }}
         - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
           mountPath: /pulsar/data/bookkeeper/ledgers
-        {{- if not .Values.persistence }}
       volumes:
+      {{- if .Values.enableTls }}
+      - name: certs
+        secret:
+          secretName: "{{ .Values.tlsSecretName }}"
+        {{- if .Values.tls.zookeeper.enabled}}
+      - name: certconverter
+        configMap: 
+          name: "{{ template "pulsar.fullname" . }}-certconverter-configmap"
+          defaultMode: 0755
+        {{- end }}
+      {{- end }}
+      {{- if not .Values.persistence }}
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
         emptyDir: {}
       {{- if and .Values.bookkeeper.volumes.ranges .Values.function.enableStateStorage}}

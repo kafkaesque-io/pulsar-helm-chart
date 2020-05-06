@@ -78,6 +78,11 @@ spec:
           volumeMounts:
           - name: pulsarexpress-data
             mountPath: /data
+          {{- if .Values.enableTls }}
+          - name: certs
+            readOnly: true
+            mountPath: /pulsar/certs
+          {{- end }}
           envFrom:
           - configMapRef:
               name: "{{ template "pulsar.fullname" . }}-{{ .Values.pulsarexpress.component }}"
@@ -85,6 +90,12 @@ spec:
           {{- if .Values.enableTls }}
           - name: PE_CONNECTION_URL
             value: https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8443
+          - name: PE_CA_PATH
+            {{- if .Values.secrets }}
+            value: /pulsar/certs/ca.crt
+            {{- else }}
+            value: "{{ .Values.pulsarexpress.tlsCaPath }}/{{ .Values.pulsarexpress.tlsCaCert }}"
+            {{- end }}
           {{- else }}
           - name: PE_CONNECTION_URL
             value: http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080
@@ -97,16 +108,31 @@ spec:
                 key: superuser.jwt 
           {{- end }}
           {{- if .Values.extra.function }}
+            {{- if .Values.enableTls }}
+          - name: PE_CONNECTION_FCT_WORKER_URL
+            value: https://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:6751
+            {{- else }}
           - name: PE_CONNECTION_FCT_WORKER_URL
             value: http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:6750
+            {{- end }}
           {{- else }}
-          {{- if .Values.broker.functionsWorkerEnabled }}
+            {{- if .Values.broker.functionsWorkerEnabled }}
+              {{- if .Values.enableTls }}
+          - name: PE_CONNECTION_FCT_WORKER_URL
+            value: https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8443
+              {{- else }}
           - name: PE_CONNECTION_FCT_WORKER_URL
             value: http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080
-          {{- end }}
+              {{- end }}
+            {{- end }}
           {{- end }}
       volumes:
         - name: pulsarexpress-data
           emptyDir: {}
+        {{- if .Values.enableTls }}
+        - name: certs
+          secret:
+            secretName: "{{ .Values.tlsSecretName }}" 
+        {{- end }}
 
 {{- end }}

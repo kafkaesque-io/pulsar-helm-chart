@@ -86,7 +86,11 @@ spec:
         {{- if .Values.zoonavigator.autoConnect }}
         # Will set Zoonavigator to autoconnect to Zookeepers
         - name: AUTO_CONNECT_CONNECTION_STRING
-          value: "{{- $global := . }}{{ range $i, $e := until (.Values.zookeeper.replicaCount | int) }}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}{{ end }}"
+          {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
+          value: {{ include "pulsar.zkConnectStringTls" . }}
+          {{- else }}
+          value: {{ include "pulsar.zkConnectString" . }}
+          {{- end }}
         {{- end }}
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.zoonavigator.component }}-api"
         image: "{{ .Values.zoonavigator.image.repository.api }}:{{ .Values.zoonavigator.image.tag }}"

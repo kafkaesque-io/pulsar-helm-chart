@@ -38,11 +38,17 @@ data:
   # serviceUrlTls: "https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8443"
   # {{- end }}
   zookeeperServers:
-    {{- $global := . }}
-    {{ range $i, $e := until (.Values.zookeeper.replicaCount | int) }}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}{{ end }}
+    {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
+    {{ include "pulsar.zkConnectStringTls" . }}
+    {{- else }}
+    {{ include "pulsar.zkConnectString" . }}
+    {{- end }}
   configurationStoreServers:
-    {{- $global := . }}
-    {{ range $i, $e := until (.Values.zookeeper.replicaCount | int) }}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}{{ end }}
+    {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
+    {{ include "pulsar.zkConnectStringTls" . }}
+    {{- else }}
+    {{ include "pulsar.zkConnectString" . }}
+    {{- end }}
   clusterName: {{ template "pulsar.fullname" . }}
   webServicePort: "{{ .Values.proxy.wsProxyPort }}"
   {{- if .Values.enableTokenAuth }}
@@ -60,7 +66,6 @@ data:
   brokerClientTlsEnabled: "true"
   tlsCertificateFilePath: /pulsar/certs/tls.crt
   tlsKeyFilePath: /pulsar/tls-pk8.key
-  tlsAllowInsecureConnection: "true"
   {{- if .Values.secrets }}
   tlsTrustCertsFilePath: /pulsar/certs/ca.crt
   {{- else }}

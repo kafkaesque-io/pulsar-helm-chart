@@ -122,6 +122,16 @@ spec:
             until bin/pulsar zookeeper-shell -server {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }} ls /admin/clusters | grep "^\[.*{{ template "pulsar.fullname" . }}.*\]"; do
               sleep 3;
             done;
+      volumes:
+      {{- if and .Values.enableTls .Values.tls.zookeeper.enabled}}
+      - name: certs
+        secret:
+          secretName: "{{ .Values.tlsSecretName }}"
+      - name: certconverter
+        configMap: 
+          name: "{{ template "pulsar.fullname" . }}-certconverter-configmap"
+          defaultMode: 0755
+      {{- end }}
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.autoRecovery.component }}"
         image: "{{ .Values.image.bookkeeper.repository }}:{{ .Values.image.bookkeeper.tag }}"
@@ -134,7 +144,18 @@ spec:
         args:
         - >
           bin/apply-config-from-env.py conf/bookkeeper.conf &&
+          {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
+          /pulsar/tools/certconverter.sh &&
+          {{- end }}
           exec bin/bookkeeper autorecovery
+        volumeMounts:
+        {{- if and .Values.enableTls .Values.tls.zookeeper.enabled}}
+        - name: certs
+          readOnly: true
+          mountPath: /pulsar/certs
+        - name: certconverter
+          mountPath: /pulsar/tools
+        {{- end }}
         envFrom:
         - configMapRef:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.autoRecovery.component }}"
