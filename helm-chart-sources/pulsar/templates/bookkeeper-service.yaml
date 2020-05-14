@@ -39,7 +39,7 @@ spec:
   ports:
   {{- if .Values.function.enableStateStorage }}
   {{- if not .Values.extra.stateStorage }}
-  - name: stateStorage
+  - name: statestorage
     port: 4181
   {{- end }}
   {{- end }}
