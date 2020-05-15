@@ -4,6 +4,12 @@ metadata:
   name: "{{ include "pulsar-monitor.fullname" . }}-config"
 data:
   runtime.yml: |-
+    name: {{ .Values.config.name }}
+    analyticsConfig:
+      apiKey: {{ .Values.config.analyticsApiKey }}
+      ingestionURL: {{ .Values.config.analyticsUrl }}
+      insightsWriteKey: {{ .Values.config.insightsWriteKey }}
+      insightsAccountId: "{{ .Values.config.insightsAccountId }}"
     prometheusConfig:
       port: ":{{ .Values.service.port }}"
       exposeMetrics: {{ .Values.prometheus.enabled }}
