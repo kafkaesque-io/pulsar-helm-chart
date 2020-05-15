@@ -63,6 +63,9 @@ spec:
             mountPath: /config
           - name: ca-cert
             mountPath: /etc/ssl/certs
+          env:
+          - name: DeployEnv
+            value: production
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
