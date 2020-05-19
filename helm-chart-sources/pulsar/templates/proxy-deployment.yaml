@@ -54,6 +54,9 @@ spec:
       {{- end }}
 {{ toYaml .Values.proxy.annotations | indent 8 }}
     spec:
+      {{- if .Values.priorityClass.enabled }}
+      priorityClassName: pulsar-priority
+      {{- end }}
       {{- if .Values.extra.kubectlProxy }}
       serviceAccountName: "{{ template "pulsar.fullname" . }}-kubectl-proxy"
       {{- end }}

@@ -54,6 +54,9 @@ spec:
       {{- end }}
 {{ toYaml .Values.function.annotations | indent 8 }}
     spec:
+      {{- if .Values.priorityClass.enabled }}
+      priorityClassName: pulsar-priority
+      {{- end }}
       serviceAccountName: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
       {{- if (.Values.nodeSelector) and (eq .Values.function.nodeSelector false) }}
       nodeSelector:

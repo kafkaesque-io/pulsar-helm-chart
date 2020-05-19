@@ -20,6 +20,16 @@ dnsName: pulsar.example.com
 ## purposes, they will be deployed with emptDir
 persistence: yes
 
+# Global priority class
+#
+# If enabled, a new priority class will be created and applied to
+# all Pulsar core pods. Priority indicates the importance of a Pod relative to other Pods. 
+# If you are running Pulsar with other pods that depend on it (ex. microservices),
+# using a higher priority will ensure it gets scheduled first
+priorityClass:
+  enabled: no
+  value: 1000000
+
 ## If prometheus_persistence is enabled, prometheus will be deployed
 ## with PersistentVolumeClaims, otherwise, for test purposes, they
 ## will be deployed with emptyDir

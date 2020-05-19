@@ -53,6 +53,9 @@ spec:
       {{- end }}
 {{ toYaml .Values.broker.annotations | indent 8 }}
     spec:
+      {{- if .Values.priorityClass.enabled }}
+      priorityClassName: pulsar-priority
+      {{- end }}
     {{- if (.Values.nodeSelector) and (eq .Values.broker.nodeSelector false) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}

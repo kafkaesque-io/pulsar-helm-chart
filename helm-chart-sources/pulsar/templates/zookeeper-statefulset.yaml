@@ -53,6 +53,9 @@ spec:
       {{- end }}
 {{ toYaml .Values.zookeeper.annotations | indent 8 }}
     spec:
+      {{- if .Values.priorityClass.enabled }}
+      priorityClassName: pulsar-priority
+      {{- end }}
     {{- if (.Values.nodeSelector) and (eq .Values.zookeeper.nodeSelector false) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
