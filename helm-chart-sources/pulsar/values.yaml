@@ -674,6 +674,8 @@ broker:
       port: 8443
     - name: pulsarssl
       port: 6651
+  ingress:
+    enabled: no
   ## Broker PodDisruptionBudget
   ## templates/broker-pdb.yaml
   ##
