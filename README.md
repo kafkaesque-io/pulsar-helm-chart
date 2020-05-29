@@ -33,7 +33,14 @@ Note: This command updates all your Helm charts.
 
 To list the version of the chart in the local Helm repository:
 
+Helm 2
+
 ```helm search -l kafkaesque/pulsar```
+
+Helm 3
+
+```helm search repo kafkaesque/pulsar```
+
 
 ## Installing Pulsar in a Cloud Provider
 
@@ -114,10 +121,10 @@ Helm 3
 
 ## Accessing the Pulsar cluster in cloud
 
-The default values will create a ClusterIP for all components. ClusterIPs are only accessible within the Kubernetes cluster. The easiest way to work with Pulsar is to log into the bastion host:
+The default values will create a ClusterIP for all components. ClusterIPs are only accessible within the Kubernetes cluster. The easiest way to work with Pulsar is to log into the bastion host (assuming it is in the pulsar namespace):
 
 ```
-kubectl exec $(kubectl get pods -l component=bastion -o jsonpath="{.items[*].metadata.name}") -it -- /bin/bash
+kubectl exec $(kubectl get pods -l component=bastion -o jsonpath="{.items[*].metadata.name}" -n pulsar) -it -n pulsar -- /bin/bash
 ```
 Once you are logged into the bastion, you can run Pulsar admin commands:
 
