@@ -47,6 +47,9 @@ spec:
       annotations:
 {{ toYaml .Values.zoonavigator.annotations | indent 8 }}
     spec:
+      {{- if .Values.priorityClass.enabled }}
+      priorityClassName: pulsar-priority
+      {{- end }}
     {{- if .Values.zoonavigator.nodeAffinity }}
       affinity:
         nodeAffinity:

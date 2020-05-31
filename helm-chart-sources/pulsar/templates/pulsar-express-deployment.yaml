@@ -47,6 +47,9 @@ spec:
       annotations:
 {{ toYaml .Values.pulsarexpress.annotations | indent 8 }}
     spec:
+      {{- if .Values.priorityClass.enabled }}
+      priorityClassName: pulsar-priority
+      {{- end }}
     {{- if .Values.pulsarexpress.nodeAffinity }}
       affinity:
         nodeAffinity:

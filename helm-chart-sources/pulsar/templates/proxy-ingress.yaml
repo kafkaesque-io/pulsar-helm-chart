@@ -48,4 +48,14 @@ spec:
               serviceName: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}"
               servicePort: 8964
           {{- end }}
+          {{- if .Values.broker.ingress.enabled }}
+          - path: /broker
+            backend:
+              serviceName: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
+              {{- if .Values.enableTls }}
+              servicePort: 8443
+              {{- else }}
+              servicePort: 8080
+              {{- end }}
+          {{- end }}
 {{- end }}

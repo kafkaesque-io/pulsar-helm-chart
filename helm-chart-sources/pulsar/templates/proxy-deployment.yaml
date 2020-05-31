@@ -54,6 +54,9 @@ spec:
       {{- end }}
 {{ toYaml .Values.proxy.annotations | indent 8 }}
     spec:
+      {{- if .Values.priorityClass.enabled }}
+      priorityClassName: pulsar-priority
+      {{- end }}
       {{- if .Values.extra.kubectlProxy }}
       serviceAccountName: "{{ template "pulsar.fullname" . }}-kubectl-proxy"
       {{- end }}
@@ -147,6 +150,9 @@ spec:
         - name: token-websocket
           secret:
             secretName: token-websocket
+        - name: token-superuser
+          secret:
+            secretName: token-superuser
         {{- end }}
         {{- if .Values.proxy.initContainer }}
         - name: lib-data
@@ -198,18 +204,29 @@ spec:
         imagePullPolicy: {{ .Values.image.proxy.pullPolicy }}
         {{- if .Values.proxy.probe.enabled }}
         readinessProbe:
-          tcpSocket:
-          {{- if .Values.proxy.probe.port }}
-            port: {{ .Values.proxy.probe.port }}
-          {{- else }}
-            {{- if .Values.enableTls }}
-            port: 8443
+          exec:
+            command:
+            - "/bin/sh"
+            - "-c"
+            {{- if .Values.enableTokenAuth }}
+            - "curl --fail -H \"Authorization: Bearer $(cat /pulsar/token-superuser/superuser.jwt | tr -d '\r')\" http://localhost:8080/metrics/"
             {{- else }}
-            port: 8080
+            - "curl --fail http://localhost:8080/metrics/"
             {{- end }}
-          {{- end }}
           initialDelaySeconds: {{ .Values.proxy.probe.initial }} 
           periodSeconds:  {{ .Values.proxy.probe.period }} 
+        livenessProbe:
+          exec:
+            command:
+            - "/bin/sh"
+            - "-c"
+            {{- if .Values.enableTokenAuth }}
+            - "curl --fail -H \"Authorization: Bearer $(cat /pulsar/token-superuser/superuser.jwt | tr -d '\r')\" http://localhost:8080/metrics/"
+            {{- else }}
+            - "curl --fail http://localhost:8080/metrics/"
+            {{- end }}
+          initialDelaySeconds: {{ .Values.proxy.probe.initial }} 
+          periodSeconds: {{ .Values.proxy.probe.period }} 
         {{- end }}
       {{- if .Values.proxy.resources }}
         resources:
@@ -218,6 +235,9 @@ spec:
         command: ["sh", "-c"]
         args:
         - >
+          {{- if .Values.enableTokenAuth }}
+          cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
+          {{- end }}
           bin/apply-config-from-env.py conf/proxy.conf &&
           bin/apply-config-from-env.py conf/pulsar_env.sh &&
           {{- if .Values.enableTls }}
@@ -248,6 +268,9 @@ spec:
             readOnly: true
           - mountPath: "/pulsar/token-proxy"
             name: token-proxy
+            readOnly: true
+          - mountPath: "/pulsar/token-superuser"
+            name: token-superuser
             readOnly: true
           {{- end }}
           {{- if .Values.proxy.initContainer }}

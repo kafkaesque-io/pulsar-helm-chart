@@ -47,6 +47,9 @@ spec:
       annotations:
 {{ toYaml .Values.pulsarBeam.annotations | indent 8 }}
     spec:
+      {{- if .Values.priorityClass.enabled }}
+      priorityClassName: pulsar-priority
+      {{- end }}
     {{- if (.Values.nodeSelector) and (eq .Values.pulsarBeam.nodeSelector false) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
