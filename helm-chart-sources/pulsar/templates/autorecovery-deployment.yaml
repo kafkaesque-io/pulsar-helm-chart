@@ -72,9 +72,25 @@ spec:
           {{- if .Values.antiAffinity.host.enabled }}
           {{- if eq .Values.antiAffinity.host.mode "preferred" }}
           preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                  - "{{ template "pulsar.name" . }}"
+                - key: "release"
+                  operator: In
+                  values:
+                  - {{ .Release.Name }}
+                - key: "component"
+                  operator: In
+                  values:
+                  - {{ .Values.autoRecovery.component }}
+              topologyKey: "kubernetes.io/hostname"
           {{- else }}
           requiredDuringSchedulingIgnoredDuringExecution:
-          {{- end }}
           - labelSelector:
               matchExpressions:
               - key: "app"
@@ -90,6 +106,7 @@ spec:
                 values:
                 - {{ .Values.autoRecovery.component }}
             topologyKey: "kubernetes.io/hostname"
+          {{- end }}
           {{- end }}
           {{- if .Values.antiAffinity.zone.enabled }}
           preferredDuringSchedulingIgnoredDuringExecution: 
