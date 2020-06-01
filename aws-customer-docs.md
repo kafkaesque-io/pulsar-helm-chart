@@ -153,11 +153,6 @@ spec:
   commonName: <insert-DNS-name-for-cluster>
   dnsNames:
   - <insert-DNS-name-for-cluster>
-  acme:
-    config:
-    - dns01:
-      domains:
-      - <insert-DNS-name-for-cluster>
 ```
 
 Apply the certificate file:
