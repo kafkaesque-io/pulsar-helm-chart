@@ -239,6 +239,7 @@ You need to generate tokens with the following subjects:
 - admin
 - superuser
 - proxy
+- websocket (only required if using the standalone WebSocket proxy)
 
 Once you have created those tokens, add each as a secret:
 
