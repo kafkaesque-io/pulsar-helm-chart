@@ -140,9 +140,11 @@ spec:
           {{- end }} 
         {{- end }}
       terminationGracePeriodSeconds: {{ .Values.proxy.gracePeriod }}
-      {{- if or .Values.enableTls (or .Values.enableTokenAuth .Values.proxy.initContainer) }}
       volumes:
-      {{- end }}
+        - name: health
+          configMap: 
+            name: "{{ template "pulsar.fullname" . }}-health"
+            defaultMode: 0755
         {{- if .Values.enableTls }}
         - name: certs
           secret:
@@ -223,25 +225,13 @@ spec:
         readinessProbe:
           exec:
             command:
-            - "/bin/sh"
-            - "-c"
-            {{- if .Values.enableTokenAuth }}
-            - "curl --fail -H \"Authorization: Bearer $(cat /pulsar/token-superuser/superuser.jwt | tr -d '\r')\" http://localhost:8080/metrics/"
-            {{- else }}
-            - "curl --fail http://localhost:8080/metrics/"
-            {{- end }}
+            - "/pulsar/health/proxy_health_check.sh"
           initialDelaySeconds: {{ .Values.proxy.probe.initial }} 
           periodSeconds:  {{ .Values.proxy.probe.period }} 
         livenessProbe:
           exec:
             command:
-            - "/bin/sh"
-            - "-c"
-            {{- if .Values.enableTokenAuth }}
-            - "curl --fail -H \"Authorization: Bearer $(cat /pulsar/token-superuser/superuser.jwt | tr -d '\r')\" http://localhost:8080/metrics/"
-            {{- else }}
-            - "curl --fail http://localhost:8080/metrics/"
-            {{- end }}
+            - "/pulsar/health/proxy_health_check.sh"
           initialDelaySeconds: {{ .Values.proxy.probe.initial }} 
           periodSeconds: {{ .Values.proxy.probe.period }} 
         {{- end }}
@@ -267,9 +257,9 @@ spec:
         ports:
         - name: http
           containerPort: 8080
-        {{- if or (or .Values.enableTls .Values.enableTokenAuth) .Values.proxy.initContainer }}
         volumeMounts:
-        {{- end }}
+          - name: health
+            mountPath: /pulsar/health
           {{- if .Values.enableTls }}
           - name: certs
             readOnly: true
