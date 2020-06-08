@@ -85,6 +85,7 @@ data:
   {{- end }}
   tlsProtocols: "TLSv1.2,TLSv1.1"
   brokerServicePortTls: "6651"
+  brokerClientTlsEnabled: "true"
   webServicePortTls: "8443"
   {{- if .Values.secrets }}
   brokerClientTrustCertsFilePath: /pulsar/certs/ca.crt

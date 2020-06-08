@@ -11,7 +11,9 @@ It includes support for:
 * Authentication
 * WebSocket Proxy
 * Standalone Functions Workers
+* Pulsar IO connectors
 * Tiered Storage
+* Pulsar SQL workers
 * Independent Image Versions for Components (Zookeeper, Bookkeeper, etc), enabling controlled upgrades
 * [Pulsar Express Web UI](https://github.com/bbonnin/pulsar-express) for managing the cluster
 
@@ -202,6 +204,29 @@ pulsarexpress:
 ```
 Pulsar Express does not have any built-in authentication capabilities. You should use authentication features of your Ingress to limit access. The example above (which has been tested with [Traefik](https://docs.traefik.io/)) uses annotations to enable basic authentication with the password stored in secret.
 
+### Pulsar SQL
+If you enable Pulsar SQL, the cluster provides [Presto](https://prestodb.io/) access to the data stored in BookKeeper (and tiered storage, if enabled). Presto is exposed on the service named `<release>-sql-svc`.
+
+The easiest way to access the Presto command line is to log into the bastion host and then connect to the Presto service port, like this:
+
+```
+bin/pulsar sql --server pulsar-sql-svc:8080
+```
+Where the value for the `server` option should be the service name plus port. Once you are connected, you can enter Presto commands:
+
+```
+presto> SELECT * FROM system.runtime.nodes;
+               node_id                |         http_uri         | node_version | coordinator | state  
+--------------------------------------+--------------------------+--------------+-------------+--------
+ 64b7c5a1-9a72-4598-b494-b140169abc55 | http://10.244.5.164:8080 | 0.206        | true        | active 
+ 0a92962e-8b44-4bd2-8988-81cbde6bab5b | http://10.244.5.196:8080 | 0.206        | false       | active 
+(2 rows)
+
+Query 20200608_155725_00000_gpdae, FINISHED, 2 nodes
+Splits: 17 total, 17 done (100.00%)
+0:04 [2 rows, 144B] [0 rows/s, 37B/s]
+```
+
 ## Dependencies
 
 ### Authentication
@@ -239,6 +264,7 @@ You need to generate tokens with the following subjects:
 - admin
 - superuser
 - proxy
+- websocket (only required if using the standalone WebSocket proxy)
 
 Once you have created those tokens, add each as a secret:
 

@@ -82,9 +82,25 @@ spec:
           {{- if .Values.antiAffinity.host.enabled }}
           {{- if eq .Values.antiAffinity.host.mode "preferred" }}
           preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                  - "{{ template "pulsar.name" . }}"
+                - key: "release"
+                  operator: In
+                  values:
+                  - {{ .Release.Name }}
+                - key: "component"
+                  operator: In
+                  values:
+                  - {{ .Values.proxy.component }}
+              topologyKey: "kubernetes.io/hostname"
           {{- else }}
           requiredDuringSchedulingIgnoredDuringExecution:
-          {{- end }}
           - labelSelector:
               matchExpressions:
               - key: "app"
@@ -100,6 +116,7 @@ spec:
                 values:
                 - {{ .Values.proxy.component }}
             topologyKey: "kubernetes.io/hostname"
+          {{- end }}
           {{- end }}
           {{- if .Values.antiAffinity.zone.enabled }}
           preferredDuringSchedulingIgnoredDuringExecution: 
@@ -123,9 +140,11 @@ spec:
           {{- end }} 
         {{- end }}
       terminationGracePeriodSeconds: {{ .Values.proxy.gracePeriod }}
-      {{- if or .Values.enableTls (or .Values.enableTokenAuth .Values.proxy.initContainer) }}
       volumes:
-      {{- end }}
+        - name: health
+          configMap: 
+            name: "{{ template "pulsar.fullname" . }}-health"
+            defaultMode: 0755
         {{- if .Values.enableTls }}
         - name: certs
           secret:
@@ -206,25 +225,13 @@ spec:
         readinessProbe:
           exec:
             command:
-            - "/bin/sh"
-            - "-c"
-            {{- if .Values.enableTokenAuth }}
-            - "curl --fail -H \"Authorization: Bearer $(cat /pulsar/token-superuser/superuser.jwt | tr -d '\r')\" http://localhost:8080/metrics/"
-            {{- else }}
-            - "curl --fail http://localhost:8080/metrics/"
-            {{- end }}
+            - "/pulsar/health/proxy_health_check.sh"
           initialDelaySeconds: {{ .Values.proxy.probe.initial }} 
           periodSeconds:  {{ .Values.proxy.probe.period }} 
         livenessProbe:
           exec:
             command:
-            - "/bin/sh"
-            - "-c"
-            {{- if .Values.enableTokenAuth }}
-            - "curl --fail -H \"Authorization: Bearer $(cat /pulsar/token-superuser/superuser.jwt | tr -d '\r')\" http://localhost:8080/metrics/"
-            {{- else }}
-            - "curl --fail http://localhost:8080/metrics/"
-            {{- end }}
+            - "/pulsar/health/proxy_health_check.sh"
           initialDelaySeconds: {{ .Values.proxy.probe.initial }} 
           periodSeconds: {{ .Values.proxy.probe.period }} 
         {{- end }}
@@ -250,9 +257,9 @@ spec:
         ports:
         - name: http
           containerPort: 8080
-        {{- if or (or .Values.enableTls .Values.enableTokenAuth) .Values.proxy.initContainer }}
         volumeMounts:
-        {{- end }}
+          - name: health
+            mountPath: /pulsar/health
           {{- if .Values.enableTls }}
           - name: certs
             readOnly: true
