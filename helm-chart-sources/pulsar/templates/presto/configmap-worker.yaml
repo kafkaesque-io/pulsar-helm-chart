@@ -52,10 +52,11 @@ data:
     {{- else }}
     pulsar.broker-service-url=http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080
     {{- end }}
+    # Can only use 1 Zookeeper as workaround for #6947
     {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
-    pulsar.zookeeper-uri={{ include "pulsar.zkConnectStringTls" . }}
+    pulsar.zookeeper-uri={{ include "pulsar.zkConnectStringTlsOne" . }}
     {{- else }}
-    pulsar.zookeeper-uri={{ include "pulsar.zkConnectString" . }}
+    pulsar.zookeeper-uri={{ include "pulsar.zkConnectStringOne" . }}
     {{- end }}
     pulsar.max-entry-read-batch-size={{ .Values.pulsarSQL.catalog.pulsar.maxEntryReadBatchSize }}
     pulsar.target-num-splits={{ .Values.pulsarSQL.catalog.pulsar.targetNumSplits }}
@@ -66,12 +67,13 @@ data:
     
     ####### AUTHENTICATION CONFIGS #######
     {{- if .Values.enableTokenAuth }}
-    pulsar.auth-plugin = org.apache.pulsar.client.impl.auth.AuthenticationToken
-    pulsar.auth-params = file:///pulsar/token-superuser/superuser.jwt
-    {{- end }} 
+    pulsar.auth-plugin=org.apache.pulsar.client.impl.auth.AuthenticationToken
+    pulsar.auth-params=file:///pulsar/token-superuser-stripped.jwt
+
+    {{ end }} 
 
     ####### MANAGED LEDGER CONFIGS #######
-    pulsar.managed-ledger-cache-size-MB = {{ .Values.pulsarSQL.catalog.pulsar.managedLedgerCacheSizeMB }}
+    # pulsar.managed-ledger-cache-size-MB = {{ .Values.pulsarSQL.catalog.pulsar.managedLedgerCacheSizeMB }}
     
 
     {{- if .Values.storageOffload.driver }}
@@ -82,14 +84,14 @@ data:
     {{- if eq .Values.storageOffload.driver "aws-s3" }}
     pulsar.offloader-properties = \
       { "s3ManagedLedgerOffloadBucket": "{{ .Values.storageOffload.bucket }}", \
-      "s3ManagedLedgerOffloadRegion": "{{ .Values.storageOffload.region }}", \ 
+      "s3ManagedLedgerOffloadRegion": "{{ .Values.storageOffload.region }}", \
       "AWS_ACCESS_KEY_ID": "{{ .Values.storageOffload.accessKey }}", \
       "AWS_SECRET_ACCESS_KEY": "{{ .Values.storageOffload.accessSecret }}" }
     {{- end }}
     {{- if eq .Values.storageOffload.driver "s3" }}
     pulsar.offloader-properties = \
       { "s3ManagedLedgerOffloadBucket": "{{ .Values.storageOffload.bucket }}", \
-      "s3ManagedLedgerOffloadRegion": "{{ .Values.storageOffload.region }}", \ 
+      "s3ManagedLedgerOffloadRegion": "{{ .Values.storageOffload.region }}", \
       "AWS_ACCESS_KEY_ID": "{{ .Values.storageOffload.accessKey }}", \
       "AWS_SECRET_ACCESS_KEY": "{{ .Values.storageOffload.accessSecret }}", \
       "s3ManagedLedgerOffloadServiceEndpoint": "{{ .Values.storageOffload.serviceEndpoint }}" }

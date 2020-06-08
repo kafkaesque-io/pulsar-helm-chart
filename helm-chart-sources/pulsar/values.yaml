@@ -306,7 +306,7 @@ image:
     pullPolicy: IfNotPresent
   pulsarSQL:
     repository: apachepulsar/pulsar-all
-    tag: 2.5.1
+    tag: 2.4.2
     pullPolicy: IfNotPresent
   # Standalone state storage is experimental and requires the custom image below 
   stateStorage:
@@ -817,10 +817,10 @@ pulsarSQL:
   catalog:
     pulsar:
       maxEntryReadBatchSize: "100"
-      targetNumSplits: "16"
+      targetNumSplits: "2"
       maxSplitMessageQueueSize: "10000"
       maxSplitEntryQueueSize: "1000"
-      namespaceDelimiterRewriteEnable: "true"
+      namespaceDelimiterRewriteEnable: "false"
       rewriteNamespaceDelimiter: "/"
       bookkeeperThrottleValue: "0"
       managedLedgerCacheSizeMB: "0"

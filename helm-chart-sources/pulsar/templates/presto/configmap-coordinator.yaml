@@ -44,7 +44,8 @@ data:
   pulsar.properties: |
     connector.name=pulsar
     {{- if .Values.enableTls }}
-    pulsar.broker-service-url=https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8443
+    # pulsar.broker-service-url=https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8443
+    pulsar.broker-service-url=http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080
     pulsar.tls-allow-insecure-connection = false
     pulsar.tls-hostname-verification-enable = false
     {{- if .Values.secrets }}
@@ -56,9 +57,9 @@ data:
     pulsar.broker-service-url=http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080
     {{- end }}
     {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
-    pulsar.zookeeper-uri={{ include "pulsar.zkConnectStringTls" . }}
+    pulsar.zookeeper-uri={{ include "pulsar.zkConnectStringTlsOne" . }}
     {{- else }}
-    pulsar.zookeeper-uri={{ include "pulsar.zkConnectString" . }}
+    pulsar.zookeeper-uri={{ include "pulsar.zkConnectStringOne" . }}
     {{- end }}
     pulsar.max-entry-read-batch-size={{ .Values.pulsarSQL.catalog.pulsar.maxEntryReadBatchSize }}
     pulsar.target-num-splits={{ .Values.pulsarSQL.catalog.pulsar.targetNumSplits }}
@@ -66,33 +67,27 @@ data:
     pulsar.max-split-entry-queue-size={{ .Values.pulsarSQL.catalog.pulsar.maxSplitEntryQueueSize }}
     pulsar.namespace-delimiter-rewrite-enable={{ .Values.pulsarSQL.catalog.pulsar.namespaceDelimiterRewriteEnable }}
     pulsar.rewrite-namespace-delimiter={{ .Values.pulsarSQL.catalog.pulsar.rewriteNamespaceDelimiter }}
-    
-    ####### AUTHENTICATION CONFIGS #######
     {{- if .Values.enableTokenAuth }}
-    pulsar.auth-plugin = org.apache.pulsar.client.impl.auth.AuthenticationToken
-    pulsar.auth-params = file:///pulsar/token-superuser/superuser.jwt
-    {{- end }} 
+    pulsar.auth-params=file:///pulsar/token-superuser-stripped.jwt
+    pulsar.auth-plugin=org.apache.pulsar.client.impl.auth.AuthenticationToken
 
-    ####### MANAGED LEDGER CONFIGS #######
-    pulsar.managed-ledger-cache-size-MB = {{ .Values.pulsarSQL.catalog.pulsar.managedLedgerCacheSizeMB }}
-    
-
+    {{ end }} 
+    # pulsar.managed-ledger-cache-size-MB = {{ .Values.pulsarSQL.catalog.pulsar.managedLedgerCacheSizeMB }}
     {{- if .Values.storageOffload.driver }}
     pulsar.offloaders-directory = /pulsar/offloaders
     pulsar.managed-ledger-offload-max-threads = 2
     pulsar.managed-ledger-offload-driver =  {{ .Values.storageOffload.driver }}
-
     {{- if eq .Values.storageOffload.driver "aws-s3" }}
     pulsar.offloader-properties = \
       { "s3ManagedLedgerOffloadBucket": "{{ .Values.storageOffload.bucket }}", \
-      "s3ManagedLedgerOffloadRegion": "{{ .Values.storageOffload.region }}", \ 
+      "s3ManagedLedgerOffloadRegion": "{{ .Values.storageOffload.region }}", \
       "AWS_ACCESS_KEY_ID": "{{ .Values.storageOffload.accessKey }}", \
       "AWS_SECRET_ACCESS_KEY": "{{ .Values.storageOffload.accessSecret }}" }
     {{- end }}
     {{- if eq .Values.storageOffload.driver "s3" }}
     pulsar.offloader-properties = \
       { "s3ManagedLedgerOffloadBucket": "{{ .Values.storageOffload.bucket }}", \
-      "s3ManagedLedgerOffloadRegion": "{{ .Values.storageOffload.region }}", \ 
+      "s3ManagedLedgerOffloadRegion": "{{ .Values.storageOffload.region }}", \
       "AWS_ACCESS_KEY_ID": "{{ .Values.storageOffload.accessKey }}", \
       "AWS_SECRET_ACCESS_KEY": "{{ .Values.storageOffload.accessSecret }}", \
       "s3ManagedLedgerOffloadServiceEndpoint": "{{ .Values.storageOffload.serviceEndpoint }}" }

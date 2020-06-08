@@ -61,6 +61,15 @@ spec:
         - name: {{ .Chart.Name }}-coordinator
           image: "{{ .Values.image.pulsarSQL.repository }}:{{ .Values.image.pulsarSQL.tag }}"
           imagePullPolicy: {{ .Values.image.pulsarSQL.pullPolicy }}
+          {{- if .Values.storageOffload.driver }}
+          {{- if eq .Values.storageOffload.driver "aws-s3" }}
+          env:
+          - name: AWS_ACCESS_KEY_ID
+            value: {{ .Values.storageOffload.accessKey }}
+          - name: AWS_SECRET_ACCESS_KEY
+            value: {{ .Values.storageOffload.accessSecret }}
+          {{- end }}
+          {{- end }}
           volumeMounts:
             - mountPath: /pulsar/conf/presto/node.properties
               name: config-volume
