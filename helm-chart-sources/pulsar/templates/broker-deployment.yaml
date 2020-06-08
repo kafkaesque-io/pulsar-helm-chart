@@ -140,6 +140,10 @@ spec:
         {{- end }}
       terminationGracePeriodSeconds: {{ .Values.broker.gracePeriod }}
       volumes:
+        - name: health
+          configMap: 
+            name: "{{ template "pulsar.fullname" . }}-health"
+            defaultMode: 0755
         {{- if .Values.enableTls }}
         - name: certs
           secret:
@@ -206,25 +210,13 @@ spec:
         readinessProbe:
           exec:
             command:
-            - "/bin/sh"
-            - "-c"
-            {{- if .Values.enableTokenAuth }}
-            - "curl --fail -H \"Authorization: Bearer $(cat /pulsar/token-superuser/superuser.jwt | tr -d '\r')\" http://localhost:8080/admin/v2/brokers/health"
-            {{- else }}
-            - "curl --fail http://localhost:8080/admin/v2/brokers/health"
-            {{- end }}
+            - "/pulsar/health/broker_health_check.sh"
           initialDelaySeconds: {{ .Values.broker.probe.initial }} 
           periodSeconds:  {{ .Values.broker.probe.period }} 
         livenessProbe:
           exec:
             command:
-            - "/bin/sh"
-            - "-c"
-            {{- if .Values.enableTokenAuth }}
-            - "curl --fail -H \"Authorization: Bearer $(cat /pulsar/token-superuser/superuser.jwt | tr -d '\r')\" http://localhost:8080/admin/v2/brokers/health"
-            {{- else }}
-            - "curl --fail http://localhost:8080/admin/v2/brokers/health"
-            {{- end }}
+            - "/pulsar/health/broker_health_check.sh"
           initialDelaySeconds: {{ .Values.broker.probe.initial }} 
           periodSeconds: {{ .Values.broker.probe.period }} 
         {{- end }}
@@ -255,6 +247,8 @@ spec:
         - name: pulsar
           containerPort: 6650
         volumeMounts:
+          - name: health
+            mountPath: /pulsar/health
           {{- if .Values.enableTls }}
           - name: certs
             readOnly: true
