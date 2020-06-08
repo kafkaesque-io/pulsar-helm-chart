@@ -217,6 +217,7 @@ extra:
   # Note that standalone state storage is experimental and requires a custom
   # image
   stateStorage: no
+  pulsarSQL: no
   # DNS on proxy
   usedns: no
   dnsOnProxy: yes
@@ -302,6 +303,10 @@ image:
   pulsarexpress:
     repository: kafkaesqueio/pulsar-express
     tag: 0.5.1_k3
+    pullPolicy: IfNotPresent
+  pulsarSQL:
+    repository: apachepulsar/pulsar-all
+    tag: 2.5.1
     pullPolicy: IfNotPresent
   # Standalone state storage is experimental and requires the custom image below 
   stateStorage:
@@ -776,6 +781,50 @@ function:
   pdb:
     usePolicy: yes
     maxUnavailable: 1
+
+# Configuration for presto SQL
+pulsarSQL:
+  server:
+    scheduleCoordinator: yes
+    workers: 0
+    node:
+      environment: production
+    log:
+      presto:
+        level: INFO
+    config:
+      http:
+        port: 8080
+      query:
+        maxMemory: "4GB"
+        maxMemoryPerNode: "1GB"
+    jvm:
+      maxHeapSize: "8G"
+      gcMethod:
+        type: "UseG1GC"
+        g1:
+          heapRegionSize: "32M"
+
+  image:
+    securityContext:
+      enabled: no
+      runAsUser: 1000
+      runAsGroup: 1000
+
+  service:
+    type: ClusterIP
+
+  catalog:
+    pulsar:
+      maxEntryReadBatchSize: "100"
+      targetNumSplits: "16"
+      maxSplitMessageQueueSize: "10000"
+      maxSplitEntryQueueSize: "1000"
+      namespaceDelimiterRewriteEnable: "true"
+      rewriteNamespaceDelimiter: "/"
+      bookkeeperThrottleValue: "0"
+      managedLedgerCacheSizeMB: "0"
+
 
 stateStorage:
   component: statestorage
