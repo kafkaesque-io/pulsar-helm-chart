@@ -33,7 +33,7 @@ data:
     query.max-memory={{ .Values.pulsarSQL.server.config.query.maxMemory }}
     query.max-memory-per-node={{ .Values.pulsarSQL.server.config.query.maxMemoryPerNode }}
     discovery-server.enabled=true
-    discovery.uri=http://{{ template "presto.service" . }}:{{ .Values.pulsarSQL.server.config.http.port }}
+    discovery.uri=http://{{ template "pulsar.fullname" . }}-{{ .Values.pulsarSQL.component }}:{{ .Values.pulsarSQL.server.config.http.port }}
 
   log.properties: |
     io.prestosql={{ .Values.pulsarSQL.server.log.presto.level }}
@@ -106,7 +106,7 @@ data:
 
   health_check.sh: |
     #!/bin/bash 
-    curl --silent {{ template "presto.service" . }}:{{ .Values.pulsarSQL.server.config.http.port }}/v1/node | tr "," "\n" | grep --silent $(hostname -i)
+    curl --silent {{ template "pulsar.fullname" . }}-{{ .Values.pulsarSQL.component }}:{{ .Values.pulsarSQL.server.config.http.port }}/v1/node | tr "," "\n" | grep --silent $(hostname -i)
 
 ---
 {{- end }}
