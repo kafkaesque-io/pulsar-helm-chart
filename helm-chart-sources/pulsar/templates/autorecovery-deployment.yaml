@@ -164,6 +164,7 @@ spec:
         args:
         - >
           bin/apply-config-from-env.py conf/bookkeeper.conf &&
+          bin/apply-config-from-env.py conf/bkenv.sh &&
           {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
           /pulsar/tools/certconverter.sh &&
           {{- end }}
