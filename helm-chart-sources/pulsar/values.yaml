@@ -784,6 +784,10 @@ function:
 
 # Configuration for presto SQL
 pulsarSQL:
+  component: sql
+  # nodeSelector:
+  # affinity:
+  # tolerations:
   server:
     scheduleCoordinator: yes
     workers: 0
@@ -813,6 +817,11 @@ pulsarSQL:
 
   service:
     type: ClusterIP
+
+  ingress:
+    enabled: no
+    host: presto.host.com
+    annotations: {}
 
   catalog:
     pulsar:

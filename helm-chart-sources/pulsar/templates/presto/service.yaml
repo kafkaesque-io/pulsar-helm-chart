@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "presto.service" . }}
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.pulsarSQL.component }}"
   labels:
     app: {{ template "presto.name" . }}
     chart: {{ template "presto.chart" . }}
