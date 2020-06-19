@@ -20,7 +20,7 @@ It includes support for:
 [Helm](https://helm.sh) must be installed and initialized to use the chart. Both Helm 2 and Helm 3 are supported.
 Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
 
-_Don't want to run it yourself? Go to [Kafkaesque](https://kafkaesque.io) for fully managed Pulsar services._
+_Don't want to run it yourself? Go to [Kesque](https://kesque.com) for fully managed Pulsar services._
 
 ## Add to local Helm repository 
 To add this chart to your local Helm repository:
