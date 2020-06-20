@@ -20,7 +20,7 @@ It includes support for:
 [Helm](https://helm.sh) must be installed and initialized to use the chart. Both Helm 2 and Helm 3 are supported.
 Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
 
-_Don't want to run it yourself? Go to [Kafkaesque](https://kafkaesque.io) for fully managed Pulsar services._
+_Don't want to run it yourself? Go to [Kesque](https://kesque.com) for fully managed Pulsar services._
 
 ## Add to local Helm repository 
 To add this chart to your local Helm repository:
@@ -225,6 +225,24 @@ presto> SELECT * FROM system.runtime.nodes;
 Query 20200608_155725_00000_gpdae, FINISHED, 2 nodes
 Splits: 17 total, 17 done (100.00%)
 0:04 [2 rows, 144B] [0 rows/s, 37B/s]
+```
+To access Pulsar SQL from outside the cluster, you can enable the `ingress` option which will expose the Presto port on hostname. We have tested with the Traefik ingress, but any Kubernetes ingress should work. You can then run SQL queries using the Presto CLI and monitoring Presto using the built-in UI (point browser to the ingress hostname). It is recommended that you match the Presto CLI version to the version running as part of Pulsar SQL (currently 0.206).
+
+The Presto CLI supports basic authentication, so if you enabled that on the ingress (using annotations), you can have secure Presto access.
+
+```
+presto --server https://presto.example.com --user admin --password
+Password: 
+presto> show catalogs;
+ Catalog 
+---------
+ pulsar  
+ system  
+(2 rows)
+
+Query 20200610_131641_00027_tzc7t, FINISHED, 1 node
+Splits: 19 total, 19 done (100.00%)
+0:01 [0 rows, 0B] [0 rows/s, 0B/s]
 ```
 
 ## Dependencies
