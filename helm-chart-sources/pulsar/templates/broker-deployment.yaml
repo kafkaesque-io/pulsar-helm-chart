@@ -59,7 +59,7 @@ spec:
       {{- if .Values.broker.serviceAccountName }}
       serviceAccountName: {{ .Values.broker.serviceAccountName }}
       {{- end }}
-    {{- if (.Values.nodeSelector) and (eq .Values.broker.nodeSelector false) }}
+    {{- if and (.Values.nodeSelector) (not .Values.broker.nodeSelector) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
     {{- end }}

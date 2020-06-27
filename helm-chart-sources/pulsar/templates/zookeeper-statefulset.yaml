@@ -56,7 +56,7 @@ spec:
       {{- if .Values.priorityClass.enabled }}
       priorityClassName: pulsar-priority
       {{- end }}
-    {{- if (.Values.nodeSelector) and (eq .Values.zookeeper.nodeSelector false) }}
+    {{- if and (.Values.nodeSelector) (not .Values.zookeeper.nodeSelector) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
     {{- end }}

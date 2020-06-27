@@ -50,7 +50,7 @@ spec:
       {{- if .Values.priorityClass.enabled }}
       priorityClassName: pulsar-priority
       {{- end }}
-    {{- if (.Values.nodeSelector) and (eq .Values.bastion.nodeSelector false) }}
+    {{- if and (.Values.nodeSelector) (not .Values.bastion.nodeSelector) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
     {{- end }}
