@@ -38,7 +38,7 @@ spec:
         nodeAffinity:
 {{ toYaml .Values.zookeeper.nodeAffinity | indent 10 }}
       {{- end }}
-    {{- if (.Values.nodeSelector) and (eq .Values.zookeeper.nodeSelector false) }}
+    {{- if and (.Values.nodeSelector) (not .Values.zookeeper.nodeSelector) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
     {{- end }}

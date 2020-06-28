@@ -60,7 +60,7 @@ spec:
       {{- if .Values.extra.kubectlProxy }}
       serviceAccountName: "{{ template "pulsar.fullname" . }}-kubectl-proxy"
       {{- end }}
-    {{- if (.Values.nodeSelector) and (eq .Values.proxy.nodeSelector false) }}
+    {{- if and (.Values.nodeSelector) (not .Values.proxy.nodeSelector) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
     {{- end }}
