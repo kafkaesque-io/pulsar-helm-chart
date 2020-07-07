@@ -27,6 +27,8 @@ data:
       heartbeatKey: {{ .Values.config.opsGenieHeartbeatKey }}
       heartbeatUrl: {{ .Values.config.opsGenieHeartbeatUrl }}
       alertKey: {{ .Values.config.opsGenieAlertKey }}
+    k8sConfig:
+      enabled: {{ .Values.config.k8sInClusterMonitorEnabled }}
     pulsarAdminRestConfig:
       intervalSeconds: 120
       token: {{ .Values.config.pulsarClientToken }}
