@@ -17,6 +17,9 @@ fullnameOverride: ""
 prometheus:
   enabled: true
 
+pulsarmonitor:
+  component: "pulsar-monitor"
+
 # Basic configuration for the monitor
 config:
   alertUrl: 'https://hooks.slack.com/services/<webhook-id>'
