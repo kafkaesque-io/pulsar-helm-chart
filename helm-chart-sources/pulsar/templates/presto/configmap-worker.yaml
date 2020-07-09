@@ -54,9 +54,9 @@ data:
     {{- end }}
     # Can only use 1 Zookeeper as workaround for #6947
     {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
-    pulsar.zookeeper-uri={{ include "pulsar.zkConnectStringTlsOne" . }}
+    pulsar.zookeeper-uri={{ include "pulsar.zkConnectStringTls" . }}
     {{- else }}
-    pulsar.zookeeper-uri={{ include "pulsar.zkConnectStringOne" . }}
+    pulsar.zookeeper-uri={{ include "pulsar.zkConnectString" . }}
     {{- end }}
     pulsar.max-entry-read-batch-size={{ .Values.pulsarSQL.catalog.pulsar.maxEntryReadBatchSize }}
     pulsar.target-num-splits={{ .Values.pulsarSQL.catalog.pulsar.targetNumSplits }}
@@ -64,23 +64,15 @@ data:
     pulsar.max-split-entry-queue-size={{ .Values.pulsarSQL.catalog.pulsar.maxSplitEntryQueueSize }}
     pulsar.namespace-delimiter-rewrite-enable={{ .Values.pulsarSQL.catalog.pulsar.namespaceDelimiterRewriteEnable }}
     pulsar.rewrite-namespace-delimiter={{ .Values.pulsarSQL.catalog.pulsar.rewriteNamespaceDelimiter }}
-    
-    ####### AUTHENTICATION CONFIGS #######
     {{- if .Values.enableTokenAuth }}
     pulsar.auth-plugin=org.apache.pulsar.client.impl.auth.AuthenticationToken
     pulsar.auth-params=file:///pulsar/token-superuser-stripped.jwt
-
-    {{ end }} 
-
-    ####### MANAGED LEDGER CONFIGS #######
+    {{- end }}
     # pulsar.managed-ledger-cache-size-MB = {{ .Values.pulsarSQL.catalog.pulsar.managedLedgerCacheSizeMB }}
-    
-
     {{- if .Values.storageOffload.driver }}
     pulsar.offloaders-directory = /pulsar/offloaders
     pulsar.managed-ledger-offload-max-threads = 2
     pulsar.managed-ledger-offload-driver =  {{ .Values.storageOffload.driver }}
-
     {{- if eq .Values.storageOffload.driver "aws-s3" }}
     pulsar.offloader-properties = \
       { "s3ManagedLedgerOffloadBucket": "{{ .Values.storageOffload.bucket }}", \

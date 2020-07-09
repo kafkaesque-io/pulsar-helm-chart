@@ -57,9 +57,9 @@ data:
     pulsar.broker-service-url=http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080
     {{- end }}
     {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
-    pulsar.zookeeper-uri={{ include "pulsar.zkConnectStringTlsOne" . }}
+    pulsar.zookeeper-uri={{ include "pulsar.zkConnectStringTls" . }}
     {{- else }}
-    pulsar.zookeeper-uri={{ include "pulsar.zkConnectStringOne" . }}
+    pulsar.zookeeper-uri={{ include "pulsar.zkConnectString" . }}
     {{- end }}
     pulsar.max-entry-read-batch-size={{ .Values.pulsarSQL.catalog.pulsar.maxEntryReadBatchSize }}
     pulsar.target-num-splits={{ .Values.pulsarSQL.catalog.pulsar.targetNumSplits }}
@@ -70,8 +70,7 @@ data:
     {{- if .Values.enableTokenAuth }}
     pulsar.auth-params=file:///pulsar/token-superuser-stripped.jwt
     pulsar.auth-plugin=org.apache.pulsar.client.impl.auth.AuthenticationToken
-
-    {{ end }} 
+    {{- end }}
     # pulsar.managed-ledger-cache-size-MB = {{ .Values.pulsarSQL.catalog.pulsar.managedLedgerCacheSizeMB }}
     {{- if .Values.storageOffload.driver }}
     pulsar.offloaders-directory = /pulsar/offloaders
