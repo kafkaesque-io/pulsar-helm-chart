@@ -36,6 +36,11 @@ data:
     {{- else }}
     configurationStoreServers: {{ include "pulsar.zkConnectString" . }}
     {{- end }}
+    {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
+    zookeeperServers: {{ include "pulsar.zkConnectStringTls" . }}
+    {{- else }}
+    zookeeperServers: {{ include "pulsar.zkConnectString" . }}
+    {{- end }}
     zooKeeperSessionTimeoutMillis: 30000
     pulsarFunctionsCluster: "{{ template "pulsar.fullname" . }}"
     workerId: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
@@ -48,8 +53,10 @@ data:
     tlsCertificateFilePath: "/pulsar/certs/tls.crt"
     {{- if .Values.secrets }}
     tlsTrustCertsFilePath: /pulsar/certs/ca.crt
+    brokerClientTrustCertsFilePath: "/pulsar/certs/ca.crt"
     {{- else }}
     tlsTrustCertsFilePath: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
+    brokerClientTrustCertsFilePath: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
     {{- end }}
     tlsKeyFilePath: "/pulsar/tls-pk8.key"
     pulsarServiceUrl: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6651"
