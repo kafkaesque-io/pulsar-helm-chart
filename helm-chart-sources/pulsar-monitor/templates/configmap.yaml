@@ -5,6 +5,8 @@ metadata:
 data:
   runtime.yml: |-
     name: {{ .Values.config.name }}
+    token: {{ .Values.config.pulsarClientToken }}
+    trustStore: {{ .Values.config.trustStore }}
     analyticsConfig:
       apiKey: {{ .Values.config.analyticsApiKey }}
       ingestionURL: {{ .Values.config.analyticsUrl }}
@@ -13,6 +15,8 @@ data:
     prometheusConfig:
       port: ":{{ .Values.service.port }}"
       exposeMetrics: {{ .Values.prometheus.enabled }}
+      prometheusProxyURL: {{ .Values.prometheus.proxyURL }}
+      prometheusProxyAPIKey: {{ .Values.prometheus.proxyAPIKey }}
     slackConfig:
       alertUrl: {{ .Values.config.alertUrl }}
     sitesConfig:
@@ -23,22 +27,14 @@ data:
       heartbeatKey: {{ .Values.config.opsGenieHeartbeatKey }}
       heartbeatUrl: {{ .Values.config.opsGenieHeartbeatUrl }}
       alertKey: {{ .Values.config.opsGenieAlertKey }}
-    pulsarOpsConfig:
+    k8sConfig:
+      enabled: {{ .Values.config.k8sInClusterMonitorEnabled }}
+    pulsarAdminRestConfig:
       intervalSeconds: 120
-      masterToken: {{ .Values.config.pulsarClientToken }}
+      token: {{ .Values.config.pulsarClientToken }}
       clusters:
         {{- toYaml .Values.pulsarOpsClusters | nindent 8 }}
-    pulsarFunctionsConfig:
-      intervalSeconds: 120
-      masterToken: {{ .Values.config.pulsarClientToken }}
-      clusters:
-        {{- toYaml .Values.pulsarFunctionsClusters | nindent 8 }}
     pulsarTopicConfig:
         {{- toYaml .Values.topicConfigs | nindent 8 }}
-    pulsarPerfConfig:
-      intervalSeconds: {{ .Values.pulsarTopicsIntervalSeconds | default 120 }}
-      token: {{ .Values.config.pulsarClientToken }}
-      topicCfgs:
-        {{- toYaml .Values.pulsarTopics | nindent 8 }}
     websocketConfig:
       {{- toYaml .Values.pulsarWebSocketConfigs | nindent 8 }}

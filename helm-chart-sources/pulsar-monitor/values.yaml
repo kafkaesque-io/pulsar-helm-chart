@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: kafkaesqueio/pulsar-ops-monitor
-  tag: 0.32
+  repository: kesque/pulsar-monitor
+  tag: 1.0.8
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -17,8 +17,12 @@ fullnameOverride: ""
 prometheus:
   enabled: true
 
+pulsarmonitor:
+  component: "default-pulsar-monitor"
+
 # Basic configuration for the monitor
 config:
+  name: 'name of the cluster where pulsar-monitor runs'
   alertUrl: 'https://hooks.slack.com/services/<webhook-id>'
   opsGenieHeartbeatUrl: 'https://api.opsgenie.com/v2/heartbeats/'
   opsGenieHeartbeatKey: 'GenieKey <key>'
@@ -46,17 +50,8 @@ pulsarOpsClusters: []
   #     MovingWindowSeconds: 30
   #     CeilingInMovingWindow: 10
 
-# List of functions to trigger
-pulsarFunctionsClusters: []
-  # - name: uscentral1-azure
-  #   triggerUrl: https://kafkaesque.io/api/v1/uscentral1-azure/functions/ming-luo/local-uscentral1-azure/for-monitor-function/trigger
-  #   alertPolicy:
-  #     Ceiling: 3
-  #     MovingWindowSeconds: 15
-  #     CeilingInMovingWindow: 5
-
 # List of topics to measure latency
-pulsarTopics: []
+topicConfigs: []
   # - latencyBudgetMs: 360
   #   pulsarUrl: pulsar+ssl://useast1.gcp.kafkaesque.io:6651
   #   topicName: persistent://ming-luo/local-useast1-gcp/reserved-cluster-monitoring
