@@ -22,6 +22,7 @@ pulsarmonitor:
 
 # Basic configuration for the monitor
 config:
+  name: 'name of the cluster where pulsar-monitor runs'
   alertUrl: 'https://hooks.slack.com/services/<webhook-id>'
   opsGenieHeartbeatUrl: 'https://api.opsgenie.com/v2/heartbeats/'
   opsGenieHeartbeatKey: 'GenieKey <key>'
