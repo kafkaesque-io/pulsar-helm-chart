@@ -140,10 +140,16 @@ data:
 {{- if eq .Values.storageOffload.driver "s3" }}
   managedLedgerOffloadDriver: "{{ .Values.storageOffload.driver }}" 
   s3ManagedLedgerOffloadBucket: "{{ .Values.storageOffload.bucket }}" 
-  s3ManagedLedgerOffloadRegion: "{{ .Values.storageOffload.region }}" 
+  s3ManagedLedgerOffloadRegion: "{{ .Values.storageOffload.region }}"
+  {{- if .Values.extra.tardigrade}}
+  s3ManagedLedgerOffloadServiceEndpoint: "http://{{ .Release.Name }}-tardigrade-gateway-svc:{{ .Values.tardigrade.service.port }}"
+  AWS_ACCESS_KEY_ID: "{{ .Values.tardigrade.accessKey }}" 
+  AWS_SECRET_ACCESS_KEY: "{{ .Values.tardigrade.secretKey }}" 
+  {{- else }}
   AWS_ACCESS_KEY_ID: "{{ .Values.storageOffload.accessKey }}" 
   AWS_SECRET_ACCESS_KEY: "{{ .Values.storageOffload.accessSecret }}" # pragma: allowlist secret
   s3ManagedLedgerOffloadServiceEndpoint: "{{ .Values.storageOffload.serviceEndpoint }}"
+  {{- end }}
   {{- if .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}
   managedLedgerOffloadAutoTriggerSizeThresholdBytes: "{{ .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}" 
   {{- end }} 
