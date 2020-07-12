@@ -204,6 +204,12 @@ pulsarexpress:
 ```
 Pulsar Express does not have any built-in authentication capabilities. You should use authentication features of your Ingress to limit access. The example above (which has been tested with [Traefik](https://docs.traefik.io/)) uses annotations to enable basic authentication with the password stored in secret.
 
+### Tiered Storage
+
+Tiered storage (offload to blob storage) can be configured in the `storageOffload` section of the `values.yaml` file. Instructions for AWS S3 and Google Cloud Storage are provided in the file.
+
+In addition you can configure any S3 compatible storage. There is explicit support for [Tardigrade](https://tardigrade.io), which is a provider of secure, decentralized storage. You can enable the Tardigarde S3 gateway. The instructions for configuring the gateway are provided in the `tardigrade` section of the `values.yaml` file.
+
 ### Pulsar SQL
 If you enable Pulsar SQL, the cluster provides [Presto](https://prestodb.io/) access to the data stored in BookKeeper (and tiered storage, if enabled). Presto is exposed on the service named `<release>-sql-svc`.
 
@@ -326,5 +332,3 @@ Once you have created the secrets that store the cerficate info (or specified it
 ```
 enableTls: yes
 ```
-
-_Originally developed from the Helm chart from the [Apache Pulsar](https://pulsar.apache.org/) project._

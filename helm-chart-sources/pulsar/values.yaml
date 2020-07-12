@@ -236,6 +236,9 @@ extra:
   pulsarexpress: no
   # Zoonavigator for debugging Zookeeper
   zoonavigator: no
+  # Tardigrade for decentralized blob storage
+  # This runs the S3 gateway that connects to Tardigrade
+  tardigrade: no
   #
   # DEPRECATED
   # Support for the monitoring extra is deprecated
@@ -308,6 +311,10 @@ image:
     repository: apachepulsar/pulsar-all
     tag: 2.4.2
     pullPolicy: IfNotPresent
+  tardigrade:
+    repository: storjlabs/gateway
+    pullPolicy: IfNotPresent
+    tag: latest
   # Standalone state storage is experimental and requires the custom image below 
   stateStorage:
     repository: kafkaesqueio/pulsar-all
@@ -353,6 +360,15 @@ storageOffload: {}
   # accessKey: <access-key>
   # accessSecret: <secret-key> # pragma: allowlist secret 
   # serviceEndpoint: host:port
+
+  # For Tardigrade
+  # =================
+  # Need to enable extra.tardigrade for the S3 gateway. 
+  # See tardigrade section below to configure the S3 gateway
+  #
+  # driver: s3
+ 
+  
 
   ## For Google Cloud Storage
   ## ====================
@@ -834,6 +850,22 @@ pulsarSQL:
       bookkeeperThrottleValue: "0"
       managedLedgerCacheSizeMB: "0"
 
+# Tardigrade S3 gateway
+#
+# Configure the S3 gateway according to instructions here: 
+#     https://documentation.tardigrade.io/api-reference/s3-gateway
+# Make sure you configure an access grant. Once you have done that, you can find the values
+# for acess, accesKey, and secretKey in: 
+#     ~/.local/share/storj/gatewayconfig.yaml
+#
+tardigrade:
+  access: access-key-generated-with-uplink
+  accessKey: 2J7EJY4xTK6uHKqnCE4nAhdGfXqy
+  secretKey: 4YeYwYdsoFFpvtNFuncWcTVqSTPL
+  service:
+    port: 7777
+    type: ClusterIP
+
 
 stateStorage:
   component: statestorage
@@ -962,6 +994,8 @@ proxy:
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
+    # To disable authentication on the Prometheus /metrics endpoint
+    # authenticateMetricsEndpoint: "false"
   wsProxyPort: 8000
   wsProxyPortTls: 8001
   ## Proxy loadbalancer service
