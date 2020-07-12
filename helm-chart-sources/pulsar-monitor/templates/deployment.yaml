@@ -6,7 +6,7 @@ metadata:
   labels:
 {{ include "pulsar-monitor.labels" . | indent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.replicaCount | default 1 }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "pulsar-monitor.name" . }}
@@ -61,8 +61,6 @@ spec:
           volumeMounts:
           - name: config-volume
             mountPath: /config
-          - name: ca-cert
-            mountPath: /etc/ssl/certs
           env:
           - name: DeployEnv
             value: production
