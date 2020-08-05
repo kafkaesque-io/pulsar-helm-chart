@@ -109,9 +109,12 @@ tls:
   #   
   zookeeper:
     enabled: no
-  # Enabled TLS between broker and BookKeeper
+  # Enable TLS between broker and BookKeeper
   bookkeeper:
     enabled: no
+  # Enable TLS between function worker and broker
+  function:
+    enabled: yes
 
 # secrets:
   ## If you're providing your own certificates, please use this to add the certificates as secrets
