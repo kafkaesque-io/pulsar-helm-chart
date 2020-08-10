@@ -14,6 +14,16 @@ entries:
   pulsar:
   - apiVersion: v1
     appVersion: "1.0"
+    created: "2020-08-10T11:49:58.194649142-04:00"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: bc4f124350dd483f0bd9beace5ae84f20ff61cb276c7ec5a193bae8c87ec4bb5
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.25/pulsar-1.0.25.tgz
+    version: 1.0.25
+  - apiVersion: v1
+    appVersion: "1.0"
     created: "2020-07-12T13:38:52.420676646Z"
     description: Apache Pulsar Helm chart for Kubernetes
     digest: 19a486f95ea50acbe8b080a3de320088688fdb0d0c4319851b8e88a1fe7ce204
