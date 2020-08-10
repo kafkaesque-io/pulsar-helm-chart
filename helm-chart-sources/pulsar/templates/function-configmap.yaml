@@ -46,7 +46,7 @@ data:
     workerId: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
     workerHostname: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
     workerPort: "6750"
-    {{- if and .Values.enableTls .Values.tls.function.enabled }}
+    {{- if .Values.enableTls }}
     workerPortTls: "6751"
     tlsCertificateFilePath: "/pulsar/certs/tls.crt"
     {{- if .Values.secrets }}
