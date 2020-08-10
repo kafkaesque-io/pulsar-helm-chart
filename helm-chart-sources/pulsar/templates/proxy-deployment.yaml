@@ -203,7 +203,7 @@ spec:
         {{- end }}
         volumeMounts:
           - name: lib-data
-            mountPath: /jars
+            mountPath: {{ .Values.proxy.initContainer.emptyDirPath }}
       {{- end }}
       containers:
 {{- if .Values.extra.kubectlProxy }}
@@ -282,7 +282,7 @@ spec:
           {{- end }}
           {{- if .Values.proxy.initContainer }}
           - name: lib-data
-            mountPath: "/jars"
+            mountPath: {{ .Values.proxy.initContainer.emptyDirPath }}
           {{- end }}
         envFrom:
         - configMapRef:

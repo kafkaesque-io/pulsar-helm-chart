@@ -125,10 +125,16 @@ data:
   AWS_ACCESS_KEY_ID: "{{ .Values.storageOffload.accessKey }}" 
   AWS_SECRET_ACCESS_KEY: "{{ .Values.storageOffload.accessSecret }}" # pragma: allowlist secret
   {{- if .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}
+  # Pre 2.6.0 value
   managedLedgerOffloadAutoTriggerSizeThresholdBytes: "{{ .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}" 
+  # Post 2.6.0 value
+  PULSAR_PREFIX_managedLedgerOffloadThresholdInBytes: "{{ .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}" 
   {{- end }} 
   {{- if .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}
-  managedLedgerOffloadDeletionLagMs: "{{ .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}" 
+  # Pre 2.6.0 value
+  managedLedgerOffloadDeletionLagMs: "{{ .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}"
+  # Post 2.6.0 value
+  PULSAR_PREFIX_managedLedgerOffloadDeletionLagInMillis: "{{ .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}" 
   {{- end }}
   {{- if .Values.storageOffload.maxBlockSizeInBytes }}
   s3ManagedLedgerOffloadMaxBlockSizeInBytes: "{{ .Values.storageOffload.maxBlockSizeInBytes }}" 
@@ -151,10 +157,16 @@ data:
   s3ManagedLedgerOffloadServiceEndpoint: "{{ .Values.storageOffload.serviceEndpoint }}"
   {{- end }}
   {{- if .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}
+  # Pre 2.6.0 value
   managedLedgerOffloadAutoTriggerSizeThresholdBytes: "{{ .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}" 
+  # Post 2.6.0 value
+  PULSAR_PREFIX_managedLedgerOffloadThresholdInBytes: "{{ .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}" 
   {{- end }} 
   {{- if .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}
-  managedLedgerOffloadDeletionLagMs: "{{ .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}" 
+  # Pre 2.6.0 value
+  managedLedgerOffloadDeletionLagMs: "{{ .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}"
+  # Post 2.6.0 value
+  PULSAR_PREFIX_managedLedgerOffloadDeletionLagInMillis: "{{ .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}" 
   {{- end }}
   {{- if .Values.storageOffload.maxBlockSizeInBytes }}
   s3ManagedLedgerOffloadMaxBlockSizeInBytes: "{{ .Values.storageOffload.maxBlockSizeInBytes }}" 
@@ -168,11 +180,17 @@ data:
   gcsManagedLedgerOffloadBucket: "{{ .Values.storageOffload.bucket }}"
   gcsManagedLedgerOffloadRegion: "{{ .Values.storageOffload.region }}"
   gcsManagedLedgerOffloadServiceAccountKeyFile: "/pulsar/gcp-service-account/{{ .Values.storageOffload.gcsServiceAccountJsonFile }}"
-  {{- if .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}
-  managedLedgerOffloadDeletionLagMs: "{{ .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}" 
-  {{- end }}
   {{- if .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}
+  # Pre 2.6.0 value
   managedLedgerOffloadAutoTriggerSizeThresholdBytes: "{{ .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}" 
+  # Post 2.6.0 value
+  PULSAR_PREFIX_managedLedgerOffloadThresholdInBytes: "{{ .Values.storageOffload.managedLedgerOffloadAutoTriggerSizeThresholdBytes }}" 
+  {{- end }} 
+  {{- if .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}
+  # Pre 2.6.0 value
+  managedLedgerOffloadDeletionLagMs: "{{ .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}"
+  # Post 2.6.0 value
+  PULSAR_PREFIX_managedLedgerOffloadDeletionLagInMillis: "{{ .Values.storageOffload.managedLedgerOffloadDeletionLagMs }}" 
   {{- end }}
   {{- if .Values.storageOffload.maxBlockSizeInBytes }}
   gcsManagedLedgerOffloadMaxBlockSizeInBytes: "{{ .Values.storageOffload.maxBlockSizeInBytes }}" 

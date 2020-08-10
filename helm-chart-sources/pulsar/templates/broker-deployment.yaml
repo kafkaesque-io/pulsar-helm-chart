@@ -200,7 +200,7 @@ spec:
         {{- end }}
         volumeMounts:
           - name: lib-data
-            mountPath: /jars
+            mountPath: {{ .Values.broker.initContainer.emptyDirPath }}
       {{- end }}
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
@@ -260,7 +260,7 @@ spec:
           {{- end }}
           {{- if .Values.broker.initContainer }}
           - name: lib-data
-            mountPath: "/jars"
+            mountPath: {{ .Values.broker.initContainer.emptyDirPath }}
           {{- end }}
           {{- if .Values.enableTokenAuth }}
           - mountPath: "/pulsar/token-public-key"

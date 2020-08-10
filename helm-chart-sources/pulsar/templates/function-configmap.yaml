@@ -48,8 +48,6 @@ data:
     workerPort: "6750"
     {{- if .Values.enableTls }}
     workerPortTls: "6751"
-    tlsEnabled: "true"
-    useTls: "true"
     tlsCertificateFilePath: "/pulsar/certs/tls.crt"
     {{- if .Values.secrets }}
     tlsTrustCertsFilePath: /pulsar/certs/ca.crt
@@ -59,6 +57,10 @@ data:
     brokerClientTrustCertsFilePath: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
     {{- end }}
     tlsKeyFilePath: "/pulsar/tls-pk8.key"
+    {{- end }}
+    {{- if .Values.tls.function.enabled }}
+    tlsEnabled: "true"
+    useTls: "true"
     pulsarServiceUrl: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6651"
     pulsarWebServiceUrl: "https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8443" 
     {{- else }}
