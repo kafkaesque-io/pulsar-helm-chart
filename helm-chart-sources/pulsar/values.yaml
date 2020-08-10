@@ -96,7 +96,8 @@ tlsSecretName: pulsar-tls
 
 # By default, TLS is enabled on the client- or admin-facing components (broker, proxy, websocket 
 # proxy, standalone function worker).
-# For added security, you can also enable TLS on the internal components (zookeeper, bookkeeper)
+# For added security, you can also enable TLS between the internal components (zookeeper, bookkeeper,
+# function worker [connect to broker])
 tls:
   # Enable TLS between ZooKeeper nodes (quorum TLS), between BookKeeper and ZooKeeper, and between
   # broker and ZooKeeper.
@@ -658,6 +659,15 @@ broker:
     requests:
       memory: 2Gi
       cpu: 1
+  # Init container to add files to image 
+  initContainer: {}
+  # initContainer:
+  #   repository: repository/image
+  #   tag: latest
+  #   pullPolicy: IfNotPresent
+  #   command: ["cp", "-r", "/pulsar-libs", "/jars" ]
+  #   emptyDirPath: "/jars"
+
   ## Broker configmap
   ## templates/broker-configmap.yaml
   ##
@@ -771,7 +781,15 @@ function:
       #   fsType: ext4
       #   extraParams:
       #      replication-type: none
-
+  # Init container to add files to image 
+  initContainer: {}
+  # initContainer:
+  #   repository: repository/image
+  #   tag: latest
+  #   pullPolicy: IfNotPresent
+  #   command: ["cp", "-r", "/pulsar-connectors", "/connectors" ]
+  #   emptyDirPath: "/connectors"
+  #   mainContainerStartupCmd: "cp -f /connectors/pulsar-connectors/* /pulsar/connectors"
 
   ## Function configmap
   ## templates/function-configmap.yaml
@@ -988,6 +1006,14 @@ proxy:
     requests:
       memory: 1Gi
       cpu: 1
+  # Init container to add files to image 
+  initContainer: {}
+  # initContainer:
+  #   repository: repository/image
+  #   tag: latest
+  #   pullPolicy: IfNotPresent
+  #   command: ["cp", "-r", "/pulsar-libs", "/jars" ]
+  #   emptyDirPath: "/jars"
   ## Proxy configmap
   ## templates/proxy-configmap.yaml
   ##
