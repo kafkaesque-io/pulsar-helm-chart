@@ -7,15 +7,15 @@
 This Helm chart configures an Apache Pulsar cluster. It is designed for production use, but can also be used in local development environments with the proper settings.
 
 It includes support for:
-* TLS
-* Authentication
+* [TLS](#tls)
+* [Authentication](#authentication)
 * WebSocket Proxy
 * Standalone Functions Workers
-* Pulsar IO connectors
-* Tiered Storage
-* Pulsar SQL workers
+* Pulsar IO Connectors
+* [Tiered Storage](#tiered-storage)
+* [Pulsar SQL Workers](#pulsar-sql)
 * Independent Image Versions for Components (Zookeeper, Bookkeeper, etc), enabling controlled upgrades
-* [Pulsar Express Web UI](https://github.com/bbonnin/pulsar-express) for managing the cluster
+* [Pulsar Express Web UI](#managing-pulsar-using-pulsar-express) for managing the cluster
 
 [Helm](https://helm.sh) must be installed and initialized to use the chart. Both Helm 2 and Helm 3 are supported.
 Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
@@ -204,13 +204,13 @@ pulsarexpress:
 ```
 Pulsar Express does not have any built-in authentication capabilities. You should use authentication features of your Ingress to limit access. The example above (which has been tested with [Traefik](https://docs.traefik.io/)) uses annotations to enable basic authentication with the password stored in secret.
 
-### Tiered Storage
+## Tiered Storage
 
 Tiered storage (offload to blob storage) can be configured in the `storageOffload` section of the `values.yaml` file. Instructions for AWS S3 and Google Cloud Storage are provided in the file.
 
-In addition you can configure any S3 compatible storage. There is explicit support for [Tardigrade](https://tardigrade.io), which is a provider of secure, decentralized storage. You can enable the Tardigarde S3 gateway. The instructions for configuring the gateway are provided in the `tardigrade` section of the `values.yaml` file.
+In addition you can configure any S3 compatible storage. There is explicit support for [Tardigrade](https://tardigrade.io), which is a provider of secure, decentralized storage. You can enable the Tardigarde S3 gateway in the `extras` configuration. The instructions for configuring the gateway are provided in the `tardigrade` section of the `values.yaml` file.
 
-### Pulsar SQL
+## Pulsar SQL
 If you enable Pulsar SQL, the cluster provides [Presto](https://prestodb.io/) access to the data stored in BookKeeper (and tiered storage, if enabled). Presto is exposed on the service named `<release>-sql-svc`.
 
 The easiest way to access the Presto command line is to log into the bastion host and then connect to the Presto service port, like this:
