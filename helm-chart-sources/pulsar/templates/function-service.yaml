@@ -42,3 +42,29 @@ spec:
     release: {{ .Release.Name }}
     component: {{ .Values.function.component }}
 {{- end }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "pulsar.name" . }}
+    chart: {{ template "pulsar.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.function.component }}
+    cluster: {{ template "pulsar.fullname" . }}
+  annotations:
+    {{- if .Values.function.service.annotations }}
+{{ toYaml .Values.function.service.annotations | indent 4 }}
+    {{- end }}
+spec:
+  ports:
+{{ toYaml .Values.function.service.ports | indent 2 }}
+  selector:
+    app: {{ template "pulsar.name" . }}
+    release: {{ .Release.Name }}
+    component: {{ .Values.function.component }}
+

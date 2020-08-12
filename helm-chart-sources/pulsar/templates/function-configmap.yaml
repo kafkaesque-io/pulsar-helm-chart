@@ -72,7 +72,7 @@ data:
     pulsarFunctionsNamespace: "public/functions"
     functionMetadataTopicName: "metadata"
     clusterCoordinationTopicName: "coordinate"
-    numHttpServerThreads: "8"
+    numHttpServerThreads: "16"
     schedulerClassName: "org.apache.pulsar.functions.worker.scheduler.RoundRobinScheduler"
     functionAssignmentTopicName: "assignments"
     failureCheckFreqMs: "30000"
@@ -83,9 +83,9 @@ data:
     topicCompactionFrequencySec: "1800"
     {{- if .Values.function.enableStateStorage }}
     {{- if .Values.extra.stateStorage }}
-    stateStorageServiceUrl: "bk://{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}:4181"
+    stateStorageServiceUrl: "bk://{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}-0.{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}:4181"
     {{- else }}
-    stateStorageServiceUrl: "bk://{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}:4181"
+    stateStorageServiceUrl: {{ include "pulsar.bkConnectStringOne" . }}
     {{- end }}
     {{- end }}
     {{- if .Values.enableTokenAuth }}

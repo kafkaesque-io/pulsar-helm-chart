@@ -50,7 +50,7 @@ data:
     "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2181"
     {{- end }}
   {{- if .Values.extra.function }}
-  functionWorkerWebServiceURL: "http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:6750"
+  functionWorkerWebServiceURL: "http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca:6750"
   {{- end }}
 {{- if .Values.enableTls }}
   tlsEnabledInProxy: "true"
@@ -62,7 +62,6 @@ data:
   tlsTrustCertsFilePath: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
   {{- end }}
   tlsProtocols: "TLSv1.2,TLSv1.1"
-  tlsEnabledWithBroker: "true"
   {{- if .Values.secrets }}
   brokerClientTrustCertsFilePath: /pulsar/certs/ca.crt
   {{- else }}
@@ -71,7 +70,13 @@ data:
   brokerServicePortTls: "6651"
   webServicePortTls: "8443"
   servicePortTls: "6651"
-  functionWorkerWebServiceURLTLS: "https://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:6751"
+  {{- if .Values.tls.function.enabled }}
+  tlsEnabledWithBroker: "true"
+  functionWorkerWebServiceURLTLS: "https://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca:6751"
+  {{- else }}
+  tlsEnabledWithBroker: "false"
+  functionWorkerWebServiceURL: "http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca:6750"
+  {{- end }}
 {{- end }}
 {{- if .Values.enableTokenAuth }}
   authenticationEnabled: "true"
