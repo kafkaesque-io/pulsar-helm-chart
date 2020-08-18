@@ -58,7 +58,7 @@ data:
     {{- end }}
     tlsKeyFilePath: "/pulsar/tls-pk8.key"
     {{- end }}
-    {{- if .Values.tls.function.enabled }}
+    {{- if and .Values.enableTls .Values.tls.function.enabled }}
     tlsEnabled: "true"
     useTls: "true"
     pulsarServiceUrl: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6651"
