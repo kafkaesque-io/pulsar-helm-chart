@@ -82,10 +82,14 @@ data:
     instanceLivenessCheckFreqMs: "30000"
     topicCompactionFrequencySec: "1800"
     {{- if .Values.function.enableStateStorage }}
+    {{- if .Values.function.stateStorageUrlOverride }}
+    stateStorageServiceUrl: {{ .Values.function.stateStorageUrlOverride }}
+    {{- else }}
     {{- if .Values.extra.stateStorage }}
     stateStorageServiceUrl: "bk://{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}-0.{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}:4181"
     {{- else }}
     stateStorageServiceUrl: {{ include "pulsar.bkConnectStringOne" . }}
+    {{- end }}
     {{- end }}
     {{- end }}
     {{- if .Values.enableTokenAuth }}
