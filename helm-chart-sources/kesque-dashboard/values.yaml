@@ -14,10 +14,10 @@ application:
   tier: web
   WORDPRESS_DB_HOST: 10.55.112.3
   WORDPRESS_DB_USER: kesque-db-user
-  WORDPRESS_DB_PASSWORD: dMjaaWnDg9tq5WZ
+  WORDPRESS_DB_PASSWORD: changeme
   WORDPRESS_DB_NAME: kesque-wp-db
   ALLOW_EMPTY_PASSWORD: no
-  WORDPRESS_CONFIG_EXTRA: "define( 'AS3CF_SETTINGS', serialize( array( 'provider' => 'aws', 'access-key-id' => 'AKIA6HMXIFJYCLDWQZTG', 'secret-access-key' => '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',) ) );define( 'W3TC_CONFIG_DATABASE', true );define( 'WP_AUTO_UPDATE_CORE', false ); define( 'WP_HOME', 'https://kesque.com' ); define( 'WP_SITEURL', 'https://kesque.com' );"
+  WORDPRESS_CONFIG_EXTRA: "define( 'AS3CF_SETTINGS', serialize( array( 'provider' => 'aws', 'access-key-id' => 'access-key', 'secret-access-key' => 'secret-key',) ) );define( 'W3TC_CONFIG_DATABASE', true );define( 'WP_AUTO_UPDATE_CORE', false ); define( 'WP_HOME', 'https://kesque.com' ); define( 'WP_SITEURL', 'https://kesque.com' );"
 service:
   enabled: true
   annotations: {}
