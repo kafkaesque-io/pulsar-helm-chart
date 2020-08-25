@@ -1,0 +1,87 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: nginx
+  annotations:
+  labels:
+    track: "{{ .Values.application.track }}"
+    tier: "{{ .Values.application.tier }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    app: nginx
+spec:
+  replicas: {{ .Values.nginx.replicaCount }}
+  {{- if .Values.nginx.enableMatchLabels }}
+  selector:
+    matchLabels:
+      app: nginx
+      track: "{{ .Values.application.track }}"
+      tier: "{{ .Values.application.tier }}"
+      release: {{ .Release.Name }}
+  {{- end }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/port: "9113" 
+        prometheus.io/scrape: "true"
+      labels:
+        track: "{{ .Values.application.track }}"
+        tier: "{{ .Values.application.tier }}"
+        release: {{ .Release.Name }}
+        app: nginx
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - nginx 
+            topologyKey: "kubernetes.io/hostname"
+
+      volumes:
+        - name: nginxconf
+          configMap:
+            name: nginx-conf 
+            items: 
+            - key: nginx.conf
+              path: nginx.conf
+        - name: certs
+          secret:
+            defaultMode: 420
+            secretName: {{ .Values.ingress.tls.secretName | default (printf "%s-tls" (include "fullname" .)) }}
+      containers:
+      - name: nginx-prometheus
+        image: nginx/nginx-prometheus-exporter:0.3.0
+        args: ["-nginx.scrape-uri", "http://127.0.0.1:8080/nginx_status"]
+      - name: nginx 
+        image: nginx 
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: "{{ .Values.service.name }}-nginx"
+          containerPort: 80 
+        - name: "{{ .Values.service.name }}-nginx-tls"
+          containerPort: 443 
+        volumeMounts:
+        - mountPath: /etc/nginx
+          readOnly: true
+          name: nginxconf 
+        - mountPath: /certs
+          name: certs
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /ruok
+            port: 80 
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        readinessProbe:
+          httpGet:
+            path: /ruok
+            port: 80 
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+        resources:

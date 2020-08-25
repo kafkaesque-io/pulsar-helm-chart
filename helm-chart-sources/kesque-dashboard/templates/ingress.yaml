@@ -1,0 +1,33 @@
+{{- if .Values.service.ingress.enabled -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    app: {{ template "appname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version| replace "+" "_" }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.ingress.annotations }}
+  annotations:
+{{ toYaml .Values.ingress.annotations | indent 4 }}
+{{- end }}
+spec:
+spec:
+  rules:
+  - host: {{ toYaml .Values.ingress.host }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ template "fullname" . }}
+          servicePort: {{ .Values.service.externalPort }}
+        path: {{ .Values.service.ingress.mainPath }}
+      - backend:
+          serviceName: nginx
+          servicePort: {{ .Values.service.externalPort }}
+        path: {{ .Values.service.ingress.apiPath }}
+  tls:
+  - hosts:
+    - {{ toYaml .Values.ingress.host }}
+    secretName: {{ .Values.ingress.tls.secretName | default (printf "%s-tls" (include "fullname" .)) }}
+{{- end -}}

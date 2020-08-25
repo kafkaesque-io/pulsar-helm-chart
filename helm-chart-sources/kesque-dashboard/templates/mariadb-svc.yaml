@@ -1,0 +1,34 @@
+{{- if .Values.mariadb.enabled -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-mariadb-svc
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
+    app.kubernetes.io/component: wp-mariadb
+spec:
+  ports:
+  - name: mariadb
+    port: 3306
+  selector:
+    app.kubernetes.io/name: {{ .Release.Name }}
+    app.kubernetes.io/component: wp-mariadb
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-mysqld-exporter-svc
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
+    app.kubernetes.io/component: wp-mariadb
+spec:
+  ports:
+  - name: exporter
+    port: 9104
+  selector:
+    app.kubernetes.io/name: {{ .Release.Name }}
+    app.kubernetes.io/component: wp-mariadb
+  type: ClusterIP
+{{- end }}

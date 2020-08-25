@@ -1,0 +1,156 @@
+# Default values for chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 3
+image:
+  repository: gitlab.example.com/group/project
+  tag: stable
+  pullPolicy: Always
+  secrets:
+    - name: gitlab-registry
+podAnnotations: {}
+application:
+  track: stable
+  tier: web
+  WORDPRESS_DB_HOST: 10.55.112.3
+  WORDPRESS_DB_USER: kesque-db-user
+  WORDPRESS_DB_PASSWORD: dMjaaWnDg9tq5WZ
+  WORDPRESS_DB_NAME: kesque-wp-db
+  ALLOW_EMPTY_PASSWORD: no
+  WORDPRESS_CONFIG_EXTRA: "define( 'AS3CF_SETTINGS', serialize( array( 'provider' => 'aws', 'access-key-id' => 'AKIA6HMXIFJYCLDWQZTG', 'secret-access-key' => '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',) ) );define( 'W3TC_CONFIG_DATABASE', true );define( 'WP_AUTO_UPDATE_CORE', false ); define( 'WP_HOME', 'https://kesque.com' ); define( 'WP_SITEURL', 'https://kesque.com' );"
+service:
+  enabled: true
+  annotations: {}
+  name: web
+  type: NodePort
+  url: http://my.host.com/
+  additionalHosts:
+  commonName:
+  externalPort: 80
+  internalPort: 80
+  ingress:
+    enabled: true
+    mainPath: /*
+    apiPath: /api/*
+ingress:
+  host: kafkaesque.io
+  tls:
+    enabled: true
+    secretName: "production-tls"
+  annotations:
+    kubernetes.io/tls-acme: "true"
+nginx:
+  replicaCount: 3
+  enableMatchLabels: no
+  service:
+    type: NodePort
+  pulsar:
+    k8sEnabled: no
+    k8sTargetDns: pulsar-proxy
+    clusterName: pulsar
+livenessProbe:
+  path: "/"
+  initialDelaySeconds: 15
+  timeoutSeconds: 15
+readinessProbe:
+  path: "/"
+  initialDelaySeconds: 5
+  timeoutSeconds: 3
+mariadb:
+  enabled: no
+  image: bitnami/mariadb:latest
+  rootPassword: uGTTB2C5GhJGHr
+  storageClassName: default
+  volumeSize: 10Gi
+  exporter:
+    image: prom/mysqld-exporter:latest
+    user: mysqld-exporter
+    password: oWJsz7tQWGBUsN
+
+phpmyadmin:
+  enabled: no
+  image:
+    registry: docker.io
+    repository: bitnami/phpmyadmin
+    tag: 5.0.2-debian-10-r75
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+  db:
+    port: 3306
+    host: foo
+    bundleTestDB: false
+    enableSsl: false
+  ingress:
+    enabled: false
+    certManager: false
+    rewriteTarget: true
+    hosts:
+      - name: phpmyadmin.local
+        path: /
+        tls: false
+        tlsSecret: phpmyadmin.local-tls
+  podSecurityContext:
+    fsGroup: 1001
+  containerSecurityContext:
+    runAsUser: 1001
+  livenessProbe:
+    initialDelaySeconds: 30
+    timeoutSeconds: 30
+    periodSeconds: 10
+    successThreshold: 1
+    failureThreshold: 6
+    httpGet:
+      path: /
+      port: http
+  readinessProbe:
+    initialDelaySeconds: 30
+    timeoutSeconds: 30
+    periodSeconds: 10
+    successThreshold: 1
+    failureThreshold: 6
+    httpGet:
+      path: /
+      port: http
+  resources:
+    limits: {}
+    requests: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podLabels: {}
+  podAnnotations: {}
+  metrics:
+    enabled: false
+    image:
+      registry: docker.io
+      repository: bitnami/apache-exporter
+      tag: 0.8.0-debian-10-r63
+      pullPolicy: IfNotPresent
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9117"
+    resources: {}  
+# Export metrics to Google StackDriver
+metrics:
+  image: 
+  exporter:
+    enabled: no
+
+
+resources:
+#  limits:
+#    cpu: 100m
+#    memory: 128Mi
+#  requests:
+#    cpu: 100m
+#    memory: 128Mi
+
+## Configure PodDisruptionBudget
+## ref: https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
+#
+podDisruptionBudget:
+  enabled: false
+  # minAvailable: 1
+  maxUnavailable: 1
