@@ -16,65 +16,62 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-
+{{- if .Values.extra.brokerSts }}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    component: {{ .Values.broker.component }}
+    component: {{ .Values.brokerSts.component }}
     cluster: {{ template "pulsar.fullname" . }}
 spec:
-  replicas: {{ .Values.broker.replicaCount }}
+  replicas: {{ .Values.brokerSts.replicaCount }}
+  serviceName: "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
   selector:
     matchLabels:
       app: {{ template "pulsar.name" . }}
       release: {{ .Release.Name }}
-      component: {{ .Values.broker.component }}
-{{- if .Values.broker.updateStrategy }}
-  strategy:
-{{ toYaml .Values.broker.updateStrategy | indent 4 }}
-  {{- end }}
+      component: {{ .Values.brokerSts.component }}
   template:
     metadata:
       labels:
         app: {{ template "pulsar.name" . }}
         release: {{ .Release.Name }}
-        component: {{ .Values.broker.component }}
+        component: {{ .Values.brokerSts.component }}
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
       {{- if .Values.restartOnConfigMapChange.enabled }}
-        checksum/config: {{ include (print $.Template.BasePath "/broker-configmap.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/brokerSts-configmap.yaml") . | sha256sum }}
       {{- end }}
-{{ toYaml .Values.broker.annotations | indent 8 }}
+{{ toYaml .Values.brokerSts.annotations | indent 8 }}
     spec:
       {{- if .Values.priorityClass.enabled }}
       priorityClassName: pulsar-priority
       {{- end }}
-      {{- if .Values.broker.serviceAccountName }}
-      serviceAccountName: {{ .Values.broker.serviceAccountName }}
+      {{- if .Values.brokerSts.serviceAccountName }}
+      serviceAccountName: {{ .Values.brokerSts.serviceAccountName }}
       {{- end }}
-    {{- if and (.Values.nodeSelector) (not .Values.broker.nodeSelector) }}
+    {{- if and (.Values.nodeSelector) (not .Values.brokerSts.nodeSelector) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
     {{- end }}
-    {{- if .Values.broker.nodeSelector }}
+    {{- if .Values.brokerSts.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.broker.nodeSelector | indent 8 }}
+{{ toYaml .Values.brokerSts.nodeSelector | indent 8 }}
     {{- end }}
-    {{- if .Values.broker.tolerations }}
+    {{- if .Values.brokerSts.tolerations }}
       tolerations:
-{{ toYaml .Values.broker.tolerations | indent 8 }}
+{{ toYaml .Values.brokerSts.tolerations | indent 8 }}
     {{- end }}
       affinity:
-        {{- if .Values.broker.nodeAffinity }}
+        {{- if .Values.brokerSts.nodeAffinity }}
         nodeAffinity:
-{{ toYaml .Values.broker.nodeAffinity | indent 10 }}
+{{ toYaml .Values.brokerSts.nodeAffinity | indent 10 }}
         {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
@@ -96,7 +93,7 @@ spec:
                 - key: "component"
                   operator: In
                   values:
-                  - {{ .Values.broker.component }}
+                  - {{ .Values.brokerSts.component }}
               topologyKey: "kubernetes.io/hostname"
           {{- else }}
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -113,7 +110,7 @@ spec:
               - key: "component"
                 operator: In
                 values:
-                - {{ .Values.broker.component }}
+                - {{ .Values.brokerSts.component }}
             topologyKey: "kubernetes.io/hostname"
           {{- end }}
           {{- end }}
@@ -135,10 +132,10 @@ spec:
                 - key: "component"
                   operator: In
                   values:
-                  - {{ .Values.broker.component }}
+                  - {{ .Values.brokerSts.component }}
           {{- end }}  
         {{- end }}
-      terminationGracePeriodSeconds: {{ .Values.broker.gracePeriod }}
+      terminationGracePeriodSeconds: {{ .Values.brokerSts.gracePeriod }}
       volumes:
         - name: health
           configMap: 
@@ -170,7 +167,7 @@ spec:
             secretName: {{ .Values.storageOffload.gcsServiceAccountSecret }}
         {{- end }}
         {{- end }}
-        {{- if .Values.broker.initContainer }}
+        {{- if .Values.brokerSts.initContainer }}
         - name: lib-data
           emptyDir: {}
         {{- end }}
@@ -178,51 +175,51 @@ spec:
       # This init container will wait for bookkeeper to be ready before
       # deploying the broker
       - name: wait-bookkeeper-ready
-        image: "{{ .Values.image.broker.repository }}:{{ .Values.image.broker.tag }}"
-        imagePullPolicy: {{ .Values.image.broker.pullPolicy }}
+        image: "{{ .Values.image.brokerSts.repository }}:{{ .Values.image.brokerSts.tag }}"
+        imagePullPolicy: {{ .Values.image.brokerSts.pullPolicy }}
         command: ["sh", "-c"]
         args:
           - >-
             until nslookup {{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ add (.Values.bookkeeper.replicaCount | int) -1 }}.{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}.{{ .Release.Namespace }}; do
               sleep 3;
             done;
-      {{- if .Values.broker.initContainer }}
+      {{- if .Values.brokerSts.initContainer }}
       - name: add-libs
-        image: "{{ .Values.broker.initContainer.repository }}:{{ .Values.broker.initContainer.tag }}"
-        imagePullPolicy: "{{ .Values.broker.initContainer.pullPolicy }}"
-        {{- if  .Values.broker.initContainer.command }}
+        image: "{{ .Values.brokerSts.initContainer.repository }}:{{ .Values.brokerSts.initContainer.tag }}"
+        imagePullPolicy: "{{ .Values.brokerSts.initContainer.pullPolicy }}"
+        {{- if  .Values.brokerSts.initContainer.command }}
         command:
-{{ toYaml .Values.broker.initContainer.command | indent 10 }}
+{{ toYaml .Values.brokerSts.initContainer.command | indent 10 }}
         {{- end }}
-        {{- if  .Values.broker.initContainer.args }}
+        {{- if  .Values.brokerSts.initContainer.args }}
         args:
-{{ toYaml .Values.broker.initContainer.args | indent 10 }}
+{{ toYaml .Values.brokerSts.initContainer.args | indent 10 }}
         {{- end }}
         volumeMounts:
           - name: lib-data
-            mountPath: {{ .Values.broker.initContainer.emptyDirPath }}
+            mountPath: {{ .Values.brokerSts.initContainer.emptyDirPath }}
       {{- end }}
       containers:
-      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
-        image: "{{ .Values.image.broker.repository }}:{{ .Values.image.broker.tag }}"
-        imagePullPolicy: {{ .Values.image.broker.pullPolicy }}
-        {{- if .Values.broker.probe.enabled }}
+      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
+        image: "{{ .Values.image.brokerSts.repository }}:{{ .Values.image.brokerSts.tag }}"
+        imagePullPolicy: {{ .Values.image.brokerSts.pullPolicy }}
+        {{- if .Values.brokerSts.probe.enabled }}
         readinessProbe:
           exec:
             command:
             - "/pulsar/health/broker_health_check.sh"
-          initialDelaySeconds: {{ .Values.broker.probe.initial }} 
-          periodSeconds:  {{ .Values.broker.probe.period }} 
+          initialDelaySeconds: {{ .Values.brokerSts.probe.initial }} 
+          periodSeconds:  {{ .Values.brokerSts.probe.period }} 
         livenessProbe:
           exec:
             command:
             - "/pulsar/health/broker_health_check.sh"
-          initialDelaySeconds: {{ .Values.broker.probe.initial }} 
+          initialDelaySeconds: {{ .Values.brokerSts.probe.initial }} 
           periodSeconds: {{ .Values.broker.probe.period }} 
         {{- end }}
-      {{- if .Values.broker.resources }}
+      {{- if .Values.brokerSts.resources }}
         resources:
-{{ toYaml .Values.broker.resources | indent 10 }}
+{{ toYaml .Values.brokerSts.resources | indent 10 }}
       {{- end }}
         command: ["sh", "-c"]
         args:
@@ -258,9 +255,9 @@ spec:
             mountPath: /pulsar/tools
             {{- end }}
           {{- end }}
-          {{- if .Values.broker.initContainer }}
+          {{- if .Values.brokerSts.initContainer }}
           - name: lib-data
-            mountPath: {{ .Values.broker.initContainer.emptyDirPath }}
+            mountPath: {{ .Values.brokerSts.initContainer.emptyDirPath }}
           {{- end }}
           {{- if .Values.enableTokenAuth }}
           - mountPath: "/pulsar/token-public-key"
@@ -279,9 +276,5 @@ spec:
           {{- end }}
         envFrom:
         - configMapRef:
-            name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
-        env:
-        - name: advertisedAddress
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
+            name: "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
+{{- end }}

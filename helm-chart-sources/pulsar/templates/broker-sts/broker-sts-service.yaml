@@ -16,25 +16,32 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-
-{{- if .Values.broker.pdb.usePolicy }}
-apiVersion: policy/v1beta1
-kind: PodDisruptionBudget
+{{- if .Values.extra.brokerSts }}
+apiVersion: v1
+kind: Service
 metadata:
-  name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    component: {{ .Values.broker.component }}
+    component: {{ .Values.brokerSts.component }}
     cluster: {{ template "pulsar.fullname" . }}
-spec:
-  selector:
-    matchLabels:
-      app: {{ template "pulsar.name" . }}
-      release: {{ .Release.Name }}
-      component: {{ .Values.broker.component }}
-  maxUnavailable: {{ .Values.broker.pdb.maxUnavailable }}
+  annotations:
+{{- if .Values.extra.dnsOnBroker }}
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.dnsName }}
 {{- end }}
+spec:
+  ports:
+{{ toYaml .Values.brokerSts.service.ports | indent 2 }}
+{{- if .Values.brokerSts.service.headless }}
+  clusterIP: None
+{{- end }}
+  type: {{ .Values.brokerSts.service.type }}
+  selector:
+    app: {{ template "pulsar.name" . }}
+    release: {{ .Release.Name }}
+    component: {{ .Values.brokerSts.component }}
+{{- end -}}
