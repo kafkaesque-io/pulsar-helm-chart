@@ -520,6 +520,7 @@ bookkeeper:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8000"
   tolerations: []
+  pvcPrexix: ''
   probe:
     enabled: yes
     port: 3181

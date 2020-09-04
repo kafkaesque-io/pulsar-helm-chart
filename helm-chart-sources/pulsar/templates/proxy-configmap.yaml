@@ -70,12 +70,14 @@ data:
   brokerServicePortTls: "6651"
   webServicePortTls: "8443"
   servicePortTls: "6651"
+  {{- if .Values.extra.function }}
   {{- if .Values.tls.function.enabled }}
   tlsEnabledWithBroker: "true"
   functionWorkerWebServiceURLTLS: "https://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca:6751"
   {{- else }}
   tlsEnabledWithBroker: "false"
   functionWorkerWebServiceURL: "http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca:6750"
+  {{- end }}
   {{- end }}
 {{- end }}
 {{- if .Values.enableTokenAuth }}

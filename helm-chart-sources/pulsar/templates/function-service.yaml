@@ -41,7 +41,6 @@ spec:
     app: {{ template "pulsar.name" . }}
     release: {{ .Release.Name }}
     component: {{ .Values.function.component }}
-{{- end }}
 
 ---
 apiVersion: v1
@@ -67,4 +66,7 @@ spec:
     app: {{ template "pulsar.name" . }}
     release: {{ .Release.Name }}
     component: {{ .Values.function.component }}
+
+{{- end }}
+
 

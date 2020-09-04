@@ -194,18 +194,18 @@ spec:
           {{- end }}
         {{- end }}
         {{- if and .Values.bookkeeper.volumes.oneDisk}}
-        - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.oneDisk.name }}"
+        - name: "{{ .Values.bookkeeper.pvcPrefix}}{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.oneDisk.name }}"
           mountPath: /pulsar/data
         {{- else }}
-        - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
+        - name: "{{ .Values.bookkeeper.pvcPrefix}}{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
           mountPath: /pulsar/data/bookkeeper/journal
         {{- if and .Values.bookkeeper.volumes.ranges .Values.function.enableStateStorage}}
         {{- if not (or .Values.extra.stateStorage .Values.function.stateStorageUrlOverride) }}
-        - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ranges.name }}"
+        - name: "{{ .Values.bookkeeper.pvcPrefix}}{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ranges.name }}"
           mountPath: /pulsar/data/bookkeeper/ranges
         {{- end }}
         {{- end }}
-        - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
+        - name: "{{ .Values.bookkeeper.pvcPrefix}}{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
           mountPath: /pulsar/data/bookkeeper/ledgers
         {{- end }}
       volumes:
@@ -236,7 +236,7 @@ spec:
   volumeClaimTemplates:
   {{- if and .Values.bookkeeper.volumes.oneDisk }}
   - metadata:
-      name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.oneDisk.name }}"
+      name: "{{ .Values.bookkeeper.pvcPrefix}}{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.oneDisk.name }}"
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
@@ -259,7 +259,7 @@ spec:
     {{- end }}
   {{- else }}
   - metadata:
-      name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
+      name: "{{ .Values.bookkeeper.pvcPrefix}}{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
@@ -283,7 +283,7 @@ spec:
   {{- if and .Values.bookkeeper.volumes.ranges .Values.function.enableStateStorage}}
   {{- if not (or .Values.extra.stateStorage .Values.function.stateStorageUrlOverride) }}
   - metadata:
-      name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ranges.name }}"
+      name: "{{ .Values.bookkeeper.pvcPrefix}}{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ranges.name }}"
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
@@ -307,7 +307,7 @@ spec:
   {{- end }}
   {{- end }}
   - metadata:
-      name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
+      name: "{{ .Values.bookkeeper.pvcPrefix}}{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
