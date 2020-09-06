@@ -137,6 +137,7 @@ spec:
         args:
         - >
           bin/apply-config-from-env.py conf/bookkeeper.conf &&
+          bin/apply-config-from-env.py conf/bkenv.sh &&
           bin/bookkeeper shell metaformat --nonInteractive || true;
         envFrom:
         - configMapRef:
@@ -168,6 +169,13 @@ spec:
           {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
           /pulsar/tools/certconverter.sh &&
           {{- end }}
+          {{- if .Values.function.enableStateStorage }}
+          {{- if not (or .Values.extra.stateStorage .Values.function.stateStorageUrlOverride) }}
+          echo 'dlog.bkcEnsembleSize=2' >> conf/bookkeeper.conf &&
+          echo 'dlog.bkcWriteQuorumSize=2'  >> conf/bookkeeper.conf &&
+          echo 'dlog.bkcAckQuorumSize=2' >> conf/bookkeeper.conf &&
+          {{- end }}
+          {{- end }}
           exec bin/pulsar bookie
         ports:
         - name: client
@@ -185,16 +193,21 @@ spec:
           mountPath: /pulsar/tools
           {{- end }}
         {{- end }}
-        - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
+        {{- if and .Values.bookkeeper.volumes.oneDisk}}
+        - name: "{{ .Values.bookkeeper.pvcPrefix}}{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.oneDisk.name }}"
+          mountPath: /pulsar/data
+        {{- else }}
+        - name: "{{ .Values.bookkeeper.pvcPrefix}}{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
           mountPath: /pulsar/data/bookkeeper/journal
         {{- if and .Values.bookkeeper.volumes.ranges .Values.function.enableStateStorage}}
-        {{- if not .Values.extra.stateStorage }}
-        - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ranges.name }}"
+        {{- if not (or .Values.extra.stateStorage .Values.function.stateStorageUrlOverride) }}
+        - name: "{{ .Values.bookkeeper.pvcPrefix}}{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ranges.name }}"
           mountPath: /pulsar/data/bookkeeper/ranges
         {{- end }}
         {{- end }}
-        - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
+        - name: "{{ .Values.bookkeeper.pvcPrefix}}{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
           mountPath: /pulsar/data/bookkeeper/ledgers
+        {{- end }}
       volumes:
       {{- if .Values.enableTls }}
       - name: certs
@@ -211,7 +224,7 @@ spec:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
         emptyDir: {}
       {{- if and .Values.bookkeeper.volumes.ranges .Values.function.enableStateStorage}}
-      {{- if not .Values.extra.stateStorage }}
+      {{- if not (or .Values.extra.stateStorage .Values.function.stateStorageUrlOverride) }}
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ranges.name }}"
         emptyDir: {}
       {{- end }}
@@ -221,8 +234,32 @@ spec:
     {{- end }}
 {{- if .Values.persistence }}
   volumeClaimTemplates:
+  {{- if and .Values.bookkeeper.volumes.oneDisk }}
   - metadata:
-      name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
+      name: "{{ .Values.bookkeeper.pvcPrefix}}{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.oneDisk.name }}"
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.bookkeeper.volumes.oneDisk.size }}
+    {{- if or .Values.bookkeeper.volumes.oneDisk.existingStorageClassName .Values.default_storage.existingStorageClassName }}
+      {{- if .Values.bookkeeper.volumes.oneDisk.existingStorageClassName}}
+      {{- if ne .Values.bookkeeper.volumes.oneDisk.existingStorageClassName "default"}}
+      storageClassName: "{{ .Values.bookkeeper.volumes.oneDisk.existingStorageClassName }}"
+      {{- end }}
+      {{- else }}
+      {{- if ne .Values.default_storage.existingStorageClassName "default"}}
+      storageClassName: "{{ .Values.default_storage.existingStorageClassName }}"
+      {{- end }}
+      {{- end }}
+    {{- else }}
+      {{- if or .Values.bookkeeper.volumes.oneDisk.storageClass .Values.default_storage }}
+      storageClassName: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.oneDisk.name }}"
+      {{- end }}
+    {{- end }}
+  {{- else }}
+  - metadata:
+      name: "{{ .Values.bookkeeper.pvcPrefix}}{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.journal.name }}"
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
@@ -244,9 +281,9 @@ spec:
       {{- end }}
     {{- end }}
   {{- if and .Values.bookkeeper.volumes.ranges .Values.function.enableStateStorage}}
-  {{- if not .Values.extra.stateStorage }}
+  {{- if not (or .Values.extra.stateStorage .Values.function.stateStorageUrlOverride) }}
   - metadata:
-      name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ranges.name }}"
+      name: "{{ .Values.bookkeeper.pvcPrefix}}{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ranges.name }}"
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
@@ -270,7 +307,7 @@ spec:
   {{- end }}
   {{- end }}
   - metadata:
-      name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
+      name: "{{ .Values.bookkeeper.pvcPrefix}}{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
@@ -291,4 +328,5 @@ spec:
       storageClassName: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ .Values.bookkeeper.volumes.ledgers.name }}"
       {{- end }}
     {{- end }}
+  {{- end }}
 {{- end }}

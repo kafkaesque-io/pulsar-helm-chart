@@ -58,7 +58,7 @@ data:
     {{- end }}
     tlsKeyFilePath: "/pulsar/tls-pk8.key"
     {{- end }}
-    {{- if .Values.tls.function.enabled }}
+    {{- if and .Values.enableTls .Values.tls.function.enabled }}
     tlsEnabled: "true"
     useTls: "true"
     pulsarServiceUrl: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6651"
@@ -72,7 +72,7 @@ data:
     pulsarFunctionsNamespace: "public/functions"
     functionMetadataTopicName: "metadata"
     clusterCoordinationTopicName: "coordinate"
-    numHttpServerThreads: "8"
+    numHttpServerThreads: "16"
     schedulerClassName: "org.apache.pulsar.functions.worker.scheduler.RoundRobinScheduler"
     functionAssignmentTopicName: "assignments"
     failureCheckFreqMs: "30000"
@@ -82,10 +82,14 @@ data:
     instanceLivenessCheckFreqMs: "30000"
     topicCompactionFrequencySec: "1800"
     {{- if .Values.function.enableStateStorage }}
-    {{- if .Values.extra.stateStorage }}
-    stateStorageServiceUrl: "bk://{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}:4181"
+    {{- if .Values.function.stateStorageUrlOverride }}
+    stateStorageServiceUrl: {{ .Values.function.stateStorageUrlOverride }}
     {{- else }}
-    stateStorageServiceUrl: "bk://{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}:4181"
+    {{- if .Values.extra.stateStorage }}
+    stateStorageServiceUrl: "bk://{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}-0.{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}:4181"
+    {{- else }}
+    stateStorageServiceUrl: {{ include "pulsar.bkConnectStringOne" . }}
+    {{- end }}
     {{- end }}
     {{- end }}
     {{- if .Values.enableTokenAuth }}

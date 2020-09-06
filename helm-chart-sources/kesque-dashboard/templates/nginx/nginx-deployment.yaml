@@ -1,0 +1,88 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-nginx
+  annotations:
+  labels:
+    track: "{{ .Values.application.track }}"
+    tier: "{{ .Values.application.tier }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    app: nginx
+spec:
+  replicas: {{ .Values.nginx.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-nginx
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/port: "9113" 
+        prometheus.io/scrape: "true"
+      labels:
+        track: "{{ .Values.application.track }}"
+        tier: "{{ .Values.application.tier }}"
+        release: {{ .Release.Name }}
+        app: {{ .Release.Name }}-nginx
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - nginx 
+            topologyKey: "kubernetes.io/hostname"
+      volumes:
+        - name: nginxconf
+          configMap:
+            name: {{ .Release.Name }}-nginx-conf 
+            items: 
+            - key: nginx.conf
+              path: nginx.conf
+        {{- if .Values.ingress.tls.enabled }}
+        - name: certs
+          secret:
+            defaultMode: 420
+            secretName: {{ .Values.ingress.tls.secretName | default (printf "%s-tls" (include "fullname" .)) }}
+        {{- end }}
+      containers:
+      - name: nginx-prometheus
+        image: nginx/nginx-prometheus-exporter:0.3.0
+        args: ["-nginx.scrape-uri", "http://127.0.0.1:8080/nginx_status"]
+      - name: nginx 
+        image: nginx 
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: "{{ .Values.service.name }}-nginx"
+          containerPort: 80
+        {{- if .Values.ingress.tls.enabled }}
+        - name: "{{ .Values.service.name }}-nginx-tls"
+          containerPort: 443
+        {{- end }}
+        volumeMounts:
+        - mountPath: /etc/nginx
+          readOnly: true
+          name: nginxconf
+        {{- if .Values.ingress.tls.enabled }}
+        - mountPath: /certs
+          name: certs
+          readOnly: true
+        {{- end }}
+        livenessProbe:
+          httpGet:
+            path: /ruok
+            port: 80 
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        readinessProbe:
+          httpGet:
+            path: /ruok
+            port: 80 
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+        resources:

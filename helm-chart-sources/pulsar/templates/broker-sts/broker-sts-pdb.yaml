@@ -16,36 +16,26 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-
-apiVersion: v1
-kind: Service
+{{- if .Values.extra.brokerSts }}
+{{- if .Values.brokerSts.pdb.usePolicy }}
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
 metadata:
-  name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}"
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    component: {{ .Values.bookkeeper.component }}
+    component: {{ .Values.brokerSts.component }}
     cluster: {{ template "pulsar.fullname" . }}
-  annotations:
-    publishNotReadyAddresses: "true"
-    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
-    {{- if .Values.bookkeeper.service.annotations }}
-{{ toYaml .Values.bookkeeper.service.annotations | indent 4 }}
-    {{- end }}
 spec:
-  ports:
-  {{- if .Values.function.enableStateStorage }}
-  {{- if not (or .Values.extra.stateStorage .Values.function.stateStorageUrlOverride) }}
-  - name: statestorage
-    port: 4181
-  {{- end }}
-  {{- end }}
-{{ toYaml .Values.bookkeeper.service.ports | indent 2 }}
-  clusterIP: None
   selector:
-    app: {{ template "pulsar.name" . }}
-    release: {{ .Release.Name }}
-    component: {{ .Values.bookkeeper.component }}
+    matchLabels:
+      app: {{ template "pulsar.name" . }}
+      release: {{ .Release.Name }}
+      component: {{ .Values.brokerSts.component }}
+  maxUnavailable: {{ .Values.brokerSts.pdb.maxUnavailable }}
+{{- end }}
+{{- end }}

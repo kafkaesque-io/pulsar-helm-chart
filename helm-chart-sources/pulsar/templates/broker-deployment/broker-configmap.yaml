@@ -16,7 +16,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-
+{{- if .Values.extra.broker }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -201,3 +201,4 @@ data:
 {{- end }}
 {{- end }}
 {{ toYaml .Values.broker.configData | indent 2 }}
+{{- end }}

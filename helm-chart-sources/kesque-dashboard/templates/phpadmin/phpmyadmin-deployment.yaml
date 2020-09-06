@@ -1,0 +1,107 @@
+{{- if .Values.phpmyadmin.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: {{ .Release.Name }}-phpmyadmin
+  labels:
+    app: "{{ .Release.Name }}-phpmyadmin"
+    chart: {{ template "phpmyadmin.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-phpmyadmin
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-phpmyadmin
+        chart: {{ template "phpmyadmin.chart" . }}
+        release: {{ .Release.Name }}
+  {{- if .Values.phpmyadmin.podLabels }}
+{{ toYaml .Values.phpmyadmin.podLabels | indent 8 }}
+  {{- end }}
+{{- if or .Values.phpmyadmin.podAnnotations .Values.phpmyadmin.metrics.enabled }}
+      annotations:
+  {{- if .Values.phpmyadmin.podAnnotations }}
+{{ toYaml .Values.phpmyadmin.podAnnotations | indent 8 }}
+  {{- end }}
+  {{- if .Values.phpmyadmin.metrics.podAnnotations }}
+{{ toYaml .Values.phpmyadmin.metrics.podAnnotations | indent 8 }}
+  {{- end }}
+{{- end }}
+    spec:
+      {{- with .Values.phpmyadmin.nodeSelector }}
+      nodeSelector: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.phpmyadmin.affinity }}
+      affinity: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.phpmyadmin.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.phpmyadmin.podSecurityContext }}
+      securityContext: {{- toYaml .Values.phpmyadmin.podSecurityContext | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: phpmyadmin
+          image: {{ template "phpmyadmin.image" . }}
+          imagePullPolicy: {{ .Values.phpmyadmin.image.pullPolicy }}
+          {{- if .Values.phpmyadmin.containerSecurityContext }}
+          securityContext: {{- toYaml .Values.phpmyadmin.containerSecurityContext | nindent 12 }}
+          {{- end }}
+          env:
+            - name: PMA_USER
+              value: {{ .Values.application.dbUser }}
+            - name: DATABASE_PORT_NUMBER
+              value: {{ .Values.phpmyadmin.db.port | quote }}
+            - name: DATABASE_HOST
+              value: {{ .Release.Name }}-mariadb-svc
+            - name: PHPMYADMIN_ALLOW_NO_PASSWORD
+              value: "false"
+            - name: DATABASE_ENABLE_SSL
+              value: {{ ternary "yes" "no" .Values.phpmyadmin.db.enableSsl | quote }}
+            {{- if .Values.phpmyadmin.db.enableSsl }}
+            {{- if not (empty .Values.phpmyadmin.db.ssl.clientKey) }}
+            - name: DATABASE_SSL_KEY
+              value: "/db_certs/server_key.pem"
+            {{- end }}
+            {{- if not (empty .Values.phpmyadmin.db.ssl.clientCertificate) }}
+            - name: DATABASE_SSL_CERT
+              value: "/db_certs/server_certificate.pem"
+            {{- end }}
+            {{- if not (empty .Values.phpmyadmin.db.ssl.caCertificate) }}
+            - name: DATABASE_SSL_CA
+              value: "/db_certs/ca_certificate.pem"
+            {{- end }}
+            {{- if .Values.phpmyadmin.db.ssl.ciphers }}
+            - name: DATABASE_SSL_CIPHERS
+              values: {{ .Values.phpmyadmin.db.ssl.ciphers | quote }}
+            {{- end }}
+            - name: DATABASE_SSL_VERIFY
+              value: {{ ternary "yes" "no" .Values.phpmyadmin.db.ssl.verify | quote }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+          {{- if .Values.phpmyadmin.livenessProbe }}
+          livenessProbe: {{- include "phpmyadmin.tplValue" (dict "value" .Values.phpmyadmin.livenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.phpmyadmin.readinessProbe }}
+          readinessProbe: {{- include "phpmyadmin.tplValue" (dict "value" .Values.phpmyadmin.readinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.phpmyadmin.resources }}
+          resources: {{- toYaml .Values.phpmyadmin.resources | nindent 12 }}
+          {{- end }}
+          {{- if .Values.phpmyadmin.db.enableSsl }}
+          volumeMounts:
+          - name: ssl-certs
+            mountPath: /db_certs
+          {{- end }}
+{{- end }}

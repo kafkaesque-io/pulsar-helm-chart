@@ -16,57 +16,32 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-{{- if .Values.extra.function }}
+{{- if .Values.extra.broker }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    component: {{ .Values.function.component }}
+    component: {{ .Values.broker.component }}
     cluster: {{ template "pulsar.fullname" . }}
   annotations:
+{{- if .Values.extra.dnsOnBroker }}
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.dnsName }}
+{{- end }}
 spec:
   ports:
-{{ toYaml .Values.function.service.ports | indent 2 }}
-{{- if .Values.function.service.headless }}
+{{ toYaml .Values.broker.service.ports | indent 2 }}
+{{- if .Values.broker.service.headless }}
   clusterIP: None
 {{- end }}
-  type: {{ .Values.function.service.type }}
+  type: {{ .Values.broker.service.type }}
   selector:
     app: {{ template "pulsar.name" . }}
     release: {{ .Release.Name }}
-    component: {{ .Values.function.component }}
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca"
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app: {{ template "pulsar.name" . }}
-    chart: {{ template "pulsar.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-    component: {{ .Values.function.component }}
-    cluster: {{ template "pulsar.fullname" . }}
-  annotations:
-    {{- if .Values.function.service.annotations }}
-{{ toYaml .Values.function.service.annotations | indent 4 }}
-    {{- end }}
-spec:
-  ports:
-{{ toYaml .Values.function.service.ports | indent 2 }}
-  selector:
-    app: {{ template "pulsar.name" . }}
-    release: {{ .Release.Name }}
-    component: {{ .Values.function.component }}
-
+    component: {{ .Values.broker.component }}
 {{- end }}
-
-

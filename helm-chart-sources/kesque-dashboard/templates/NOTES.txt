@@ -1,0 +1,2 @@
+Application should be accessible at: {{ .Values.application.url }}
+

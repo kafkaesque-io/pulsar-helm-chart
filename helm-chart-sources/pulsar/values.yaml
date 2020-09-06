@@ -196,8 +196,12 @@ enableExtendedTests: no
 restartOnConfigMapChange:
   enabled: no
 
-## which extra components to deploy
+## which extra components
 extra:
+  # Broker as deployment
+  broker: yes
+  # Broker as stateful set
+  brokerSts: no
   # Pulsar proxy
   proxy: yes
   # Websocket proxy
@@ -271,6 +275,11 @@ extra:
 #
 image:
   broker:
+    # If not using tiered storage, you can use the smaller pulsar image for the broker
+    repository: apachepulsar/pulsar-all
+    pullPolicy: IfNotPresent
+    tag: 2.5.0
+  brokerSts:
     # If not using tiered storage, you can use the smaller pulsar image for the broker
     repository: apachepulsar/pulsar-all
     pullPolicy: IfNotPresent
@@ -511,6 +520,7 @@ bookkeeper:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8000"
   tolerations: []
+  pvcPrexix: ''
   probe:
     enabled: yes
     port: 3181
@@ -629,6 +639,100 @@ broker:
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 0
+  # nodeSelector:
+    # cloud.google.com/gke-nodepool: default-pool
+    #
+  # nodeAffinity: 
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: nodeppool
+  #         operator: In
+  #         values:
+  #         - pulsar
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+  tolerations: []
+  gracePeriod: 60
+  # Enable extra services in the broker
+  # These can also be enabled as standalone services
+  # See extras section above
+  functionsWorkerEnabled: no
+  webSocketServiceEnabled: no
+  probe:
+    enabled: yes
+    port: 8080
+    initial: 10
+    period: 30
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 1
+  # Init container to add files to image 
+  initContainer: {}
+  # initContainer:
+  #   repository: repository/image
+  #   tag: latest
+  #   pullPolicy: IfNotPresent
+  #   command: ["cp", "-r", "/pulsar-libs", "/jars" ]
+  #   emptyDirPath: "/jars"
+
+  ## Broker configmap
+  ## templates/broker-configmap.yaml
+  ##
+  configData:
+    PULSAR_MEM: "\"-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:ParallelGCThreads=32 -XX:ConcGCThreads=32 -XX:G1NewSizePercent=50 -XX:+DisableExplicitGC -XX:-ResizePLAB -XX:+ExitOnOutOfMemoryError -XX:+PerfDisableSharedMem\""
+    PULSAR_GC: "\"-XX:+UseG1GC -XX:MaxGCPauseMillis=10\""
+    PULSAR_LOG_LEVEL: "info"
+    PULSAR_LOG_ROOT_LEVEL: "info"
+    PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
+    managedLedgerDefaultEnsembleSize: "2"
+    managedLedgerDefaultWriteQuorum: "2"
+    managedLedgerDefaultAckQuorum: "2"
+    deduplicationEnabled: "true"
+    exposeTopicLevelMetricsInPrometheus: "true"
+    exposeConsumerLevelMetricsInPrometheus: "true"
+    backlogQuotaDefaultRetentionPolicy: "producer_exception"
+  
+  ## Broker service
+  ## templates/broker-service.yaml
+  ##
+  # If you are enabling TLS, make sure these ports are on the port list:
+  #   - name: https
+  #     port: 8443
+  #     protocol: TCP
+  #   - name: pulsarssl
+  #     port: 6651
+  # To only allow TLS connections, remove the plain-text ports (http, pulsar)
+  service:
+    annotations: {}
+    type: ClusterIP
+    headless: no
+    ports:
+    - name: http
+      port: 8080
+    - name: pulsar
+      port: 6650
+    - name: https
+      port: 8443
+    - name: pulsarssl
+      port: 6651
+  ingress:
+    enabled: no
+  ## Broker PodDisruptionBudget
+  ## templates/broker-pdb.yaml
+  ##
+  pdb:
+    usePolicy: yes
+    maxUnavailable: 1
+
+## Pulsar: Broker cluster
+## templates/broker-deployment.yaml
+##
+brokerSts:
+  component: brokersts
+  replicaCount: 3
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
     #

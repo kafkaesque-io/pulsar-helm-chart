@@ -41,7 +41,7 @@ data:
   # In k8s always want to use hostname as bookie ID since IP addresses are ephemeral
   useHostNameAsBookieID: "true"
   {{- if .Values.function.enableStateStorage }}
-    {{- if not .Values.extra.stateStorage }}
+    {{- if not (or .Values.extra.stateStorage .Values.function.stateStorageUrlOverride) }}
   # Enable function state storage
   PULSAR_PREFIX_extraServerComponents: org.apache.bookkeeper.stream.server.StreamStorageLifecycleComponent
     {{- end }}
