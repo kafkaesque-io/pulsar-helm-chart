@@ -36,14 +36,8 @@ You should verify that the new chart version are present in the index.yaml:
 
 https://helm.kafkaesque.io/index.yaml
 
-Once you have verified that the release was successful, update **master** with the new versions:
+Also confirm that **master** has been updated with the new versions in the Chart.yaml files.
 
-```
-git checkout master
-git merge release
-git pull
-git push
-```
 
 
 # How to Install a New Release
