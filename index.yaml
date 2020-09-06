@@ -11,7 +11,26 @@ entries:
     urls:
     - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/imagepuller-1.0.0/imagepuller-1.0.0.tgz
     version: 1.0.0
+  kesque-dashboard:
+  - apiVersion: v1
+    created: "2020-09-06T22:55:01.23459363Z"
+    description: Kesque Dashboard for Apache Pulsar
+    digest: acdade5b14cccd8cbfc261cd03aa1d7939aa7899aba33e327353cb7c4ebe3cfb
+    name: kesque-dashboard
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/kesque-dashboard-0.0.1/kesque-dashboard-0.0.1.tgz
+    version: 0.0.1
   pulsar:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-09-06T22:55:01.346479055Z"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: 542439ebc6c8cc4edc1bf1f717d6939364c325ca9258d61c5153471b8c33ea43
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.26/pulsar-1.0.26.tgz
+    version: 1.0.26
   - apiVersion: v1
     appVersion: "1.0"
     created: "2020-08-10T11:49:58.194649142-04:00"
