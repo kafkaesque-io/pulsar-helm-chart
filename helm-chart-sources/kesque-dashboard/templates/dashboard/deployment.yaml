@@ -15,8 +15,6 @@ spec:
   selector:
     matchLabels:
       app: {{ template "appname" . }}
-      track: "{{ .Values.application.track }}"
-      tier: "{{ .Values.application.tier }}"
       release: {{ .Release.Name }}
   template:
     metadata:
@@ -42,7 +40,7 @@ spec:
                 - {{ template "appname" . }} 
             topologyKey: "kubernetes.io/hostname"
       imagePullSecrets:
-{{ toYaml .Values.image.secrets | indent 10 }}
+      - name: {{ .Values.image.secret }}
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -54,19 +52,15 @@ spec:
         {{- end }}
         env:
         - name: WORDPRESS_DB_HOST
-          value: {{ .Values.application.WORDPRESS_DB_HOST }}
+          value: {{ .Release.Name }}-mariadb-svc
         - name: WORDPRESS_DB_USER
-          value: {{ .Values.application.WORDPRESS_DB_USER }}
+          value: {{ .Values.application.dbUser }}
         - name: WORDPRESS_DB_PASSWORD
-          value: {{ .Values.application.WORDPRESS_DB_PASSWORD }}
+          value: {{ .Values.application.dbPassword }}
         - name: WORDPRESS_DB_NAME
-          value: {{ .Values.application.WORDPRESS_DB_NAME }}
+          value: {{ .Values.application.dbName }}
         - name: WORDPRESS_CONFIG_EXTRA
-          value: "{{ .Values.application.WORDPRESS_CONFIG_EXTRA }}"
-        {{- if .Values.application.ALLOW_EMPTY_PASSWORD }}
-        - name: ALLOW_EMPTY_PASSWORD
-          value: "yes"
-        {{- end }}
+          value: "define('FS_METHOD', 'direct' ); define( 'WP_DEBUG_LOG', true ); define( 'WP_DEBUG_DISPLAY', false ); define( 'DISABLE_WP_CRON', true ); define( 'ALLOW_UNFILTERED_UPLOADS', true); define( 'WP_AUTO_UPDATE_CORE', false ); define( 'W3TC_CONFIG_DATABASE', true ); define( 'WP_HOME', '{{ .Values.application.url }}' ); define( 'WP_SITEURL', '{{ .Values.application.url }}' );"
         envFrom:
         - configMapRef:
             name: wp-keys-salts

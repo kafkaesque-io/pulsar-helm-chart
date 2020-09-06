@@ -1,28 +1,43 @@
 # Default values for chart.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-replicaCount: 3
+replicaCount: 1
 image:
-  repository: gitlab.example.com/group/project
-  tag: stable
+  repository: registry.gitlab.com/cdbartholomew/kafkaesque
+  # 
+  # Obtain credentials to the private repository from support@kesque.com
+  # 
+  username: deploy-token-user
+  password: deploy-token-password
+  tag: latest
   pullPolicy: Always
-  secrets:
-    - name: gitlab-registry
+  secret: gitlab
 podAnnotations: {}
 application:
   track: stable
   tier: web
-  WORDPRESS_DB_HOST: 10.55.112.3
-  WORDPRESS_DB_USER: kesque-db-user
-  WORDPRESS_DB_PASSWORD: changeme
-  WORDPRESS_DB_NAME: kesque-wp-db
-  ALLOW_EMPTY_PASSWORD: no
-  WORDPRESS_CONFIG_EXTRA: "define( 'AS3CF_SETTINGS', serialize( array( 'provider' => 'aws', 'access-key-id' => 'access-key', 'secret-access-key' => 'secret-key',) ) );define( 'W3TC_CONFIG_DATABASE', true );define( 'WP_AUTO_UPDATE_CORE', false ); define( 'WP_HOME', 'https://kesque.com' ); define( 'WP_SITEURL', 'https://kesque.com' );"
+  url: http://kesque-dashboard.example.com/
+  dbUser: kesque-db-user
+  # Change this password
+  dbPassword: 7Q5jciQVCFA9bt
+  dbName: k8s
+  adminUser: chris
+  # Change this password
+  adminPassword: k6Z6qr5D7s3Qe6
+  adminEmail: chris@kesque.com
+  clusterName: pulsar
+  # Use a superuser token
+  token: tokentoken
+  brokerService: pulsar-broker
+  proxyService: pulsar-proxy
+  httpService: pulsar-proxy
+
+
 service:
   enabled: true
   annotations: {}
   name: web
-  type: NodePort
+  type: ClusterIP
   url: http://my.host.com/
   additionalHosts:
   commonName:
@@ -33,33 +48,40 @@ service:
     mainPath: /*
     apiPath: /api/*
 ingress:
-  host: kafkaesque.io
+  host: kesque-dashboard.example.com
   tls:
-    enabled: true
+    enabled: no
     secretName: "production-tls"
-  annotations:
-    kubernetes.io/tls-acme: "true"
+  annotations: {}
+    # kubernetes.io/tls-acme: "true"
 nginx:
-  replicaCount: 3
-  enableMatchLabels: no
+  replicaCount: 1
   service:
-    type: NodePort
+    type: ClusterIP
   pulsar:
     k8sEnabled: no
     k8sTargetDns: pulsar-proxy
     clusterName: pulsar
 livenessProbe:
-  path: "/"
+  path: "/index.php"
   initialDelaySeconds: 15
   timeoutSeconds: 15
 readinessProbe:
-  path: "/"
+  path: "/index.php"
   initialDelaySeconds: 5
   timeoutSeconds: 3
 mariadb:
-  enabled: no
-  image: bitnami/mariadb:latest
-  rootPassword: uGTTB2C5GhJGHr
+  enabled: yes
+  image: mariadb:latest
+  # Change this password
+  rootPassword: KvrYDCwLvtn74u 
+  initContainer:
+    repository: kafkaesqueio/kesque-mariadb
+    tag: latest
+    pullPolicy: Always
+    command: "cp /db-startup-files/00_default-db.sql /docker-entrypoint-initdb.d && source /db-utils/create_db_update_script.sh"
+    # command: "sleep 100000"
+    emptyDirPath: "/docker-entrypoint-initdb.d"
   storageClassName: default
   volumeSize: 10Gi
   exporter:
@@ -79,7 +101,6 @@ phpmyadmin:
     port: 80
   db:
     port: 3306
-    host: foo
     bundleTestDB: false
     enableSsl: false
   ingress:

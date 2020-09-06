@@ -1,7 +1,7 @@
 apiVersion: apps/v1 
 kind: Deployment
 metadata:
-  name: nginx
+  name: {{ .Release.Name }}-nginx
   annotations:
   labels:
     track: "{{ .Values.application.track }}"
@@ -12,14 +12,10 @@ metadata:
     app: nginx
 spec:
   replicas: {{ .Values.nginx.replicaCount }}
-  {{- if .Values.nginx.enableMatchLabels }}
   selector:
     matchLabels:
-      app: nginx
-      track: "{{ .Values.application.track }}"
-      tier: "{{ .Values.application.tier }}"
+      app: {{ .Release.Name }}-nginx
       release: {{ .Release.Name }}
-  {{- end }}
   template:
     metadata:
       annotations:
@@ -29,7 +25,7 @@ spec:
         track: "{{ .Values.application.track }}"
         tier: "{{ .Values.application.tier }}"
         release: {{ .Release.Name }}
-        app: nginx
+        app: {{ .Release.Name }}-nginx
     spec:
       affinity:
         podAntiAffinity:
@@ -41,18 +37,19 @@ spec:
                 values:
                 - nginx 
             topologyKey: "kubernetes.io/hostname"
-
       volumes:
         - name: nginxconf
           configMap:
-            name: nginx-conf 
+            name: {{ .Release.Name }}-nginx-conf 
             items: 
             - key: nginx.conf
               path: nginx.conf
+        {{- if .Values.ingress.tls.enabled }}
         - name: certs
           secret:
             defaultMode: 420
             secretName: {{ .Values.ingress.tls.secretName | default (printf "%s-tls" (include "fullname" .)) }}
+        {{- end }}
       containers:
       - name: nginx-prometheus
         image: nginx/nginx-prometheus-exporter:0.3.0
@@ -62,16 +59,20 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - name: "{{ .Values.service.name }}-nginx"
-          containerPort: 80 
+          containerPort: 80
+        {{- if .Values.ingress.tls.enabled }}
         - name: "{{ .Values.service.name }}-nginx-tls"
-          containerPort: 443 
+          containerPort: 443
+        {{- end }}
         volumeMounts:
         - mountPath: /etc/nginx
           readOnly: true
-          name: nginxconf 
+          name: nginxconf
+        {{- if .Values.ingress.tls.enabled }}
         - mountPath: /certs
           name: certs
           readOnly: true
+        {{- end }}
         livenessProbe:
           httpGet:
             path: /ruok

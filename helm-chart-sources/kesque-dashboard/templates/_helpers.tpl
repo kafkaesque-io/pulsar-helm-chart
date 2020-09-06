@@ -31,3 +31,17 @@ Get a hostname from URL
 {{- define "hostname" -}}
 {{- . | trimPrefix "http://" |  trimPrefix "https://" | trimSuffix "/" | quote -}}
 {{- end -}}
+
+
+{{- define "image.dockerconfigjson" -}}
+{
+    "auths": {
+    "registry.gitlab.com": {
+        "username": "{{ .Values.image.username }}",
+        "password": "{{ .Values.image.password }}",
+        "email": "support@kesque.com",
+        "auth": "{{ tpl ("{{ .Values.image.username }}:{{ .Values.image.password }}") . | b64enc }}"
+        }
+    }
+}
+{{- end }}

@@ -18,18 +18,30 @@ spec:
     metadata:
       labels: *MariaDBDeploymentLabels
     spec:
+      volumes:
+      - name: db-init
+        emptyDir: {}
+      - name: db-utils
+        configMap:
+          name: "{{ .Release.Name }}-dbinitscript"
+          defaultMode: 0777
       initContainers:
-      - name: mariadb-create-directory-structure
-        image: busybox
+      {{- if .Values.mariadb.initContainer }}
+      - name: db-init
+        image: "{{ .Values.mariadb.initContainer.repository }}:{{ .Values.mariadb.initContainer.tag }}"
+        imagePullPolicy: "{{ .Values.mariadb.initContainer.pullPolicy }}"
         command:
           [
             "sh",
             "-c",
-            "/bin/mkdir -p /bitnami/mariadb/data && /bin/chmod -R 777 /bitnami/mariadb",
+            "{{ .Values.mariadb.initContainer.command }}",
           ]
         volumeMounts:
-          - name: {{ .Release.Name }}-mariadb-pvc
-            mountPath: /bitnami/mariadb
+          - name: db-init
+            mountPath: {{ .Values.mariadb.initContainer.emptyDirPath }}
+          - name: db-utils
+            mountPath: /db-utils
+      {{- end }}
       containers:
       - image: {{ .Values.mariadb.image }}
         name: mariadb
@@ -39,22 +51,22 @@ spec:
             memory: 300Mi
         env:
         # A password for root superuser.
-        - name: MARIADB_ROOT_PASSWORD
+        - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ .Release.Name }}-mariadb-secret
               key: root-password
         # A database name to be created at startup.
-        - name: MARIADB_DATABASE
-          value: {{ .Values.application.WORDPRESS_DB_NAME }}
+        - name: MYSQL_DATABASE
+          value: {{ .Values.application.dbName }}
         # A new user to be created at startup.
-        - name: MARIADB_USER
+        - name: MYSQL_USER
           valueFrom:
             secretKeyRef:
               name: {{ .Release.Name }}-mariadb-secret
               key: wp-user
         # A password of the new user created at startup.
-        - name: MARIADB_PASSWORD
+        - name: MYSQL_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ .Release.Name }}-mariadb-secret
@@ -64,14 +76,18 @@ spec:
           containerPort: 3306
         volumeMounts:
         - name: {{ .Release.Name }}-mariadb-pvc
-          mountPath: /bitnami/mariadb
+          mountPath: /var/lib/mysql
+        {{- if .Values.mariadb.initContainer }}
+        - name: db-init
+          mountPath: {{ .Values.mariadb.initContainer.emptyDirPath }}
+        {{- end }}
         readinessProbe:
           exec:
-            command: ["sh", "-c", "exec mysqladmin status -uroot -p$MARIADB_ROOT_PASSWORD"]
+            command: ["sh", "-c", "exec mysqladmin status -uroot -p$MYSQL_ROOT_PASSWORD"]
           initialDelaySeconds: 15
         livenessProbe:
           exec:
-            command: ["sh", "-c", "exec mysqladmin status -uroot -p$MARIADB_ROOT_PASSWORD"]
+            command: ["sh", "-c", "exec mysqladmin status -uroot -p$MYSQL_ROOT_PASSWORD"]
           initialDelaySeconds: 120
       {{ if .Values.metrics.exporter.enabled }}
       - image: {{ .Values.mariadb.exporter.image }}
@@ -126,7 +142,9 @@ spec:
         app.kubernetes.io/component: wp-server
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: {{ .Values.mariadb.storageClassName }} 
+      {{ if .Values.mariadb.storageClassName }}
+      storageClassName: {{ .Values.mariadb.storageClassName }}
+      {{- end }}
       resources:
         requests:
           storage: {{ .Values.mariadb.volumeSize }}

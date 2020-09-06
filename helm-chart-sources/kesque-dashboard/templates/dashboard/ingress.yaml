@@ -13,7 +13,6 @@ metadata:
 {{ toYaml .Values.ingress.annotations | indent 4 }}
 {{- end }}
 spec:
-spec:
   rules:
   - host: {{ toYaml .Values.ingress.host }}
     http:
@@ -23,11 +22,13 @@ spec:
           servicePort: {{ .Values.service.externalPort }}
         path: {{ .Values.service.ingress.mainPath }}
       - backend:
-          serviceName: nginx
+          serviceName: {{ .Release.Name }}-nginx
           servicePort: {{ .Values.service.externalPort }}
         path: {{ .Values.service.ingress.apiPath }}
+  {{- if .Values.ingress.tls.enabled }}
   tls:
   - hosts:
     - {{ toYaml .Values.ingress.host }}
     secretName: {{ .Values.ingress.tls.secretName | default (printf "%s-tls" (include "fullname" .)) }}
+  {{- end }}
 {{- end -}}

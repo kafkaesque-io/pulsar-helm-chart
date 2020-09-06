@@ -53,27 +53,14 @@ spec:
           securityContext: {{- toYaml .Values.phpmyadmin.containerSecurityContext | nindent 12 }}
           {{- end }}
           env:
+            - name: PMA_USER
+              value: {{ .Values.application.dbUser }}
             - name: DATABASE_PORT_NUMBER
               value: {{ .Values.phpmyadmin.db.port | quote }}
-            {{- if .Values.phpmyadmin.db.chartName }}
             - name: DATABASE_HOST
-              value: "{{ template "phpmyadmin.dbfullname" . }}"
-            {{- else if .Values.phpmyadmin.db.bundleTestDB }}
-            - name: DATABASE_HOST
-              value: "{{ template "mariadb.fullname" . }}"
-            {{- else }}
-            - name: DATABASE_HOST
-              value: {{ .Values.phpmyadmin.db.host | quote }}
-            {{- end }}
-            {{- if and (not .Values.phpmyadmin.db.chartName) (not .Values.phpmyadmin.db.host) }}
-            - name: PHPMYADMIN_ALLOW_NO_PASSWORD
-              value: "true"
-            - name: PHPMYADMIN_ALLOW_ARBITRARY_SERVER
-              value: "true"
-            {{- else }}
+              value: {{ .Release.Name }}-mariadb-svc
             - name: PHPMYADMIN_ALLOW_NO_PASSWORD
               value: "false"
-            {{- end }}
             - name: DATABASE_ENABLE_SSL
               value: {{ ternary "yes" "no" .Values.phpmyadmin.db.enableSsl | quote }}
             {{- if .Values.phpmyadmin.db.enableSsl }}

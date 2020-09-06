@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Release.Name }}-dbinitscript"
+data:
+  create_db_update_script.sh: |-
+    #!/bin/bash
+
+    INFILE=/db-startup-files/10_update-db-template.sql
+    OUTFILE=/docker-entrypoint-initdb.d/10_update-db.sql
+    URL={{ .Values.application.url }}
+
+    cp $INFILE $OUTFILE
+
+    sed 's/__DATABASENAME__/{{ .Values.application.dbName }}/g' -i $OUTFILE
+    sed 's/__ADMINUSER__/{{ .Values.application.adminUser }}/g' -i $OUTFILE
+    sed 's/__ADMINPASSWORD__/{{ .Values.application.adminPassword }}/g' -i $OUTFILE
+    sed 's/__ADMINEMAIL__/{{ .Values.application.adminEmail }}/g' -i $OUTFILE
+    sed 's/__TOKEN__/{{ .Values.application.token }}/g' -i $OUTFILE
+    sed "s|__URL__|$URL|g" -i $OUTFILE
+    sed "s|__CLUSTERNAME__|{{ .Values.application.clusterName }}|g" -i $OUTFILE
+    sed "s|__BROKERURL__|{{ .Values.application.brokerService }}|g" -i $OUTFILE
+    sed "s|__PROXYURL__|{{ .Values.application.proxyService }}|g" -i $OUTFILE
+    sed "s|__HTTPURL__|{{ .Values.application.httpService }}|g" -i $OUTFILE
+
+    URLLEN=${#URL}
+    # Need to add length of hard-coded path: /api/v1
+    LEN=$(($URLLEN + 7))
+
+
+    sed "s/__URLLEN__/$LEN/g" -i $OUTFILE
