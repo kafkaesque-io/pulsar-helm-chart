@@ -1076,6 +1076,7 @@ proxy:
   component: proxy
   replicaCount: 3
   disableZookeeperDiscovery: yes
+  useStsBrokersForDiscover: no
   updateStrategy:
     type: RollingUpdate
     rollingUpdate:
