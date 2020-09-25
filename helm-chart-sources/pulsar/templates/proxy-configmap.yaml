@@ -32,10 +32,17 @@ metadata:
     cluster: {{ template "pulsar.fullname" . }}
 data:
   {{- if .Values.proxy.disableZookeeperDiscovery }}
-  brokerServiceURL: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
-  brokerServiceURLTLS: "https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6651"
+  {{- if .Values.proxy.useStsBrokersForDiscovery }}
+  brokerServiceURL: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}:6650"
+  brokerServiceURLTLS: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}:6651"
+  brokerWebServiceURL: "http://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}:8080"
+  brokerWebServiceURLTLS: "https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}:8443"
+  {{- else }}
+  brokerServiceURL: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
+  brokerServiceURLTLS: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6651"
   brokerWebServiceURL: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080"
   brokerWebServiceURLTLS: "https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8443"
+  {{- end }}
   {{- end }}
   zookeeperServers:
     {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}

@@ -32,15 +32,15 @@ metadata:
 data:
   zookeeperServers: 
     {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
-    {{ include "pulsar.zkConnectStringTls" . }}
+    {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2281
     {{- else }}
-    {{ include "pulsar.zkConnectString" . }}
+    {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2181
     {{- end }}
   configurationStoreServers:
     {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
-    {{ include "pulsar.zkConnectStringTls" . }}
+    {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2281
     {{- else }}
-    {{ include "pulsar.zkConnectString" . }}
+    {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2181
     {{- end }}
   clusterName: {{ template "pulsar.fullname" . }}
   {{- if .Values.brokerSts.functionsWorkerEnabled }}

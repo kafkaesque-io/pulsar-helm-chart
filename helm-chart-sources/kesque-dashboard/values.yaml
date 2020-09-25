@@ -59,7 +59,7 @@ nginx:
   service:
     type: ClusterIP
   pulsar:
-    k8sEnabled: no
+    k8sEnabled: yes
     k8sTargetDns: pulsar-proxy
     clusterName: pulsar
 livenessProbe:
