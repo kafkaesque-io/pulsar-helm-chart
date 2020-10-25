@@ -32,6 +32,14 @@ git push origin release
 
 The chart-releaser tool will handle the packaging of the new version, will push it to the Github repo as a new [release](https://github.com/kafkaesque-io/pulsar-helm-chart/releases). It will update the index.yaml file for the Helm repo and commit it to **master** since this is where the GitHub pages are hosted. 
 
+If you see an error like this from the release script:
+
+```
+Error: error creating GitHub release: POST https://api.github.com/repos/kafkaesque-io/pulsar-helm-chart/releases: 422 Validation Failed [{Resource:Release Field:tag_name Code:already_exists Message:}]
+```
+
+It is likely becuase one of the Helm charts has changed but the version number was not increased. All the changed charts will be listed in the logs of the release script. Bump the missing versions and commit to the release branch.
+
 You should verify that the new chart version are present in the index.yaml:
 
 https://helm.kafkaesque.io/index.yaml
