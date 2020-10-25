@@ -32,14 +32,30 @@ metadata:
 data:
   functions_worker.yml: |-
     {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
-    configurationStoreServers: {{ include "pulsar.zkConnectStringTls" . }}
+      {{- if .Values.extra.zookeepernp }}
+    configurationStoreServers: {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2281,{{ template "pulsar.fullname" . }}-{{ .Values.zookeepernp.component }}-ca:2281
+      {{- else }}
+    configurationStoreServers: {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2281
+      {{- end }}
     {{- else }}
-    configurationStoreServers: {{ include "pulsar.zkConnectString" . }}
+      {{- if .Values.extra.zookeepernp }}
+    configurationStoreServers: {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2181,{{ template "pulsar.fullname" . }}-{{ .Values.zookeepernp.component }}-ca:2181
+      {{- else }}
+    configurationStoreServers: {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2181
+      {{- end }}
     {{- end }}
     {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
-    zookeeperServers: {{ include "pulsar.zkConnectStringTls" . }}
+      {{- if .Values.extra.zookeepernp }}
+    zookeeperServers: {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2281,{{ template "pulsar.fullname" . }}-{{ .Values.zookeepernp.component }}-ca:2281
+      {{- else }}
+    zookeeperServers: {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2281
+      {{- end }}
     {{- else }}
-    zookeeperServers: {{ include "pulsar.zkConnectString" . }}
+      {{- if .Values.extra.zookeepernp }}
+    zookeeperServers: {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2181,{{ template "pulsar.fullname" . }}-{{ .Values.zookeepernp.component }}-ca:2181
+      {{- else }}
+    zookeeperServers: {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2181
+      {{- end }}
     {{- end }}
     zooKeeperSessionTimeoutMillis: 30000
     pulsarFunctionsCluster: "{{ template "pulsar.fullname" . }}"
@@ -100,7 +116,7 @@ data:
     properties:
       tokenPublicKey: "file:///pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
     clientAuthenticationPlugin: "org.apache.pulsar.client.impl.auth.AuthenticationToken"
-    clientAuthenticationParameters: "file:///pulsar/token-superuser/superuser.jwt" 
+    clientAuthenticationParameters: "file:///pulsar/token-superuser/superuser.jwt"
     superUserRoles: 
         {{- range splitList "," .Values.superUserRoles }}
       - {{ . | quote }}
@@ -118,13 +134,14 @@ data:
       extraFunctionDependenciesDir:
     {{- end }}
     {{- if eq .Values.function.runtime "kubernetes" }}
+    secretsProviderConfiguratorClassName: org.apache.pulsar.functions.secretsproviderconfigurator.KubernetesSecretsProviderConfigurator
     kubernetesContainerFactory:
       # uri to kubernetes cluster, leave it to empty and it will use the kubernetes settings in function worker
       k8Uri:
       # the kubernetes namespace to run the function instances. it is `default`, if this setting is left to be empty
       jobNamespace: {{ .Release.Namespace }} 
       # the docker image to run function instance. by default it is `apachepulsar/pulsar`
-      pulsarDockerImageName: apachepulsar/pulsar
+      pulsarDockerImageName: {{ .Values.image.function.repository }}:{{ .Values.image.function.tag }}
       # the root directory of pulsar home directory in `pulsarDockerImageName`. by default it is `/pulsar`.
       # if you are using your own built image in `pulsarDockerImageName`, you need to set this setting accordingly
       pulsarRootDir: /pulsar
@@ -145,5 +162,10 @@ data:
       #extraFunctionDependenciesDir:
       # Additional memory padding added on top of the memory requested by the function per on a per instance basis
       percentMemoryPadding: 10
+    # runtimeCustomizerClassName: "org.apache.pulsar.functions.runtime.kubernetes.BasicKubernetesManifestCustomizer"
+    functionInstanceMinResources:
+      cpu: {{ .Values.function.k8sMinResources.cpu }}
+      ram: {{ .Values.function.k8sMinResources.ram }}
+      disk: {{ .Values.function.k8sMinResources.disk }}
     {{- end }}
 {{- end }}

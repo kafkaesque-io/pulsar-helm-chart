@@ -172,6 +172,7 @@ spec:
           emptyDir: {}
         {{- end }}
       initContainers:
+      {{- if .Values.enableWaitContainers }}
       # This init container will wait for bookkeeper to be ready before
       # deploying the broker
       - name: wait-bookkeeper-ready
@@ -183,6 +184,7 @@ spec:
             until nslookup {{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ add (.Values.bookkeeper.replicaCount | int) -1 }}.{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}.{{ .Release.Namespace }}; do
               sleep 3;
             done;
+      {{- end }}
       {{- if .Values.brokerSts.initContainer }}
       - name: add-libs
         image: "{{ .Values.brokerSts.initContainer.repository }}:{{ .Values.brokerSts.initContainer.tag }}"
