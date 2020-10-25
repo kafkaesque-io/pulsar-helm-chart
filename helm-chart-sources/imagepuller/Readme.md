@@ -15,10 +15,10 @@
 
 Pull a public image from Docker Hub: 
 ```
-IMAGE=apachepulsar/pulsar-all:2.4.1
-helm install --name imagepuller kafkaesque/imagepuller --set image=$IMAGE
+IMAGE=apachepulsar/pulsar-all:2.6.1
+helm install imagepuller kafkaesque/imagepuller --set image=$IMAGE
 ```
 Once all the pods are in a running state, delete the Helm release:
 ```
-helm delete imagepuller --purge
+helm delete imagepuller
 ```
