@@ -131,7 +131,11 @@ spec:
           {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
           /pulsar/tools/certconverter.sh &&
           {{- end }}
+          {{- if .Values.extra.zookeepernp }}
+          /pulsar/zookeeper-config/generate-zookeeper-config-mixed.sh conf/zookeeper.conf &&
+          {{- else }}
           bin/generate-zookeeper-config.sh conf/zookeeper.conf &&
+          {{- end }}
           exec bin/pulsar zookeeper
         ports:
         - name: client
@@ -143,7 +147,11 @@ spec:
         env:
         - name: ZOOKEEPER_SERVERS
           value:
+            {{- if .Values.extra.zookeepernp }}
+            {{ include "pulsar.zkConnectString" . }}
+            {{- else }}
             {{ include "pulsar.zkServers" . }}
+            {{- end }}
         envFrom:
         - configMapRef:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}"
@@ -171,6 +179,10 @@ spec:
         {{- end }}
         - name: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-{{ .Values.zookeeper.volumes.data.name }}"
           mountPath: /pulsar/data
+        {{- if .Values.extra.zookeepernp }}
+        - name: zookeeper-config
+          mountPath: /pulsar/zookeeper-config
+        {{- end }}
       volumes:
       {{- if and .Values.enableTls .Values.tls.zookeeper.enabled}}
       - name: certs
@@ -184,6 +196,12 @@ spec:
     {{- if not .Values.persistence }}
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-{{ .Values.zookeeper.volumes.data.name }}"
         emptyDir: {}
+    {{- end }}
+    {{- if .Values.extra.zookeepernp }}
+      - name: zookeeper-config
+        configMap: 
+          name: "{{ template "pulsar.fullname" . }}-zookeeper-config"
+          defaultMode: 0755
     {{- end }}
 {{- if .Values.persistence }}
   volumeClaimTemplates:

@@ -38,4 +38,5 @@ data:
   sslQuorum: "true"
   PULSAR_PREFIX_sslQuorum: "true"
   {{- end }}
+  PULSAR_PREFIX_quorumListenOnAllIPs: "true"
 {{ toYaml .Values.zookeeper.configData | indent 2 }}
