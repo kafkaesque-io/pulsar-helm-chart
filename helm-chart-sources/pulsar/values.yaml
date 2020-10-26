@@ -783,7 +783,7 @@ broker:
     managedLedgerDefaultEnsembleSize: "2"
     managedLedgerDefaultWriteQuorum: "2"
     managedLedgerDefaultAckQuorum: "2"
-    brokerDeduplicationEnabled: "true"
+    brokerDeduplicationEnabled: "false"
     exposeTopicLevelMetricsInPrometheus: "true"
     exposeConsumerLevelMetricsInPrometheus: "true"
     backlogQuotaDefaultRetentionPolicy: "producer_exception"
