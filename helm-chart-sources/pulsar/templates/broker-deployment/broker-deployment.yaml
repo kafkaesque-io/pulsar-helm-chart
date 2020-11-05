@@ -16,7 +16,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-
+{{- if .Values.extra.broker }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -175,6 +175,7 @@ spec:
           emptyDir: {}
         {{- end }}
       initContainers:
+      {{- if .Values.enableWaitContainers }}
       # This init container will wait for bookkeeper to be ready before
       # deploying the broker
       - name: wait-bookkeeper-ready
@@ -186,6 +187,7 @@ spec:
             until nslookup {{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-{{ add (.Values.bookkeeper.replicaCount | int) -1 }}.{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}.{{ .Release.Namespace }}; do
               sleep 3;
             done;
+      {{- end }}
       {{- if .Values.broker.initContainer }}
       - name: add-libs
         image: "{{ .Values.broker.initContainer.repository }}:{{ .Values.broker.initContainer.tag }}"
@@ -285,3 +287,4 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
+{{- end }}

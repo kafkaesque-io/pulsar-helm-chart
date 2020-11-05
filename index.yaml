@@ -3,6 +3,16 @@ entries:
   imagepuller:
   - apiVersion: v1
     appVersion: "1.0"
+    created: "2020-10-25T22:54:29.162199583Z"
+    description: Pull container images to your nodes so that they are already present
+      when containers are launched
+    digest: 9bf8446e25ee7595cc74a700f1005f6bc60d65a856aa14dd74916ad586ecb5a5
+    name: imagepuller
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/imagepuller-1.0.1/imagepuller-1.0.1.tgz
+    version: 1.0.1
+  - apiVersion: v1
+    appVersion: "1.0"
     created: "2019-12-15T20:21:43.960624756Z"
     description: Pull container images to your nodes so that they are already present
       when containers are launched
@@ -11,7 +21,54 @@ entries:
     urls:
     - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/imagepuller-1.0.0/imagepuller-1.0.0.tgz
     version: 1.0.0
+  kesque-dashboard:
+  - apiVersion: v1
+    created: "2020-10-25T22:54:29.256758385Z"
+    description: Kesque Dashboard for Apache Pulsar
+    digest: c2f996903dc34daee71bd08491d09a01366a756a5f27995277566fad6fccc0c2
+    name: kesque-dashboard
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/kesque-dashboard-0.0.2/kesque-dashboard-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v1
+    created: "2020-09-06T22:55:01.23459363Z"
+    description: Kesque Dashboard for Apache Pulsar
+    digest: acdade5b14cccd8cbfc261cd03aa1d7939aa7899aba33e327353cb7c4ebe3cfb
+    name: kesque-dashboard
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/kesque-dashboard-0.0.1/kesque-dashboard-0.0.1.tgz
+    version: 0.0.1
   pulsar:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-10-26T10:31:43.268402565-04:00"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: b09aafed0d095b5e86a24f87b3438e5f91379b2a98b54ec12333ccd481f32204
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.28/pulsar-1.0.28.tgz
+    version: 1.0.28
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-10-25T22:54:29.34958689Z"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: 4a91e32709d1b9bfab0b0428fa6e8e0ed227f4dd19b805297151812b5b103b2f
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.27/pulsar-1.0.27.tgz
+    version: 1.0.27
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-09-06T22:55:01.346479055Z"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: 542439ebc6c8cc4edc1bf1f717d6939364c325ca9258d61c5153471b8c33ea43
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.26/pulsar-1.0.26.tgz
+    version: 1.0.26
   - apiVersion: v1
     appVersion: "1.0"
     created: "2020-08-10T11:49:58.194649142-04:00"
@@ -215,6 +272,15 @@ entries:
   pulsar-monitor:
   - apiVersion: v1
     appVersion: "1.0"
+    created: "2020-10-25T22:54:29.467703798Z"
+    description: A Helm chart for the Pulsar Monitor application
+    digest: bfe96199ee47055692ed6e6b189a7bea9e05c54adcd07b8e46d63f3b8d747c0d
+    name: pulsar-monitor
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-monitor-0.1.6/pulsar-monitor-0.1.6.tgz
+    version: 0.1.6
+  - apiVersion: v1
+    appVersion: "1.0"
     created: "2020-07-12T13:38:52.516529435Z"
     description: A Helm chart for the Pulsar Monitor application
     digest: e3a5d9cf9e0ce78712214c506a9cdb4e79d90b908cec36a24308542198b2880a
@@ -259,6 +325,13 @@ entries:
     - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-monitor-0.1.0/pulsar-monitor-0.1.0.tgz
     version: 0.1.0
   teleport:
+  - created: "2020-10-25T22:54:29.561550194Z"
+    description: Teleport Community
+    digest: ef11ec7225e1b96655f82ebae816b7c5a146e735ce6a53c2bbf8dc1c244f3162
+    name: teleport
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/teleport-1.0.1/teleport-1.0.1.tgz
+    version: 1.0.1
   - created: "2020-02-13T18:26:05.106048182Z"
     description: Teleport Community
     digest: def95a688ce6f14856f2c6cb9ba74ec0b3e90f145d4b1c214121c0580f1c9076

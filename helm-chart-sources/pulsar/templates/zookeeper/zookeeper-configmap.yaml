@@ -18,29 +18,25 @@
 #
 
 apiVersion: v1
-kind: Service
+kind: ConfigMap
 metadata:
-  name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}"
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    component: {{ .Values.broker.component }}
+    component: {{ .Values.zookeeper.component }}
     cluster: {{ template "pulsar.fullname" . }}
-  annotations:
-{{- if .Values.extra.dnsOnBroker }}
-    external-dns.alpha.kubernetes.io/hostname: {{ .Values.dnsName }}
-{{- end }}
-spec:
-  ports:
-{{ toYaml .Values.broker.service.ports | indent 2 }}
-{{- if .Values.broker.service.headless }}
-  clusterIP: None
-{{- end }}
-  type: {{ .Values.broker.service.type }}
-  selector:
-    app: {{ template "pulsar.name" . }}
-    release: {{ .Release.Name }}
-    component: {{ .Values.broker.component }}
+data:
+  {{- if and .Values.enableTls .Values.tls.zookeeper.enabled}}
+  PULSAR_PREFIX_serverCnxnFactory: org.apache.zookeeper.server.NettyServerCnxnFactory
+  serverCnxnFactory: org.apache.zookeeper.server.NettyServerCnxnFactory
+  secureClientPort: "2281"
+  PULSAR_PREFIX_secureClientPort: "2281"
+  sslQuorum: "true"
+  PULSAR_PREFIX_sslQuorum: "true"
+  {{- end }}
+  PULSAR_PREFIX_quorumListenOnAllIPs: "true"
+{{ toYaml .Values.zookeeper.configData | indent 2 }}

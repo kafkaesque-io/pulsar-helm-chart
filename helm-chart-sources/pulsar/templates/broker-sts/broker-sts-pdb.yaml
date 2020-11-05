@@ -16,10 +16,26 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-
-apiVersion: v1
-appVersion: "1.0"
-description: Apache Pulsar Helm chart for Kubernetes
-name: pulsar
-icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
-version: 1.0.27
+{{- if .Values.extra.brokerSts }}
+{{- if .Values.brokerSts.pdb.usePolicy }}
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "pulsar.name" . }}
+    chart: {{ template "pulsar.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.brokerSts.component }}
+    cluster: {{ template "pulsar.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "pulsar.name" . }}
+      release: {{ .Release.Name }}
+      component: {{ .Values.brokerSts.component }}
+  maxUnavailable: {{ .Values.brokerSts.pdb.maxUnavailable }}
+{{- end }}
+{{- end }}

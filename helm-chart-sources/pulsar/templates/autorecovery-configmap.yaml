@@ -33,9 +33,17 @@ metadata:
 data:
   zkServers:
     {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
-    {{ include "pulsar.zkConnectStringTls" . }}
+      {{- if .Values.extra.zookeepernp }}
+    {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2281,{{ template "pulsar.fullname" . }}-{{ .Values.zookeepernp.component }}-ca:2281
+      {{- else }}
+    {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2281
+      {{- end }}
     {{- else }}
-    {{ include "pulsar.zkConnectString" . }}
+      {{- if .Values.extra.zookeepernp }}
+    {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2181,{{ template "pulsar.fullname" . }}-{{ .Values.zookeepernp.component }}-ca:2181
+      {{- else }}
+    {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2181
+      {{- end }}
     {{- end }}
 {{ toYaml .Values.autoRecovery.configData | indent 2 }}
 {{- end }}

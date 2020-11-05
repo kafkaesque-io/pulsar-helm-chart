@@ -32,25 +32,48 @@ metadata:
     cluster: {{ template "pulsar.fullname" . }}
 data:
   {{- if .Values.proxy.disableZookeeperDiscovery }}
-  brokerServiceURL: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
-  brokerServiceURLTLS: "https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6651"
+  {{- if .Values.proxy.useStsBrokersForDiscovery }}
+  brokerServiceURL: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}:6650"
+  brokerServiceURLTLS: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}:6651"
+  brokerWebServiceURL: "http://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}:8080"
+  brokerWebServiceURLTLS: "https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}:8443"
+  {{- else }}
+  brokerServiceURL: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
+  brokerServiceURLTLS: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6651"
   brokerWebServiceURL: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080"
   brokerWebServiceURLTLS: "https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8443"
   {{- end }}
-  zookeeperServers:
+  {{- end }}
+  zookeeperServers: 
     {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
-    "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2281"
+    {{- if .Values.extra.zookeepernp }}
+    {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2281,{{ template "pulsar.fullname" . }}-{{ .Values.zookeepernp.component }}-ca:2281
     {{- else }}
-    "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2181"
+    {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2281
+    {{- end }}
+    {{- else }}
+    {{- if .Values.extra.zookeepernp }}
+    {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2181,{{ template "pulsar.fullname" . }}-{{ .Values.zookeepernp.component }}-ca:2181
+    {{- else }}
+    {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2181
+    {{- end }}
     {{- end }}
   configurationStoreServers:
     {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
-    "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2281"
+    {{- if .Values.extra.zookeepernp }}
+    {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2281,{{ template "pulsar.fullname" . }}-{{ .Values.zookeepernp.component }}-ca:2281
     {{- else }}
-    "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2181"
+    {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2281
+    {{- end }}
+    {{- else }}
+    {{- if .Values.extra.zookeepernp }}
+    {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2181,{{ template "pulsar.fullname" . }}-{{ .Values.zookeepernp.component }}-ca:2181
+    {{- else }}
+    {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca:2181
+    {{- end }}
     {{- end }}
   {{- if .Values.extra.function }}
-  functionWorkerWebServiceURL: "http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:6750"
+  functionWorkerWebServiceURL: "http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca:6750"
   {{- end }}
 {{- if .Values.enableTls }}
   tlsEnabledInProxy: "true"
@@ -62,7 +85,6 @@ data:
   tlsTrustCertsFilePath: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
   {{- end }}
   tlsProtocols: "TLSv1.2,TLSv1.1"
-  tlsEnabledWithBroker: "true"
   {{- if .Values.secrets }}
   brokerClientTrustCertsFilePath: /pulsar/certs/ca.crt
   {{- else }}
@@ -71,7 +93,15 @@ data:
   brokerServicePortTls: "6651"
   webServicePortTls: "8443"
   servicePortTls: "6651"
-  functionWorkerWebServiceURLTLS: "https://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}:6751"
+  {{- if .Values.extra.function }}
+  {{- if .Values.tls.function.enabled }}
+  tlsEnabledWithBroker: "true"
+  functionWorkerWebServiceURLTLS: "https://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca:6751"
+  {{- else }}
+  tlsEnabledWithBroker: "false"
+  functionWorkerWebServiceURL: "http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca:6750"
+  {{- end }}
+  {{- end }}
 {{- end }}
 {{- if .Values.enableTokenAuth }}
   authenticationEnabled: "true"

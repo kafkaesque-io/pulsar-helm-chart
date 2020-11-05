@@ -1,0 +1,177 @@
+# Default values for chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+image:
+  repository: registry.gitlab.com/cdbartholomew/kafkaesque
+  # 
+  # Obtain credentials to the private repository from support@kesque.com
+  # 
+  username: deploy-token-user
+  password: deploy-token-password
+  tag: latest
+  pullPolicy: Always
+  secret: gitlab
+podAnnotations: {}
+application:
+  track: stable
+  tier: web
+  url: http://kesque-dashboard.example.com/
+  dbUser: kesque-db-user
+  # Change this password
+  dbPassword: 7Q5jciQVCFA9bt
+  dbName: k8s
+  adminUser: chris
+  # Change this password
+  adminPassword: k6Z6qr5D7s3Qe6
+  adminEmail: chris@kesque.com
+  clusterName: pulsar
+  # Use a superuser token
+  token: tokentoken
+  brokerService: pulsar-broker
+  proxyService: pulsar-proxy
+  httpService: pulsar-proxy
+
+
+service:
+  enabled: true
+  annotations: {}
+  name: web
+  type: ClusterIP
+  url: http://my.host.com/
+  additionalHosts:
+  commonName:
+  externalPort: 80
+  internalPort: 80
+  ingress:
+    enabled: true
+    mainPath: /*
+    apiPath: /api/*
+ingress:
+  host: kesque-dashboard.example.com
+  tls:
+    enabled: no
+    secretName: "production-tls"
+  annotations: {}
+    # kubernetes.io/tls-acme: "true"
+nginx:
+  replicaCount: 1
+  service:
+    type: ClusterIP
+  pulsar:
+    k8sEnabled: yes
+    k8sTargetDns: pulsar-proxy
+    clusterName: pulsar
+livenessProbe:
+  path: "/index.php"
+  initialDelaySeconds: 15
+  timeoutSeconds: 15
+readinessProbe:
+  path: "/index.php"
+  initialDelaySeconds: 5
+  timeoutSeconds: 3
+mariadb:
+  enabled: yes
+  image: mariadb:latest
+  # Change this password
+  rootPassword: KvrYDCwLvtn74u 
+  initContainer:
+    repository: kafkaesqueio/kesque-mariadb
+    tag: latest
+    pullPolicy: Always
+    command: "cp /db-startup-files/00_default-db.sql /docker-entrypoint-initdb.d && source /db-utils/create_db_update_script.sh"
+    # command: "sleep 100000"
+    emptyDirPath: "/docker-entrypoint-initdb.d"
+  storageClassName: default
+  volumeSize: 10Gi
+  exporter:
+    image: prom/mysqld-exporter:latest
+    user: mysqld-exporter
+    password: oWJsz7tQWGBUsN
+
+phpmyadmin:
+  enabled: no
+  image:
+    registry: docker.io
+    repository: bitnami/phpmyadmin
+    tag: 5.0.2-debian-10-r75
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+  db:
+    port: 3306
+    bundleTestDB: false
+    enableSsl: false
+  ingress:
+    enabled: false
+    certManager: false
+    rewriteTarget: true
+    hosts:
+      - name: phpmyadmin.local
+        path: /
+        tls: false
+        tlsSecret: phpmyadmin.local-tls
+  podSecurityContext:
+    fsGroup: 1001
+  containerSecurityContext:
+    runAsUser: 1001
+  livenessProbe:
+    initialDelaySeconds: 30
+    timeoutSeconds: 30
+    periodSeconds: 10
+    successThreshold: 1
+    failureThreshold: 6
+    httpGet:
+      path: /
+      port: http
+  readinessProbe:
+    initialDelaySeconds: 30
+    timeoutSeconds: 30
+    periodSeconds: 10
+    successThreshold: 1
+    failureThreshold: 6
+    httpGet:
+      path: /
+      port: http
+  resources:
+    limits: {}
+    requests: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podLabels: {}
+  podAnnotations: {}
+  metrics:
+    enabled: false
+    image:
+      registry: docker.io
+      repository: bitnami/apache-exporter
+      tag: 0.8.0-debian-10-r63
+      pullPolicy: IfNotPresent
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9117"
+    resources: {}  
+# Export metrics to Google StackDriver
+metrics:
+  image: 
+  exporter:
+    enabled: no
+
+
+resources:
+#  limits:
+#    cpu: 100m
+#    memory: 128Mi
+#  requests:
+#    cpu: 100m
+#    memory: 128Mi
+
+## Configure PodDisruptionBudget
+## ref: https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
+#
+podDisruptionBudget:
+  enabled: false
+  # minAvailable: 1
+  maxUnavailable: 1

@@ -37,6 +37,12 @@ prometheus_persistence: yes
 
 prometheus_rbac: yes
 
+# Enable initContainers that wait for dependent components to 
+# be enabled. Provides a graceful initial install. However, it some
+# failure scenarios it can prevent containers from starting
+# even though they could operate.
+enableWaitContainers: yes
+
 # If default_storage is set, that storage class is the default for all 
 # persistent volmes created by the chart.
 #
@@ -196,8 +202,12 @@ enableExtendedTests: no
 restartOnConfigMapChange:
   enabled: no
 
-## which extra components to deploy
+## which extra components
 extra:
+  # Broker as deployment
+  broker: yes
+  # Broker as stateful set
+  brokerSts: no
   # Pulsar proxy
   proxy: yes
   # Websocket proxy
@@ -216,6 +226,14 @@ extra:
   # When enabling the standalone function worker, the proxy will be configured
   # to forward function API calls.
   #
+  # ZooKeeper with non-persistent storage
+  #
+  # These are extra ZooKeepers that can be used to achieve quorum that
+  # are not locked to an AZ or host by a PVC requirement
+  # They can "float" between AZs for quorum in complete AZ failure scenarios
+  zookeepernp: no
+  # Standalone function worker
+  # 
   function: no 
   # Standalone state storage
   # Note that standalone state storage is experimental and requires a custom
@@ -274,27 +292,32 @@ image:
     # If not using tiered storage, you can use the smaller pulsar image for the broker
     repository: apachepulsar/pulsar-all
     pullPolicy: IfNotPresent
-    tag: 2.5.0
+    tag: 2.6.1
+  brokerSts:
+    # If not using tiered storage, you can use the smaller pulsar image for the broker
+    repository: apachepulsar/pulsar-all
+    pullPolicy: IfNotPresent
+    tag: 2.6.1
   function:
     repository: apachepulsar/pulsar-all
     pullPolicy: IfNotPresent
-    tag: 2.5.0
+    tag: 2.6.1
   zookeeper:
     repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
-    tag: 2.5.0
+    tag: 2.6.1
   bookkeeper:
     repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
-    tag: 2.5.0
+    tag: 2.6.1
   proxy:
     repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
-    tag: 2.5.0
+    tag: 2.6.1
   bastion:
     repository: apachepulsar/pulsar
     pullPolicy: IfNotPresent
-    tag: 2.5.0
+    tag: 2.6.1
   pulsarBeam:
     repository: kafkaesqueio/pulsar-beam
     pullPolicy: IfNotPresent
@@ -428,6 +451,9 @@ zookeeper:
     requests:
       memory: 1Gi
       cpu: 0.3
+    # limits:
+    #   memory: 1Gi
+    #   cpu: 0.3
   volumes:
     data:
       name: data
@@ -455,8 +481,8 @@ zookeeper:
   ## templates/zookeeper-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms1g -Xmx1g -Dcom.sun.management.jmxremote -Djute.maxbuffer=10485760 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+DisableExplicitGC -XX:+PerfDisableSharedMem -Dzookeeper.forceSync=no\""
-    PULSAR_GC: "\"-XX:+UseG1GC -XX:MaxGCPauseMillis=10\""
+    PULSAR_MEM: "\"-Xms1g -Xmx1g -Dcom.sun.management.jmxremote -Djute.maxbuffer=10485760\""
+    PULSAR_GC: "\"-XX:+UseG1GC\""
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -474,6 +500,76 @@ zookeeper:
       port: 2181
   ## Zookeeper PodDisruptionBudget
   ## templates/zookeeper-pdb.yaml
+  ##
+  pdb:
+    usePolicy: yes
+    maxUnavailable: 1
+
+## Pulsar: Zookeeper cluster non persistent storage
+## Used as floating Zookeeper to maintain quorum in AZ failures
+## templates/zookeepernp-statefulset.yaml
+##
+zookeepernp:
+  component: zookeepernp
+  # Keep count at 0 unless you are using the non-persistent zookeeper
+  replicaCount: 0
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  # nodeSelector:
+    # cloud.google.com/gke-nodepool: default-pool
+  # nodeAffinity:
+  #   preferredDuringSchedulingIgnoredDuringExecution:
+  #   - weight: 1
+  #     preference:
+  #       matchExpressions:
+  #       - key: failure-domain.beta.kubernetes.io/region
+  #         operator: In
+  #         values:
+  #         - region1
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8000"
+  tolerations: []
+  gracePeriod: 60
+  probe:
+    enabled: yes
+    initial: 10
+    period: 30
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 0.3
+    # limits:
+    #   memory: 1Gi
+    #   cpu: 0.3
+  # Volume is emptyDir
+  volumes:
+    data:
+      name: data
+  ## Zookeeper configmap
+  ## templates/zookeepernp-configmap.yaml
+  ##
+  configData:
+    PULSAR_MEM: "\"-Xms1g -Xmx1g -Dcom.sun.management.jmxremote -Djute.maxbuffer=10485760\""
+    PULSAR_GC: "\"-XX:+UseG1GC\""
+    PULSAR_LOG_LEVEL: "info"
+    PULSAR_LOG_ROOT_LEVEL: "info"
+    PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
+  ## Zookeeper service
+  ## templates/zookeepernp-service.yaml
+  ##
+  service:
+    annotations:
+    ports:
+    - name: server
+      port: 2888
+    - name: leader-election
+      port: 3888
+    - name: client
+      port: 2181
+  ## Zookeeper PodDisruptionBudget
+  ## templates/zookeepernp-pdb.yaml
   ##
   pdb:
     usePolicy: yes
@@ -511,6 +607,7 @@ bookkeeper:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8000"
   tolerations: []
+  pvcPrexix: ''
   probe:
     enabled: yes
     port: 3181
@@ -521,6 +618,9 @@ bookkeeper:
     requests:
       memory: 2Gi
       cpu: 1
+    # limits:
+    #   memory: 2Gi
+    #   cpu: 1
   volumes:
     journal:
       name: journal
@@ -597,8 +697,8 @@ bookkeeper:
   ## templates/bookkeeper-configmap.yaml
   ##
   configData:
-    BOOKIE_MEM: "\"-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:ParallelGCThreads=32 -XX:ConcGCThreads=32 -XX:G1NewSizePercent=50 -XX:+DisableExplicitGC -XX:-ResizePLAB -XX:+ExitOnOutOfMemoryError -XX:+PerfDisableSharedMem -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCApplicationStoppedTime -XX:+PrintHeapAtGC -verbosegc -XX:G1LogLevel=finest\""
-    BOOKIE_GC: "\"-XX:+UseG1GC -XX:MaxGCPauseMillis=10\""
+    BOOKIE_MEM: "\"-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ExitOnOutOfMemoryError\""
+    BOOKIE_GC: "\"-XX:+UseG1GC\""
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -659,6 +759,9 @@ broker:
     requests:
       memory: 2Gi
       cpu: 1
+    # limits:
+    #   memory: 2Gi
+    #   cpu: 1
   # Init container to add files to image 
   initContainer: {}
   # initContainer:
@@ -672,15 +775,112 @@ broker:
   ## templates/broker-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:ParallelGCThreads=32 -XX:ConcGCThreads=32 -XX:G1NewSizePercent=50 -XX:+DisableExplicitGC -XX:-ResizePLAB -XX:+ExitOnOutOfMemoryError -XX:+PerfDisableSharedMem\""
-    PULSAR_GC: "\"-XX:+UseG1GC -XX:MaxGCPauseMillis=10\""
+    PULSAR_MEM: "\"-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ExitOnOutOfMemoryError\""
+    PULSAR_GC: "\"-XX:+UseG1GC\""
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
     managedLedgerDefaultEnsembleSize: "2"
     managedLedgerDefaultWriteQuorum: "2"
     managedLedgerDefaultAckQuorum: "2"
-    deduplicationEnabled: "true"
+    brokerDeduplicationEnabled: "false"
+    exposeTopicLevelMetricsInPrometheus: "true"
+    exposeConsumerLevelMetricsInPrometheus: "true"
+    backlogQuotaDefaultRetentionPolicy: "producer_exception"
+  
+  ## Broker service
+  ## templates/broker-service.yaml
+  ##
+  # If you are enabling TLS, make sure these ports are on the port list:
+  #   - name: https
+  #     port: 8443
+  #     protocol: TCP
+  #   - name: pulsarssl
+  #     port: 6651
+  # To only allow TLS connections, remove the plain-text ports (http, pulsar)
+  service:
+    annotations: {}
+    type: ClusterIP
+    headless: no
+    ports:
+    - name: http
+      port: 8080
+    - name: pulsar
+      port: 6650
+    - name: https
+      port: 8443
+    - name: pulsarssl
+      port: 6651
+  ingress:
+    enabled: no
+  ## Broker PodDisruptionBudget
+  ## templates/broker-pdb.yaml
+  ##
+  pdb:
+    usePolicy: yes
+    maxUnavailable: 1
+
+## Pulsar: Broker cluster
+## templates/broker-deployment.yaml
+##
+brokerSts:
+  component: brokersts
+  replicaCount: 3
+  # nodeSelector:
+    # cloud.google.com/gke-nodepool: default-pool
+    #
+  # nodeAffinity: 
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: nodeppool
+  #         operator: In
+  #         values:
+  #         - pulsar
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+  tolerations: []
+  gracePeriod: 60
+  # Enable extra services in the broker
+  # These can also be enabled as standalone services
+  # See extras section above
+  functionsWorkerEnabled: no
+  webSocketServiceEnabled: no
+  probe:
+    enabled: yes
+    port: 8080
+    initial: 10
+    period: 30
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 1
+    # limits:
+    #   memory: 2Gi
+    #   cpu: 1
+  # Init container to add files to image 
+  initContainer: {}
+  # initContainer:
+  #   repository: repository/image
+  #   tag: latest
+  #   pullPolicy: IfNotPresent
+  #   command: ["cp", "-r", "/pulsar-libs", "/jars" ]
+  #   emptyDirPath: "/jars"
+
+  ## Broker configmap
+  ## templates/broker-configmap.yaml
+  ##
+  configData:
+    PULSAR_MEM: "\"-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ExitOnOutOfMemoryError\""
+    PULSAR_GC: "\"-XX:+UseG1GC\""
+    PULSAR_LOG_LEVEL: "info"
+    PULSAR_LOG_ROOT_LEVEL: "info"
+    PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
+    managedLedgerDefaultEnsembleSize: "2"
+    managedLedgerDefaultWriteQuorum: "2"
+    managedLedgerDefaultAckQuorum: "2"
+    brokerDeduplicationEnabled: "true"
     exposeTopicLevelMetricsInPrometheus: "true"
     exposeConsumerLevelMetricsInPrometheus: "true"
     backlogQuotaDefaultRetentionPolicy: "producer_exception"
@@ -732,6 +932,10 @@ function:
     period: 30
   # Only the process runtime has been tested with this chart
   runtime: "process"
+  k8sMinResources:
+    cpu: "0.1"
+    ram: "307200000"
+    disk: "10737418240"
   # If state storage is enabled state storage will be enabled on Bookkeeper and the 
   # function workers will connect to BookKeeper by default.
   # If you enable standalone state storage (extra.stateStorage), the function workers will 
@@ -758,6 +962,9 @@ function:
     requests:
       memory: 4Gi
       cpu: 1
+    # limits:
+    #   memory: 4Gi
+    #   cpu: 1
   volumes:
     data:
       name: logs
@@ -795,8 +1002,8 @@ function:
   ## templates/function-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:ParallelGCThreads=32 -XX:ConcGCThreads=32 -XX:G1NewSizePercent=50 -XX:+DisableExplicitGC -XX:-ResizePLAB -XX:+ExitOnOutOfMemoryError -XX:+PerfDisableSharedMem\""
-    PULSAR_GC: "\"-XX:+UseG1GC -XX:MaxGCPauseMillis=10\""
+    PULSAR_MEM: "\"-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -XX:+ExitOnOutOfMemoryError\""
+    PULSAR_GC: "\"-XX:+UseG1GC\""
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -919,6 +1126,9 @@ stateStorage:
     requests:
       memory: 1Gi
       cpu: 0.5 
+    # limits:
+    #   memory: 1Gi
+    #   cpu: 0.5 
   volumes:
     data:
       name: data
@@ -972,6 +1182,7 @@ proxy:
   component: proxy
   replicaCount: 3
   disableZookeeperDiscovery: yes
+  useStsBrokersForDiscover: no
   updateStrategy:
     type: RollingUpdate
     rollingUpdate:
@@ -1001,11 +1212,17 @@ proxy:
     requests:
       memory: 1Gi
       cpu: 1
+    # limits:
+    #   memory: 1Gi
+    #   cpu: 1
   # Resources for the websocket proxy
   wsResources:
     requests:
       memory: 1Gi
       cpu: 1
+    # limits:
+    #   memory: 1Gi
+    #   cpu: 1
   # Init container to add files to image 
   initContainer: {}
   # initContainer:
@@ -1081,6 +1298,22 @@ proxy:
       port: 8000
       protocol: TCP
 
+  # For creating and extra service pointing to the proxy
+  extraService:
+    enabled: no
+    annotations: {}
+    type: ClusterIP
+    ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+    - name: pulsar
+      port: 6650
+      protocol: TCP
+    - name: ws
+      port: 8000
+      protocol: TCP
+
   ingress:
     enabled: no
     host: admin.host.com
@@ -1138,11 +1371,14 @@ autoRecovery:
     requests:
       memory: 512Mi
       cpu: 0.3
+    # limits:
+    #   memory: 512Mi
+    #   cpu: 0.3
   ## Bookkeeper auto-recovery configmap
   ## templates/autorecovery-configmap.yaml
   ##
   configData:
-    BOOKIE_MEM: "\" -Xms512m -Xmx512m \""
+    BOOKIE_MEM: "\" -Xms512m -Xmx512m -XX:+ExitOnOutOfMemoryError\""
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -1202,6 +1438,9 @@ pulsarexpress:
     requests:
       memory: 250Mi
       cpu: 0.1
+    # limits:
+    #   memory: 250Mi
+    #   cpu: 0.1
   configData: {}
   ## Pulsar Express service
   ## templates/pulsarexpress-service.yaml
@@ -1293,7 +1532,7 @@ bastion:
   ## templates/bastion-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms256m -Xmx256m -XX:MaxDirectMemorySize=256m\""
+    PULSAR_MEM: "\"-Xms256m -Xmx256m -XX:MaxDirectMemorySize=256m -XX:+ExitOnOutOfMemoryError\""
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -1310,6 +1549,9 @@ pulsarBeam:
     requests:
       memory: 256Mi
       cpu: 0.5
+    # limits:
+    #   memory: 256Mi
+    #   cpu: 0.5
   annotations: {}
   tolerations: []
   gracePeriod: 60

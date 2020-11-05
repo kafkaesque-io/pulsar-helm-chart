@@ -16,26 +16,32 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-
+{{- if .Values.extra.brokerSts }}
 apiVersion: v1
-kind: ConfigMap
+kind: Service
 metadata:
-  name: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}"
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    component: {{ .Values.zookeeper.component }}
+    component: {{ .Values.brokerSts.component }}
     cluster: {{ template "pulsar.fullname" . }}
-data:
-  {{- if and .Values.enableTls .Values.tls.zookeeper.enabled}}
-  PULSAR_PREFIX_serverCnxnFactory: org.apache.zookeeper.server.NettyServerCnxnFactory
-  serverCnxnFactory: org.apache.zookeeper.server.NettyServerCnxnFactory
-  secureClientPort: "2281"
-  PULSAR_PREFIX_secureClientPort: "2281"
-  sslQuorum: "true"
-  PULSAR_PREFIX_sslQuorum: "true"
-  {{- end }}
-{{ toYaml .Values.zookeeper.configData | indent 2 }}
+  annotations:
+{{- if .Values.extra.dnsOnBroker }}
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.dnsName }}
+{{- end }}
+spec:
+  ports:
+{{ toYaml .Values.brokerSts.service.ports | indent 2 }}
+{{- if .Values.brokerSts.service.headless }}
+  clusterIP: None
+{{- end }}
+  type: {{ .Values.brokerSts.service.type }}
+  selector:
+    app: {{ template "pulsar.name" . }}
+    release: {{ .Release.Name }}
+    component: {{ .Values.brokerSts.component }}
+{{- end -}}

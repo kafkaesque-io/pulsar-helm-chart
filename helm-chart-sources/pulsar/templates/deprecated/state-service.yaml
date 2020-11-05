@@ -41,4 +41,30 @@ spec:
     app: {{ template "pulsar.name" . }}
     release: {{ .Release.Name }}
     component: {{ .Values.stateStorage.component }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}-ca"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "pulsar.name" . }}
+    chart: {{ template "pulsar.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.stateStorage.component }}
+    cluster: {{ template "pulsar.fullname" . }}
+  annotations:
+    {{- if .Values.stateStorage.service.annotations }}
+{{ toYaml .Values.stateStorage.service.annotations | indent 4 }}
+    {{- end }}
+spec:
+  ports:
+{{ toYaml .Values.stateStorage.service.ports | indent 2 }}
+  selector:
+    app: {{ template "pulsar.name" . }}
+    release: {{ .Release.Name }}
+    component: {{ .Values.stateStorage.component }}
+
 {{- end }}

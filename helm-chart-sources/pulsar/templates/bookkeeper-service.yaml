@@ -38,7 +38,7 @@ metadata:
 spec:
   ports:
   {{- if .Values.function.enableStateStorage }}
-  {{- if not .Values.extra.stateStorage }}
+  {{- if not (or .Values.extra.stateStorage .Values.function.stateStorageUrlOverride) }}
   - name: statestorage
     port: 4181
   {{- end }}

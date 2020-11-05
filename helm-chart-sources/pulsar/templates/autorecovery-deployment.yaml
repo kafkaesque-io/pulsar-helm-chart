@@ -169,8 +169,8 @@ spec:
           /pulsar/tools/certconverter.sh &&
           {{- end }}
           exec bin/bookkeeper autorecovery
-        volumeMounts:
         {{- if and .Values.enableTls .Values.tls.zookeeper.enabled}}
+        volumeMounts:
         - name: certs
           readOnly: true
           mountPath: /pulsar/certs

@@ -78,7 +78,7 @@ install_local-path-provisioner() {
 }
 
 install_charts() {
-    docker_exec ct install --chart-dirs helm-chart-sources
+    docker_exec ct install --chart-dirs helm-chart-sources --excluded-charts kesque-dashboard
     echo
 }
 

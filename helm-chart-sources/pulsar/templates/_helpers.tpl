@@ -39,6 +39,13 @@ Create chart name and version as used by the chart label.
 {{- define "pulsar.zkConnectString" -}}
 {{- $global := . -}}
 {{- range $i, $e := until (.Values.zookeeper.replicaCount | int) -}}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}{{ end }}
+{{- $global := . -}}
+{{- range $i, $e := until (.Values.zookeepernp.replicaCount | int) -}},{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeepernp.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeepernp.component }}{{ end }}
+{{- end -}}
+
+{{- define "pulsar.bkConnectString" -}}
+{{- $global := . -}}
+{{- range $i, $e := until (.Values.bookkeeper.replicaCount | int) -}}{{ if ne $i 0 }},{{ end }}bk://{{ template "pulsar.fullname" $global }}-{{ $global.Values.bookkeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.bookkeeper.component }}:4181{{ end }}
 {{- end -}}
 
 {{- define "pulsar.zkConnectStringOne" -}}
@@ -46,10 +53,18 @@ Create chart name and version as used by the chart label.
 {{- range $i, $e := until 1 -}}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}{{ end }}
 {{- end -}}
 
+{{- define "pulsar.bkConnectStringOne" -}}
+{{- $global := . -}}
+{{- range $i, $e := until 1 -}}{{ if ne $i 0 }},{{ end }}bk://{{ template "pulsar.fullname" $global }}-{{ $global.Values.bookkeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.bookkeeper.component }}:4181{{ end }}
+{{- end -}}
+
 {{- define "pulsar.zkConnectStringTls" -}}
 {{- $global := . -}}
 {{- $port := "2281" -}}
 {{- range $i, $e := until (.Values.zookeeper.replicaCount | int) -}}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}:{{ $port }}{{ end }}
+{{- $global := . -}}
+{{- $port := "2281" -}}
+{{- range $i, $e := until (.Values.zookeepernp.replicaCount | int) -}},{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeepernp.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeepernp.component }}:{{ $port }}{{ end }}
 {{- end -}}
 
 {{- define "pulsar.zkConnectStringTlsONe" -}}
@@ -61,4 +76,13 @@ Create chart name and version as used by the chart label.
 {{- define "pulsar.zkServers" -}}
 {{- $global := . }}
 {{- range $i, $e := until (.Values.zookeeper.replicaCount | int) -}}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}{{ end }}
+{{- $global := . }}
+{{- range $i, $e := until (.Values.zookeepernp.replicaCount | int) -}},{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeepernp.component }}-{{ printf "%d" $i }}{{ end }}
+{{- end -}}
+
+{{- define "pulsar.zkDomains" -}}
+{{- $global := . -}}
+{{- range $i, $e := until (.Values.zookeeper.replicaCount | int) -}}{{ if ne $i 0 }},{{ end }}{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeeper.component }}{{ end }}
+{{- $global := . -}}
+{{- range $i, $e := until (.Values.zookeepernp.replicaCount | int) -}},{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeepernp.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeepernp.component }}{{ end }}
 {{- end -}}
