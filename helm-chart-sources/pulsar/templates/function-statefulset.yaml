@@ -58,7 +58,7 @@ spec:
       priorityClassName: pulsar-priority
       {{- end }}
       serviceAccountName: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
-      {{- if (.Values.nodeSelector) and (eq .Values.function.nodeSelector false) }}
+      {{- if and (.Values.nodeSelector) (not .Values.function.nodeSelector) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
       {{- end }}
