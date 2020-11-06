@@ -1,3 +1,4 @@
+{{- if .Values.extra.pulsarMonitor }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -41,3 +42,4 @@ data:
         {{- toYaml .Values.pulsarMonitor.config.topicConfigs | nindent 8 }}
     websocketConfig:
       {{- toYaml .Values.pulsarMonitor.config.pulsarWebSocketConfigs | nindent 8 }}
+{{- end }}
