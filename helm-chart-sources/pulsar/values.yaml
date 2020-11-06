@@ -277,10 +277,6 @@ extra:
   #
   # Monitoring stack (prometheus, grafana, and dashboard)
   monitoring: no
-  # Zoonavigator
-  zoonavigator: no
-  # Pulsar manager UI for admin
-  pulsarexpress: no
   
 ## Which images to use
 # When upgrading a Pulsar cluster, it is recommended to upgrade the 

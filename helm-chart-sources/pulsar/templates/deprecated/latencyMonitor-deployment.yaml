@@ -47,7 +47,7 @@ spec:
       annotations:
 {{ toYaml .Values.latencymonitor.annotations | indent 8 }}
     spec:
-    {{- if (.Values.nodeSelector) and (eq .Values.latencymonitor.nodeSelector false) }}
+    {{- if and (.Values.nodeSelector) (not .Values.latencymonitor.nodeSelector) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
     {{- end }}

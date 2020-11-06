@@ -48,7 +48,7 @@ spec:
       annotations:
 {{ toYaml .Values.dashboard.annotations | indent 8 }}
     spec:
-    {{- if (.Values.nodeSelector) and (eq .Values.dashboard.nodeSelector false) }}
+    {{- if and (.Values.nodeSelector) (not .Values.dashboard.nodeSelector) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
     {{- end }}
