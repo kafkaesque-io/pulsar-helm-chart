@@ -72,6 +72,19 @@ spec:
           env:
           - name: DeployEnv
             value: production
+          - name: ClusterName
+            value: "{{ template "pulsar.fullname" . }}"
+          - name: BrokerProxyURL
+            value: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080"
+          {{- if .Values.enableTokenAuth }}
+          - name: PulsarToken
+            valueFrom:
+              secretKeyRef:
+                name: token-superuser
+                key: superuser.jwt
+          {{- end }}
+          - name: PulsarURL
+            value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
       {{- with .Values.pulsarMonitor.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
