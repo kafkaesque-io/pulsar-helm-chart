@@ -36,7 +36,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      serviceAccountName: {{ .Values.pulsarMonitor.serviceAccountName }}
+      serviceAccountName: "{{ template "pulsar.fullname" . }}-{{ .Values.pulsarMonitor.component }}"
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       volumes:
