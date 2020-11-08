@@ -12,7 +12,7 @@ image:
   pulsarMonitor:
     repository: kesque/pulsar-monitor
     pullPolicy: IfNotPresent
-    tag: 2.1.91
+    tag: 1.2.91
 
 zookeeper:
   resources:

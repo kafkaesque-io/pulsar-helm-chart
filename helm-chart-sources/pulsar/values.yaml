@@ -344,7 +344,7 @@ image:
   pulsarMonitor:
     repository: kesque/pulsar-monitor
     pullPolicy: IfNotPresent
-    tag: 2.1.91
+    tag: 1.2.91
   # Standalone state storage is experimental and requires the custom image below 
   stateStorage:
     repository: kafkaesqueio/pulsar-all
