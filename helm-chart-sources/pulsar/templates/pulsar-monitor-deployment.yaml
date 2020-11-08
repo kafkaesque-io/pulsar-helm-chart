@@ -30,7 +30,7 @@ spec:
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/pulsar-monitor-configmap.yaml") . | sha256sum }}
-{{ toYaml .Values.broker.annotations | indent 8 }}
+{{ toYaml .Values.pulsarMonitor.annotations | indent 8 }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -43,9 +43,6 @@ spec:
         - name: config-volume
           configMap:
             name: "{{ include "pulsar.fullname" . }}-{{ .Values.pulsarMonitor.component }}-config"
-        - name: ca-cert
-          secret:
-            secretName: "{{ .Values.tlsSecretName }}"
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
