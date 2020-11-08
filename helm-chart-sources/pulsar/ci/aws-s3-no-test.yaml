@@ -5,6 +5,7 @@ extra:
   autoRecovery: no
   bastion: yes
   proxy: no
+  pulsarMonitor: no
 
 image:
   broker:

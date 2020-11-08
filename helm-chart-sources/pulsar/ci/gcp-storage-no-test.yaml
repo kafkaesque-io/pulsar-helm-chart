@@ -4,6 +4,7 @@ enableTests: yes
 extra:
   autoRecovery: no
   bastion: yes
+  pulsarMonitor: no
 
 image:
   broker:
