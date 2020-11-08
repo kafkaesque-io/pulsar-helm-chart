@@ -341,7 +341,7 @@ image:
     repository: storjlabs/gateway
     pullPolicy: IfNotPresent
     tag: latest
-  tardigrade:
+  pulsarMonitor:
     repository: kesque/pulsar-monitor
     pullPolicy: IfNotPresent
     tag: 2.1.91
