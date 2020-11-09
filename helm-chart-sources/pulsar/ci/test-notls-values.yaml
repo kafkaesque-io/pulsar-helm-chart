@@ -5,6 +5,7 @@ extra:
   autoRecovery: no
   bastion: no
   pulsarMonitor: yes
+  burnell: yes
 
 image:
   broker:
@@ -13,6 +14,10 @@ image:
     repository: kesque/pulsar-monitor
     pullPolicy: IfNotPresent
     tag: 1.2.91
+  burnell:
+    repository: kesque/burnell
+    pullPolicy: IfNotPresent
+    tag: latest
 
 zookeeper:
   resources:
@@ -64,6 +69,9 @@ proxy:
       cpu: 0.3
   configData:
     PULSAR_MEM: "\"-Xms256m -Xmx400m -XX:MaxDirectMemorySize=400m\""
+
+burnell:
+  federatedPromUrl:
 
 pulsarMonitor:
   component: pulsarmonitor
