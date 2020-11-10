@@ -17,7 +17,7 @@ image:
   burnell:
     repository: kesque/burnell
     pullPolicy: IfNotPresent
-    tag: 1.2.3
+    tag: 1.2.5
 
 zookeeper:
   resources:
