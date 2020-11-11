@@ -55,7 +55,7 @@ spec:
         nodeAffinity:
 {{ toYaml .Values.zoonavigator.nodeAffinity | indent 10 }}
       {{- end }}
-    {{- if (.Values.nodeSelector) and (eq .Values.zoonavigator.nodeSelector false) }}
+    {{- if and (.Values.nodeSelector) (not .Values.zoonavigator.nodeSelector) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
     {{- end }}

@@ -262,6 +262,9 @@ extra:
   # Tardigrade for decentralized blob storage
   # This runs the S3 gateway that connects to Tardigrade
   tardigrade: no
+  # Pulsar Monitor
+  #
+  pulsarMonitor: yes
   #
   # DEPRECATED
   # Support for the monitoring extra is deprecated
@@ -278,10 +281,6 @@ extra:
   #
   # Monitoring stack (prometheus, grafana, and dashboard)
   monitoring: no
-  # Zoonavigator
-  zoonavigator: no
-  # Pulsar manager UI for admin
-  pulsarexpress: no
   
 ## Which images to use
 # When upgrading a Pulsar cluster, it is recommended to upgrade the 
@@ -343,6 +342,10 @@ image:
     repository: storjlabs/gateway
     pullPolicy: IfNotPresent
     tag: latest
+  pulsarMonitor:
+    repository: kesque/pulsar-monitor
+    pullPolicy: IfNotPresent
+    tag: 1.2.91
   # Standalone state storage is experimental and requires the custom image below 
   stateStorage:
     repository: kafkaesqueio/pulsar-all
@@ -1594,6 +1597,35 @@ pulsarBeam:
   #         values:
   #         - pulsar
   
+pulsarMonitor:
+  component: pulsarmonitor
+  port: "8089"
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8089"
+    prometheus.io/path: "/metrics"
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 0.1
+    limits:
+      memory: 128Mi
+      cpu: 0.25
+  prometheus:
+    enabled: true
+  config:
+    k8sInClusterMonitorEnabled: "true"
+    alertUrl:
+    opsGenieHeartbeatUrl:
+    opsGenieHeartbeatKey:
+    opsGenieAlertKey:
+    broker:
+      intervalSeconds: 45
+    adminRest:
+      intervalSeconds: 120
+    latencyTest:
+      intervalSeconds: 60
+
 ## Monitoring Stack: Prometheus
 ## templates/prometheus-deployment.yaml
 ##

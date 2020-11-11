@@ -4,10 +4,15 @@ enableTests: yes
 extra:
   autoRecovery: no
   bastion: no
+  pulsarMonitor: yes
 
 image:
   broker:
     repository: apachepulsar/pulsar
+  pulsarMonitor:
+    repository: kesque/pulsar-monitor
+    pullPolicy: IfNotPresent
+    tag: 1.2.91
 
 zookeeper:
   resources:
@@ -59,4 +64,20 @@ proxy:
       cpu: 0.3
   configData:
     PULSAR_MEM: "\"-Xms256m -Xmx400m -XX:MaxDirectMemorySize=400m\""
+
+pulsarMonitor:
+  component: pulsarmonitor
+  port: "8089"
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8089"
+    prometheus.io/path: "/metrics"
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 0.1
+  prometheus:
+    enabled: true
+  config:
+    k8sInClusterMonitorEnabled: "false"
   
