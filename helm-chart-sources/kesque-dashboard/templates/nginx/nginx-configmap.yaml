@@ -52,6 +52,14 @@ data:
               return 200 "I'm good\n";
             }
 
+            location / {
+               proxy_set_header Host $host;
+               proxy_set_header X-Forwarded-For $remote_addr;
+               proxy_set_header X-Forwarded-Proto $scheme;
+               proxy_pass_header Set-Cookie;
+               proxy_pass http://backend;
+            }
+
             {{- if .Values.nginx.pulsar.k8sEnabled }}
 
             # General cluster forwarding rule for functions
