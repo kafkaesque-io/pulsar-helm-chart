@@ -50,7 +50,7 @@ spec:
       {{- if .Values.priorityClass.enabled }}
       priorityClassName: pulsar-priority
       {{- end }}
-    {{- if (.Values.nodeSelector) and (eq .Values.pulsarBeam.nodeSelector false) }}
+    {{- if and (.Values.nodeSelector) (not .Values.pulsarBeam.nodeSelector) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
     {{- end }}
@@ -69,6 +69,9 @@ spec:
         {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
+        {{- if .Values.pulsarBeam.podAntiAffinity }}
+{{ toYaml .Values.pulsarBeam.podAntiAffinity | indent 10 }}
+        {{- else }}
           {{- if .Values.antiAffinity.host.enabled }}
           {{- if eq .Values.antiAffinity.host.mode "preferred" }}
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -129,6 +132,7 @@ spec:
                   - {{ .Values.pulsarBeam.component }}
           {{- end }}
         {{- end }}
+      {{- end }}
       terminationGracePeriodSeconds: {{ .Values.pulsarBeam.gracePeriod | default 60 }}
       volumes:
         {{- if .Values.enableTls }}

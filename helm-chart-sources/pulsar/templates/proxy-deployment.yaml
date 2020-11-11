@@ -79,6 +79,9 @@ spec:
         {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
+        {{- if .Values.proxy.podAntiAffinity }}
+{{ toYaml .Values.proxy.podAntiAffinity | indent 10 }}
+        {{- else }}
           {{- if .Values.antiAffinity.host.enabled }}
           {{- if eq .Values.antiAffinity.host.mode "preferred" }}
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -139,6 +142,7 @@ spec:
                   - {{ .Values.proxy.component }}
           {{- end }} 
         {{- end }}
+      {{- end }}
       terminationGracePeriodSeconds: {{ .Values.proxy.gracePeriod }}
       volumes:
         - name: health

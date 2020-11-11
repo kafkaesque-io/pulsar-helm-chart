@@ -59,7 +59,7 @@ spec:
       {{- if .Values.priorityClass.enabled }}
       priorityClassName: pulsar-priority
       {{- end }}
-      {{- if (.Values.nodeSelector) and (eq .Values.stateStorage.nodeSelector false) }}
+      {{- if and (.Values.nodeSelector) (not .Values.stateStorage.nodeSelector) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
       {{- end }}
@@ -78,6 +78,9 @@ spec:
         {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
+        {{- if .Values.stateStorage.podAntiAffinity }}
+{{ toYaml .Values.stateStorage.podAntiAffinity | indent 10 }}
+        {{- else }}
           {{- if .Values.antiAffinity.host.enabled }}
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
@@ -117,6 +120,7 @@ spec:
                   - {{ .Values.stateStorage.component }}
           {{- end }} 
         {{- end }}   
+      {{- end }}
       terminationGracePeriodSeconds: {{ .Values.stateStorage.gracePeriod }}
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}"

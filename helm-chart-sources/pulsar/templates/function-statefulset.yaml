@@ -58,7 +58,7 @@ spec:
       priorityClassName: pulsar-priority
       {{- end }}
       serviceAccountName: "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}"
-      {{- if (.Values.nodeSelector) and (eq .Values.function.nodeSelector false) }}
+      {{- if and (.Values.nodeSelector) (not .Values.function.nodeSelector) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
       {{- end }}
@@ -77,6 +77,9 @@ spec:
         {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
+        {{- if .Values.function.podAntiAffinity }}
+{{ toYaml .Values.function.podAntiAffinity | indent 10 }}
+        {{- else }}
           {{- if .Values.antiAffinity.host.enabled }}
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
@@ -116,6 +119,7 @@ spec:
                   - {{ .Values.function.component }}
           {{- end }} 
         {{- end }}
+      {{- end }}
       terminationGracePeriodSeconds: {{ .Values.function.gracePeriod }}
       volumes:
         - name: config-volume

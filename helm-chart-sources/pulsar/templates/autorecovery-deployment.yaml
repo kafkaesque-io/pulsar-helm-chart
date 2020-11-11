@@ -69,6 +69,9 @@ spec:
         {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
+        {{- if .Values.autoRecovery.podAntiAffinity }}
+{{ toYaml .Values.autoRecovery.podAntiAffinity | indent 10 }}
+        {{- else }}
           {{- if .Values.antiAffinity.host.enabled }}
           {{- if eq .Values.antiAffinity.host.mode "preferred" }}
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -129,6 +132,7 @@ spec:
                   - {{ .Values.autoRecovery.component }}
           {{- end }}
         {{- end }}
+      {{- end }}
       terminationGracePeriodSeconds: {{ .Values.autoRecovery.gracePeriod }}
       initContainers:
       # This init container will wait for zookeeper to be ready before

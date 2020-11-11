@@ -78,6 +78,9 @@ spec:
         {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
+        {{- if .Values.broker.podAntiAffinity }}
+{{ toYaml .Values.broker.podAntiAffinity | indent 10 }}
+        {{- else }}
           {{- if .Values.antiAffinity.host.enabled }}
           {{- if eq .Values.antiAffinity.host.mode "preferred" }}
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -138,6 +141,7 @@ spec:
                   - {{ .Values.broker.component }}
           {{- end }}  
         {{- end }}
+      {{- end }}
       terminationGracePeriodSeconds: {{ .Values.broker.gracePeriod }}
       volumes:
         - name: health
@@ -287,4 +291,12 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
+        {{- if .Values.broker.ledger }}
+        - name: managedLedgerDefaultAckQuorum
+          value: "{{ .Values.broker.ledger.defaultAckQuorum }}"
+        - name: managedLedgerDefaultEnsembleSize
+          value: "{{ .Values.broker.ledger.defaultEnsembleSize }}"
+        - name: managedLedgerDefaultWriteQuorum
+          value: "{{ .Values.broker.ledger.defaultWriteQuorum }}"
+        {{- end }}
 {{- end }}

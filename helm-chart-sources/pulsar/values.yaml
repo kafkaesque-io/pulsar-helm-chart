@@ -14,7 +14,6 @@ dnsName: pulsar.example.com
 # selector
 #nodeSelector:
 #  zone: pulsar
-
 ## If persistence is enabled, components that has state will
 ## be deployed with PersistentVolumeClaims, otherwise, for test
 ## purposes, they will be deployed with emptDir
@@ -42,6 +41,8 @@ prometheus_rbac: yes
 # failure scenarios it can prevent containers from starting
 # even though they could operate.
 enableWaitContainers: yes
+
+default_storage: {}
 
 # If default_storage is set, that storage class is the default for all 
 # persistent volmes created by the chart.
@@ -624,7 +625,7 @@ bookkeeper:
   volumes:
     journal:
       name: journal
-      size: 50Gi
+      size: 20Gi
       # To override the default_storage class for this volume, set storageClass. 
       # To use an existing storage class, set existingStorageClassName.
       # To have the chart create a storage class, leave existingStorageClassName 
@@ -724,14 +725,18 @@ bookkeeper:
 broker:
   component: broker
   replicaCount: 3
+  # ledger:
+  #   defaultEnsembleSize: 2
+  #   defaultAckQuorum: 2
+  #   defaultWriteQuorum: 2
   updateStrategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 0
   # nodeSelector:
-    # cloud.google.com/gke-nodepool: default-pool
-    #
+  #   cloud.google.com/gke-nodepool: default-pool
+  #
   # nodeAffinity: 
   #   requiredDuringSchedulingIgnoredDuringExecution:
   #     nodeSelectorTerms:
@@ -740,6 +745,15 @@ broker:
   #         operator: In
   #         values:
   #         - pulsar
+  # podAntiAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #   - labelSelector:
+  #       matchExpressions:
+  #       - key: "component"
+  #         operator: In
+  #         values:
+  #         - bookkeeper
+  #     topologyKey: "kubernetes.io/hostname"
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8080"
@@ -780,9 +794,6 @@ broker:
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
-    managedLedgerDefaultEnsembleSize: "2"
-    managedLedgerDefaultWriteQuorum: "2"
-    managedLedgerDefaultAckQuorum: "2"
     brokerDeduplicationEnabled: "false"
     exposeTopicLevelMetricsInPrometheus: "true"
     exposeConsumerLevelMetricsInPrometheus: "true"
@@ -826,9 +837,12 @@ broker:
 brokerSts:
   component: brokersts
   replicaCount: 3
+  # ledger:
+  #   defaultEnsembleSize: 2
+  #   defaultAckQuorum: 2
+  #   defaultWriteQuorum: 2
   # nodeSelector:
-    # cloud.google.com/gke-nodepool: default-pool
-    #
+  #   cloud.google.com/gke-nodepool: default-pool
   # nodeAffinity: 
   #   requiredDuringSchedulingIgnoredDuringExecution:
   #     nodeSelectorTerms:
@@ -837,6 +851,15 @@ brokerSts:
   #         operator: In
   #         values:
   #         - pulsar
+  # podAntiAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #   - labelSelector:
+  #       matchExpressions:
+  #       - key: "component"
+  #         operator: In
+  #         values:
+  #         - bookkeeper
+  #     topologyKey: "kubernetes.io/hostname"
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8080"
@@ -877,10 +900,7 @@ brokerSts:
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
-    managedLedgerDefaultEnsembleSize: "2"
-    managedLedgerDefaultWriteQuorum: "2"
-    managedLedgerDefaultAckQuorum: "2"
-    brokerDeduplicationEnabled: "true"
+    brokerDeduplicationEnabled: "false"
     exposeTopicLevelMetricsInPrometheus: "true"
     exposeConsumerLevelMetricsInPrometheus: "true"
     backlogQuotaDefaultRetentionPolicy: "producer_exception"
@@ -1354,8 +1374,8 @@ dns:
 autoRecovery:
   component: autorecovery
   replicaCount: 1
-  #nodeSelector:
-  #  cloud.google.com/gke-nodepool: default-pool
+  # nodeSelector:
+  #   cloud.google.com/gke-nodepool: default-pool
   # nodeAffinity: 
   #   requiredDuringSchedulingIgnoredDuringExecution:
   #     nodeSelectorTerms:
@@ -1364,6 +1384,15 @@ autoRecovery:
   #         operator: In
   #         values:
   #         - pulsar
+  # podAntiAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #   - labelSelector:
+  #       matchExpressions:
+  #       - key: "component"
+  #         operator: In
+  #         values:
+  #         - bookkeeper
+  #     topologyKey: "kubernetes.io/hostname"
   annotations: {}
   tolerations: []
   gracePeriod: 60
