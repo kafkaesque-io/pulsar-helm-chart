@@ -264,7 +264,7 @@ extra:
   tardigrade: no
   # Pulsar Monitor
   #
-  pulsarMonitor: yes
+  pulsarMonitor: no
   #
   # DEPRECATED
   # Support for the monitoring extra is deprecated
