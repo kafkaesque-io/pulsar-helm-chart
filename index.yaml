@@ -23,6 +23,14 @@ entries:
     version: 1.0.0
   kesque-dashboard:
   - apiVersion: v1
+    created: "2020-11-12T00:51:40.986584285Z"
+    description: Kesque Dashboard for Apache Pulsar
+    digest: 9e56d71f5ba889710e9ca28bb1187bc7db5f33158e8bbca22d52b3f2d8a98fc6
+    name: kesque-dashboard
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/kesque-dashboard-0.0.3/kesque-dashboard-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v1
     created: "2020-10-25T22:54:29.256758385Z"
     description: Kesque Dashboard for Apache Pulsar
     digest: c2f996903dc34daee71bd08491d09a01366a756a5f27995277566fad6fccc0c2
@@ -39,6 +47,16 @@ entries:
     - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/kesque-dashboard-0.0.1/kesque-dashboard-0.0.1.tgz
     version: 0.0.1
   pulsar:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-11-12T00:51:41.094785299Z"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: 4cd475ab96c4bc293a62c35fc013f0a77a0b47ee211ca8762774c5927cbcd62e
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.30/pulsar-1.0.30.tgz
+    version: 1.0.30
   - apiVersion: v1
     appVersion: "1.0"
     created: "2020-11-11T17:34:48.683093896-05:00"
@@ -335,6 +353,13 @@ entries:
     - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-monitor-0.1.0/pulsar-monitor-0.1.0.tgz
     version: 0.1.0
   teleport:
+  - created: "2020-11-12T00:51:41.239520311Z"
+    description: Teleport Community
+    digest: 2c637290cd20b064c91842c4702ca418afba2af9442ce3b4855562dc92ed2c27
+    name: teleport
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/teleport-1.0.2/teleport-1.0.2.tgz
+    version: 1.0.2
   - created: "2020-10-25T22:54:29.561550194Z"
     description: Teleport Community
     digest: ef11ec7225e1b96655f82ebae816b7c5a146e735ce6a53c2bbf8dc1c244f3162
