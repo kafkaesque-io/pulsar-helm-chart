@@ -75,6 +75,9 @@ spec:
         {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
+        {{- if .Values.brokerSts.podAntiAffinity }}
+{{ toYaml .Values.brokerSts.podAntiAffinity | indent 10 }}
+        {{- else }}
           {{- if .Values.antiAffinity.host.enabled }}
           {{- if eq .Values.antiAffinity.host.mode "preferred" }}
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -135,6 +138,7 @@ spec:
                   - {{ .Values.brokerSts.component }}
           {{- end }}  
         {{- end }}
+      {{- end }}
       terminationGracePeriodSeconds: {{ .Values.brokerSts.gracePeriod }}
       volumes:
         - name: health
@@ -279,4 +283,13 @@ spec:
         envFrom:
         - configMapRef:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
+        {{- if .Values.brokerSts.ledger }}
+        env:
+        - name: managedLedgerDefaultAckQuorum
+          value: "{{ .Values.brokerSts.ledger.defaultAckQuorum }}"
+        - name: managedLedgerDefaultEnsembleSize
+          value: "{{ .Values.brokerSts.ledger.defaultEnsembleSize }}"
+        - name: managedLedgerDefaultWriteQuorum
+          value: "{{ .Values.brokerSts.ledger.defaultWriteQuorum }}"
+        {{- end }}
 {{- end }}

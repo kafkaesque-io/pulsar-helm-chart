@@ -78,6 +78,9 @@ spec:
         {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
+        {{- if .Values.stateStorage.podAntiAffinity }}
+{{ toYaml .Values.stateStorage.podAntiAffinity | indent 10 }}
+        {{- else }}
           {{- if .Values.antiAffinity.host.enabled }}
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
@@ -117,6 +120,7 @@ spec:
                   - {{ .Values.stateStorage.component }}
           {{- end }} 
         {{- end }}   
+      {{- end }}
       terminationGracePeriodSeconds: {{ .Values.stateStorage.gracePeriod }}
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}"

@@ -75,6 +75,9 @@ spec:
 {{ toYaml .Values.bookkeeper.nodeAffinity | indent 10 }}
         {{- end }}
         {{- if .Values.enableAntiAffinity }}
+        {{- if .Values.bookkeeper.podAntiAffinity }}
+{{ toYaml .Values.bookkeeper.podAntiAffinity | indent 10 }}
+        {{- else }}       
         podAntiAffinity:
           {{- if .Values.antiAffinity.host.enabled }}
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -115,6 +118,7 @@ spec:
                   - {{ .Values.bookkeeper.component }}
           {{- end }}
         {{- end }}
+      {{- end }}
       terminationGracePeriodSeconds: {{ .Values.bookkeeper.gracePeriod }}
       initContainers:
       # This init container will wait for zookeeper to be ready before

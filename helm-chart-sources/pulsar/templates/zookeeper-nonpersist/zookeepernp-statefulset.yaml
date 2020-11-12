@@ -57,6 +57,9 @@ spec:
         {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
+        {{- if .Values.zookeepernp.podAntiAffinity }}
+{{ toYaml .Values.zookeepernp.podAntiAffinity | indent 10 }}
+        {{- else }}
           {{- if .Values.antiAffinity.host.enabled }}
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
@@ -94,7 +97,8 @@ spec:
                   operator: In
                   values:
                   - {{ .Values.zookeeper.component }}
-          {{- end }} 
+          {{- end }}
+        {{- end }}
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.zookeepernp.gracePeriod }}
       containers:
