@@ -505,6 +505,8 @@ spec:
             value: "8964"
           - name: ClusterName
             value: "{{ template "pulsar.fullname" . }}"
+          - name: WebsocketURL
+            value: {{ .Values.burnell.wsUrl | default "ws://localhost:8000" }}
           - name: BrokerProxyURL
             value: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080"
           - name: FunctionProxyURL
