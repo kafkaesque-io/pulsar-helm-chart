@@ -323,9 +323,9 @@ image:
     pullPolicy: IfNotPresent
     tag: 0.23.21
   burnell:
-    repository: kafkaesqueio/burnell
+    repository: kesque/burnell
     pullPolicy: Always
-    tag: 0.2.6
+    tag: 1.2.54
   burnellLogCollector:
     repository: kafkaesqueio/burnell-logcollector
     pullPolicy: IfNotPresent
@@ -1117,6 +1117,8 @@ tardigrade:
     port: 7777
     type: ClusterIP
 
+# Placeholder for Burnell config options
+burnell: {}
 
 stateStorage:
   component: statestorage
