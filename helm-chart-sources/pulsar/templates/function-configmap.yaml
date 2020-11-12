@@ -102,7 +102,7 @@ data:
     stateStorageServiceUrl: {{ .Values.function.stateStorageUrlOverride }}
     {{- else }}
     {{- if .Values.extra.stateStorage }}
-    stateStorageServiceUrl: "bk://{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}-0.{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}:4181"
+    stateStorageServiceUrl: "bk://{{ template "pulsar.fullname" . }}-{{ .Values.stateStorage.component }}-ca:4181"
     {{- else }}
     stateStorageServiceUrl: {{ include "pulsar.bkConnectStringOne" . }}
     {{- end }}
