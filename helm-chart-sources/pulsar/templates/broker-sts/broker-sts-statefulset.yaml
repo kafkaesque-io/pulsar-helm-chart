@@ -46,7 +46,7 @@ spec:
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
       {{- if .Values.restartOnConfigMapChange.enabled }}
-        checksum/config: {{ include (print $.Template.BasePath "/brokerSts-configmap.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/broker-sts/broker-sts-configmap.yaml") . | sha256sum }}
       {{- end }}
 {{ toYaml .Values.brokerSts.annotations | indent 8 }}
     spec:

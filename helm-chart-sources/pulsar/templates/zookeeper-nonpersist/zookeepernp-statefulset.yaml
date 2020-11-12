@@ -31,7 +31,7 @@ spec:
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
       {{- if .Values.restartOnConfigMapChange.enabled }}
-        checksum/config: {{ include (print $.Template.BasePath "/zookeeper-configmap.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/zookeeper-nonpersist/zookeeper-configmap.yaml") . | sha256sum }}
       {{- end }}
 {{ toYaml .Values.zookeepernp.annotations | indent 8 }}
     spec:
