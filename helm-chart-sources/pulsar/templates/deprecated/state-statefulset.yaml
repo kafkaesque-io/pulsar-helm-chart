@@ -52,7 +52,7 @@ spec:
         publishNotReadyAddresses: "true"
         service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
       {{- if .Values.restartOnConfigMapChange.enabled }}
-        checksum/config: {{ include (print $.Template.BasePath "/state-configmap.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/deprecated/state-configmap.yaml") . | sha256sum }}
       {{- end }}
 {{ toYaml .Values.stateStorage.annotations | indent 8 }}
     spec:
