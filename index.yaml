@@ -23,6 +23,14 @@ entries:
     version: 1.0.0
   kesque-dashboard:
   - apiVersion: v1
+    created: "2020-11-13T01:32:50.534282108Z"
+    description: Kesque Dashboard for Apache Pulsar
+    digest: 376a05abb29e456ed53f140130e2461f3b91aad6e956f2ebff2958070f4c8f97
+    name: kesque-dashboard
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/kesque-dashboard-0.0.4/kesque-dashboard-0.0.4.tgz
+    version: 0.0.4
+  - apiVersion: v1
     created: "2020-11-12T00:51:40.986584285Z"
     description: Kesque Dashboard for Apache Pulsar
     digest: 9e56d71f5ba889710e9ca28bb1187bc7db5f33158e8bbca22d52b3f2d8a98fc6
@@ -47,6 +55,16 @@ entries:
     - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/kesque-dashboard-0.0.1/kesque-dashboard-0.0.1.tgz
     version: 0.0.1
   pulsar:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-11-13T01:32:50.6450584Z"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: 889a7b698ec4c74484d96578d9c3b7b116d86ab4d54e7d2ae33bc490c80a9b16
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.31/pulsar-1.0.31.tgz
+    version: 1.0.31
   - apiVersion: v1
     appVersion: "1.0"
     created: "2020-11-12T00:51:41.094785299Z"
@@ -353,6 +371,13 @@ entries:
     - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-monitor-0.1.0/pulsar-monitor-0.1.0.tgz
     version: 0.1.0
   teleport:
+  - created: "2020-11-13T01:32:50.774155617Z"
+    description: Teleport Community
+    digest: 18910efa6b6278dc5faa701066e283d669831ea5e8b97dcc9bdef06ef00452af
+    name: teleport
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/teleport-1.0.3/teleport-1.0.3.tgz
+    version: 1.0.3
   - created: "2020-11-12T00:51:41.239520311Z"
     description: Teleport Community
     digest: 2c637290cd20b064c91842c4702ca418afba2af9442ce3b4855562dc92ed2c27
