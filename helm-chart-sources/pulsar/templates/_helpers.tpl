@@ -86,3 +86,98 @@ Create chart name and version as used by the chart label.
 {{- $global := . -}}
 {{- range $i, $e := until (.Values.zookeepernp.replicaCount | int) -}},{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeepernp.component }}-{{ printf "%d" $i }}.{{ template "pulsar.fullname" $global }}-{{ $global.Values.zookeepernp.component }}{{ end }}
 {{- end -}}
+
+{{- define "pulsar.proxyAutoPort" -}}
+{{- if not .Values.enableTls }}
+- name: http
+  port: 8080
+  protocol: TCP
+  {{- if .Values.proxy.autoPortAssign.matchingNodePort }}
+  nodePort: 8080
+  {{- end  }}
+- name: pulsar
+  port: 6650
+  protocol: TCP
+  {{- if .Values.proxy.autoPortAssign.matchingNodePort }}
+  nodePort: 6650
+  {{- end  }}
+- name: ws
+  port: 8000
+  protocol: TCP
+  {{- if .Values.proxy.autoPortAssign.matchingNodePort }}
+  nodePort: 8000
+  {{- end  }}
+{{- end }}
+{{- if .Values.enableTls }}
+- name: https
+  port: 8443
+  protocol: TCP
+  {{- if .Values.proxy.autoPortAssign.matchingNodePort }}
+  nodePort: 8443
+  {{- end  }}
+- name: pulsarssl
+  port: 6651
+  protocol: TCP
+  {{- if .Values.proxy.autoPortAssign.matchingNodePort }}
+  nodePort: 6651
+  {{- end  }}
+- name: wss
+  port: 8001
+  protocol: TCP
+  {{- if .Values.proxy.autoPortAssign.matchingNodePort }}
+  nodePort: 8001
+  {{- end  }}
+  {{- if .Values.proxy.autoPortAssign.enablePlainTextWithTLS }}
+- name: http
+  port: 8080
+  protocol: TCP
+  {{- if .Values.proxy.autoPortAssign.matchingNodePort }}
+  nodePort: 8080
+  {{- end  }}
+- name: pulsar
+  port: 6650
+  protocol: TCP
+  {{- if .Values.proxy.autoPortAssign.matchingNodePort }}
+  nodePort: 6650
+  {{- end  }}
+- name: ws
+  port: 8000
+  protocol: TCP
+  {{- if .Values.proxy.autoPortAssign.matchingNodePort }}
+  nodePort: 8000
+  {{- end  }}
+  {{- end }}
+{{- end }}
+{{- if .Values.extra.pulsarBeam }}
+- name: pulsarbeam
+  port: 8085
+  protocol: TCP
+  {{- if .Values.proxy.autoPortAssign.matchingNodePort }}
+  nodePort: 8085
+  {{- end  }}
+{{- end }}
+{{- if .Values.extra.burnell }}
+- name: burnell
+  port: 8964
+  protocol: TCP
+  {{- if .Values.proxy.autoPortAssign.matchingNodePort }}
+  nodePort: 8964
+  {{- end  }}
+{{- end }}
+{{- if .Values.extra.wsAuthServer }}
+- name: wsauth
+  port: 8500
+  protocol: TCP
+  {{- if .Values.proxy.autoPortAssign.matchingNodePort }}
+  nodePort: 8500
+  {{- end  }}
+{{- end }}
+{{- if .Values.extra.tokenServer }}
+- name: tokenserver
+  port: 3000
+  protocol: TCP
+  {{- if .Values.proxy.autoPortAssign.matchingNodePort }}
+  nodePort: 3000
+  {{- end  }}
+{{- end }}
+{{- end }}

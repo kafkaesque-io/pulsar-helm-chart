@@ -528,11 +528,13 @@ spec:
             value: {{ .Values.burnell.token }}
           - name: PulsarURL
             value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
-          {{- if .Values.enableTls }}
+          {{- if .Values.enableTokenAuth }}
           - name: PulsarPublicKey
             value: "/pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
           - name: PulsarPrivateKey
             value: "/pulsar/token-private-key/{{ .Values.tokenPrivateKeyFile }}"
+          {{- end }}
+          {{- if .Values.enableTls }}
           - name: CertFile
             value: /pulsar/certs/tls.crt
           - name: KeyFile

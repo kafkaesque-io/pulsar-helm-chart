@@ -34,13 +34,21 @@ metadata:
 {{- if .Values.proxy.service.annotations }}
 {{ toYaml .Values.proxy.service.annotations | indent 4 }}
 {{- end }}
+# For contour ingress to ensure Burnell port is TLS
+{{- if .Values.enableTls }}
+    projectcontour.io/upstream-protocol.tls: "https,8964"
+{{- end}}
 {{- if .Values.extra.dnsOnProxy }}
     external-dns.alpha.kubernetes.io/hostname: {{ .Values.dnsName }}
 {{- end }}
 spec:
   type: {{ .Values.proxy.service.type }}
   ports:
+  {{- if .Values.proxy.service.autoPortAssign.enabled }}
+{{ include "pulsar.proxyAutoPort" . | indent 2 }}
+  {{- else }}
 {{ toYaml .Values.proxy.service.ports | indent 2 }}
+  {{- end }}
   selector:
     app: {{ template "pulsar.name" . }}
     release: {{ .Release.Name }}
@@ -69,7 +77,11 @@ metadata:
 spec:
   type: {{ .Values.proxy.extraService.type }}
   ports:
+  {{- if .Values.proxy.extraService.autoPortAssign.enabled }}
+{{ include "pulsar.proxyAutoPort" . | indent 2 }}
+  {{- else }}
 {{ toYaml .Values.proxy.extraService.ports | indent 2 }}
+  {{- end }}
   selector:
     app: {{ template "pulsar.name" . }}
     release: {{ .Release.Name }}

@@ -253,8 +253,10 @@ extra:
   # that to use Beam. You need to expose the Pulsar Beam
   # port on the proxy. See the proxy section for details.
   pulsarBeam: no
-  # burnell - various Pulsar proxy
+  # Burnell - various Pulsar proxies
   burnell: no
+  # Burnell log collector for functions when using process runtime
+  burnellLogCollector: no
   # Pulsar manager UI for admin
   pulsarexpress: no
   # Zoonavigator for debugging Zookeeper
@@ -329,7 +331,7 @@ image:
   burnellLogCollector:
     repository: kafkaesqueio/burnell-logcollector
     pullPolicy: IfNotPresent
-    tag: 0.2.0
+    tag: 0.2.99
   pulsarexpress:
     repository: kafkaesqueio/pulsar-express
     tag: 0.5.1_k3
@@ -1310,9 +1312,14 @@ proxy:
   ## Proxy cluster service
   ## templates/proxy-service.yaml
   ##
+  autoPortAssign:
+    enablePlainTextWithTLS: no
+    matchingNodePort: no
   service:
     annotations: {}
     type: ClusterIP
+    autoPortAssign:
+      enabled: no
     ports:
     - name: http
       port: 8080
@@ -1328,6 +1335,8 @@ proxy:
   extraService:
     enabled: no
     annotations: {}
+    autoPortAssign:
+      enabled: no
     type: ClusterIP
     ports:
     - name: http
