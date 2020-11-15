@@ -23,6 +23,14 @@ entries:
     version: 1.0.0
   kesque-dashboard:
   - apiVersion: v1
+    created: "2020-11-15T19:55:41.105933867Z"
+    description: Kesque Dashboard for Apache Pulsar
+    digest: 3625b77c2aa3a76bf73bbec98cd69d360de81c6544354fec750441afaec6577d
+    name: kesque-dashboard
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/kesque-dashboard-0.0.5/kesque-dashboard-0.0.5.tgz
+    version: 0.0.5
+  - apiVersion: v1
     created: "2020-11-13T01:32:50.534282108Z"
     description: Kesque Dashboard for Apache Pulsar
     digest: 376a05abb29e456ed53f140130e2461f3b91aad6e956f2ebff2958070f4c8f97
@@ -55,6 +63,16 @@ entries:
     - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/kesque-dashboard-0.0.1/kesque-dashboard-0.0.1.tgz
     version: 0.0.1
   pulsar:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-11-15T19:55:41.23049517Z"
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: a57065856832866f02236709a8d49983abd78fb911f3fb434dccee431de60d98
+    icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
+    name: pulsar
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-1.0.32/pulsar-1.0.32.tgz
+    version: 1.0.32
   - apiVersion: v1
     appVersion: "1.0"
     created: "2020-11-13T01:32:50.6450584Z"
@@ -371,6 +389,13 @@ entries:
     - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/pulsar-monitor-0.1.0/pulsar-monitor-0.1.0.tgz
     version: 0.1.0
   teleport:
+  - created: "2020-11-15T19:55:41.347570543Z"
+    description: Teleport Community
+    digest: 91656cac1be47f562da2af1e6ee6c07a21e8e555469f4eeeee900c7b42e3b1d7
+    name: teleport
+    urls:
+    - https://github.com/kafkaesque-io/pulsar-helm-chart/releases/download/teleport-1.0.4/teleport-1.0.4.tgz
+    version: 1.0.4
   - created: "2020-11-13T01:32:50.774155617Z"
     description: Teleport Community
     digest: 18910efa6b6278dc5faa701066e283d669831ea5e8b97dcc9bdef06ef00452af
