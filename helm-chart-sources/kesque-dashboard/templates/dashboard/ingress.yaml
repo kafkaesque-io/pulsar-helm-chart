@@ -25,6 +25,10 @@ spec:
           serviceName: {{ .Release.Name }}-nginx
           servicePort: {{ .Values.service.externalPort }}
         path: {{ .Values.service.ingress.apiPath }}
+      - backend:
+          serviceName: {{ .Values.service.wsName }}-proxy
+          servicePort: {{ .Values.service.wsPort }}
+        path: '/ws/'
   {{- if .Values.ingress.tls.enabled }}
   tls:
   - hosts:

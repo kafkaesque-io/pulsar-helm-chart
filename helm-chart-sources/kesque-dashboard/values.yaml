@@ -31,6 +31,7 @@ application:
   brokerService: pulsar-broker
   proxyService: pulsar-proxy
   httpService: pulsar-proxy
+  enableAntiAffinity: yes
 
 
 service:
@@ -43,6 +44,8 @@ service:
   commonName:
   externalPort: 80
   internalPort: 80
+  wsPort: 8964
+  wsName: "pulsar"
   ingress:
     enabled: true
     mainPath: /*
@@ -62,6 +65,7 @@ nginx:
     k8sEnabled: yes
     k8sTargetDns: pulsar-proxy
     clusterName: pulsar
+    burnellTls: false
 livenessProbe:
   path: "/index.php"
   initialDelaySeconds: 15

@@ -30,6 +30,7 @@ spec:
         release: {{ .Release.Name }}
     spec:
       affinity:
+        {{- if .Values.application.enableAntiAffinity }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
@@ -39,6 +40,7 @@ spec:
                 values:
                 - {{ template "appname" . }} 
             topologyKey: "kubernetes.io/hostname"
+        {{- end }}
       imagePullSecrets:
       - name: {{ .Values.image.secret }}
       containers:
