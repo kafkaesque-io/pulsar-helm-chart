@@ -81,14 +81,7 @@ data:
               proxy_pass http://http-pulsar-proxy$uri$is_args$args;
             }
 
-
-            # Cluster forwarding rule for Burnell
-            location ^~ /api/v2/{{ .Values.nginx.pulsar.clusterName }}/br {
-              rewrite ^/api/v2/{{ .Values.nginx.pulsar.clusterName }}/br/(.*)$ /$1 break;
-              proxy_pass http://http-pulsar-proxy$uri$is_args$args;
-            }
-
-            # K8s cluster forwarding rule api v2
+            # K8s cluster forwarding rule api v2 (Burnell)
             location ^~ /api/v2/{{ .Values.nginx.pulsar.clusterName }} {
               rewrite ^/api/v2/{{ .Values.nginx.pulsar.clusterName }}/(.*)$ /admin/v2/$1 break;
               proxy_pass http://pulsar-burnell$uri$is_args$args;

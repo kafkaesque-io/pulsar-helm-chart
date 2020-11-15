@@ -97,6 +97,9 @@ data:
     assignmentWriteMaxRetries: "60"
     instanceLivenessCheckFreqMs: "30000"
     topicCompactionFrequencySec: "1800"
+    {{- if .Values.function.enableMetrics }}
+    includeStandardPrometheusMetrics: "true"
+    {{- end }}
     {{- if .Values.function.enableStateStorage }}
     {{- if .Values.function.stateStorageUrlOverride }}
     stateStorageServiceUrl: {{ .Values.function.stateStorageUrlOverride }}

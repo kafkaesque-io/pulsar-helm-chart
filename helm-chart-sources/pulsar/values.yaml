@@ -965,7 +965,8 @@ function:
   # connect to that
   # Note: State storage is in developer preview
   # Note: Standalone state storage is experimental
-  enableStateStorage: no 
+  enableStateStorage: no
+  enableMetrics: no
   # nodeAffinity: 
   #   requiredDuringSchedulingIgnoredDuringExecution:
   #     nodeSelectorTerms:
