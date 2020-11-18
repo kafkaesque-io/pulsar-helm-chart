@@ -88,7 +88,61 @@ spec:
           secret:
             secretName: "{{ .Values.tlsSecretName }}" 
         {{- end }}
+      initContainers:
+      {{- if .Values.enableProvisionContainer }}
+      - name: provision-tls-jwt
+        image: "{{ .Values.image.burnell.repository }}:{{ .Values.image.burnell.tag }}"
+        imagePullPolicy: {{ .Values.image.burnell.pullPolicy }}
+      {{- if .Values.proxy.burnellResources }}
+        resources:
+{{ toYaml .Values.proxy.burnellResources | indent 10 }}
+      {{- end }}
+        ports:
+        volumeMounts:
+        env:
+          - name: ClusterName
+            value: "{{ template "pulsar.fullname" . }}"
+          - name: SuperRoles
+            value: {{ .Values.superUserRoles }}
+          - name: ProcessMode
+            value: "init"
+          - name: PulsarNamespace
+            value: {{ .Values.burnell.PulsarNamespace | default "pulsar" }}
+          - name: LogLevel
+            value: {{ .Values.burnell.logLevel | default "info" }}
+      {{- end }}
       containers:
+{{- if .Values.extra.pulsarHealer }}
+      - name: "{{ template "pulsar.fullname" . }}-burnell-healer" 
+        image: "{{ .Values.image.burnell.repository }}:{{ .Values.image.burnell.tag }}"
+        imagePullPolicy: {{ .Values.image.burnell.pullPolicy }}
+      {{- if .Values.proxy.burnellResources }}
+        resources:
+{{ toYaml .Values.proxy.burnellResources | indent 10 }}
+      {{- end }}
+        ports:
+        - name: burnell
+          containerPort: 8964
+        volumeMounts:
+          {{- if .Values.enableTls }}
+          - name: certs
+            readOnly: true
+            mountPath: /pulsar/certs
+          {{- end }}
+        env:
+          - name: PORT
+            value: "8964"
+          - name: ClusterName
+            value: "{{ template "pulsar.fullname" . }}"
+          - name: SuperRoles
+            value: {{ .Values.superUserRoles }}
+          - name: ProcessMode
+            value: "healer"
+          - name: PulsarNamespace
+            value: {{ .Values.burnell.PulsarNamespace | default "pulsar" }}
+          - name: LogLevel
+            value: {{ .Values.burnell.logLevel | default "info" }}
+{{- end }}
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bastion.component }}"
         image: "{{ .Values.image.bastion.repository }}:{{ .Values.image.bastion.tag }}"
         imagePullPolicy: {{ .Values.image.bastion.pullPolicy }}
