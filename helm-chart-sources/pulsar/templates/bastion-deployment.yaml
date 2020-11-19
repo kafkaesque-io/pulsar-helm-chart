@@ -108,7 +108,7 @@ spec:
           - name: ProcessMode
             value: "init"
           - name: PulsarNamespace
-            value: {{ .Values.burnell.PulsarNamespace | default "pulsar" }}
+            value: {{ .Values.burnell.PulsarNamespace | .Release.Namespace }}
           - name: LogLevel
             value: {{ .Values.burnell.logLevel | default "info" }}
       {{- end }}
@@ -140,7 +140,7 @@ spec:
           - name: ProcessMode
             value: "healer"
           - name: PulsarNamespace
-            value: {{ .Values.burnell.PulsarNamespace | default "pulsar" }}
+            value: {{ .Values.burnell.PulsarNamespace | .Release.Namespace }}
           - name: LogLevel
             value: {{ .Values.burnell.logLevel | default "info" }}
 {{- end }}
