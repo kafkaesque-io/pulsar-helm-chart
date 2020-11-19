@@ -68,6 +68,7 @@ spec:
 {{ toYaml .Values.bastion.tolerations | indent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.bastion.gracePeriod }}
+      serviceAccountName: "{{ template "pulsar.fullname" . }}-burnell"
       volumes:
         {{- if .Values.enableTokenAuth }}
         - name: token-private-key
@@ -113,7 +114,7 @@ spec:
       {{- end }}
       containers:
 {{- if .Values.extra.pulsarHealer }}
-      - name: "{{ template "pulsar.fullname" . }}-burnell-healer" 
+      - name: "{{ template "pulsar.fullname" . }}-burnell" 
         image: "{{ .Values.image.burnell.repository }}:{{ .Values.image.burnell.tag }}"
         imagePullPolicy: {{ .Values.image.burnell.pullPolicy }}
       {{- if .Values.proxy.burnellResources }}
