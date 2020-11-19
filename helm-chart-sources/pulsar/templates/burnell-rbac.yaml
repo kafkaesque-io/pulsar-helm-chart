@@ -27,6 +27,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: "{{ template "pulsar.fullname" . }}-burnell"
+  namespace: {{ .Release.Namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
@@ -39,4 +40,5 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: "{{ template "pulsar.fullname" . }}-burnell"
+  namespace: {{ .Release.Namespace }}
 {{- end }}
