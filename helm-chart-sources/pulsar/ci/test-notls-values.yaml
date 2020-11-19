@@ -1,11 +1,13 @@
 
 persistence: no
 enableTests: yes
+enableProvisionContainer: yes
 extra:
   autoRecovery: no
-  bastion: no
+  bastion: yes
   pulsarMonitor: yes
   burnell: yes
+  pulsarHealer: yes
 
 image:
   broker:

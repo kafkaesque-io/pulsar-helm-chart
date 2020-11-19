@@ -157,7 +157,8 @@ tlsCaCert: ca-certificates.crt
 superUserRoles: superuser,admin,websocket,proxy
 proxyRoles: proxy
 
-
+# Enable auto provisioning of Pulsar keys and JWT
+enableProvisionContainer: no
 
 # Enable token-based authentication and authorization
 enableTokenAuth: no
@@ -265,6 +266,8 @@ extra:
   # Pulsar Monitor
   #
   pulsarMonitor: no
+  # Healer repairs any miconfiguration of Pulsar
+  pulsarHealer: no
   #
   # DEPRECATED
   # Support for the monitoring extra is deprecated
