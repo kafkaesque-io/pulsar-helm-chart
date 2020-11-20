@@ -1,4 +1,4 @@
 apiVersion: v1
 description: Kesque Dashboard for Apache Pulsar
 name: kesque-dashboard
-version: 0.0.4
+version: 0.0.5
