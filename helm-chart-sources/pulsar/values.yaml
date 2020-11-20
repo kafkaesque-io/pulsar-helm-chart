@@ -29,13 +29,6 @@ priorityClass:
   enabled: no
   value: 1000000
 
-## If prometheus_persistence is enabled, prometheus will be deployed
-## with PersistentVolumeClaims, otherwise, for test purposes, they
-## will be deployed with emptyDir
-prometheus_persistence: yes
-
-prometheus_rbac: yes
-
 # Enable initContainers that wait for dependent components to 
 # be enabled. Provides a graceful initial install. However, it some
 # failure scenarios it can prevent containers from starting
@@ -157,8 +150,6 @@ tlsCaCert: ca-certificates.crt
 superUserRoles: superuser,admin,websocket,proxy
 proxyRoles: proxy
 
-
-
 # Enable token-based authentication and authorization
 enableTokenAuth: no
 
@@ -265,24 +256,7 @@ extra:
   # This runs the S3 gateway that connects to Tardigrade
   tardigrade: no
   # Pulsar Monitor
-  #
   pulsarMonitor: no
-  #
-  # DEPRECATED
-  # Support for the monitoring extra is deprecated
-  # and will be removed in a future release.
-  #
-  # Maintaining Helm support for prometheus and grafana in this chart
-  # makes little sense when there are stable charts that are
-  # actively maintained that do a better job. The Prometheus 
-  # Operator Helm chart is recommended for monitoring since it 
-  # has a rich feature set and the latest versions and features.
-  #
-  # The pulsar dashboard is deprecated by the Pulsar project. This 
-  # chart includes Pulsar Express as an alternative.
-  #
-  # Monitoring stack (prometheus, grafana, and dashboard)
-  monitoring: no
   
 ## Which images to use
 # When upgrading a Pulsar cluster, it is recommended to upgrade the 
@@ -353,12 +327,6 @@ image:
     repository: kafkaesqueio/pulsar-all
     pullPolicy: IfNotPresent
     tag: 2.4.2-k2.1
-  dashboard:
-    tag: 2.5.0
-  grafana:
-    tag: 2.5.0
-  prometheus:
-    tag: v2.8.1
 
 
 ## Tiered Storage
@@ -1887,11 +1855,5 @@ kube-prometheus-stack:
         - source_labels: [__meta_kubernetes_pod_name]
           action: replace
           target_label: kubernetes_pod_name  
-
-## Monitoring Stack: Prometheus
-## templates/prometheus-deployment.yaml
-##
-prometheus:
-  component: prometheus
 
 
