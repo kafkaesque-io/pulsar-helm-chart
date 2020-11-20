@@ -23,3 +23,9 @@ description: Apache Pulsar Helm chart for Kubernetes
 name: pulsar
 icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_background.svg
 version: 1.0.31
+dependencies:
+- name: kube-prometheus-stack
+  version: 12.x.x
+  repository: https://prometheus-community.github.io/helm-charts
+  condition: kube-prometheus-stack.enabled
+
