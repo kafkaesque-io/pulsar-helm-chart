@@ -31,6 +31,7 @@ data:
       alertKey: {{ .Values.pulsarMonitor.config.opsGenieAlertKey }}
     k8sConfig:
       enabled: {{ .Values.pulsarMonitor.config.k8sInClusterMonitorEnabled | default false }}
+      pulsarNamespace: {{ .Release.Namespace }}
     brokersConfig:
       {{- if .Values.pulsarMonitor.config.broker }}
       intervalSeconds: {{ .Values.pulsarMonitor.config.broker.intervalSeconds | default 45 }}
