@@ -1646,7 +1646,7 @@ pulsarDashboards:
 
 kube-prometheus-stack:
   enabled: no
-  
+  namespaceOverride: monitoring
   prometheus-node-exporter:
     namespaceOverride: monitoring
   defaultRules:
