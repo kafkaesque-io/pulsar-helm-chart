@@ -150,9 +150,6 @@ tlsCaCert: ca-certificates.crt
 superUserRoles: superuser,admin,websocket,proxy
 proxyRoles: proxy
 
-# Enable auto provisioning of Pulsar keys and JWT
-enableProvisionContainer: no
-
 # Enable token-based authentication and authorization
 enableTokenAuth: no
 
@@ -260,8 +257,6 @@ extra:
   tardigrade: no
   # Pulsar Monitor
   pulsarMonitor: no
-  # Healer repairs any miconfiguration of Pulsar
-  pulsarHealer: no
   
 ## Which images to use
 # When upgrading a Pulsar cluster, it is recommended to upgrade the 
@@ -1362,6 +1357,8 @@ dns:
 autoRecovery:
   component: autorecovery
   replicaCount: 1
+  # Enable auto provisioning of Pulsar keys and JWT
+  enableProvisionContainer: no
   # nodeSelector:
   #   cloud.google.com/gke-nodepool: default-pool
   # nodeAffinity: 

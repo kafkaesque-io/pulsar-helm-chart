@@ -68,7 +68,6 @@ spec:
 {{ toYaml .Values.bastion.tolerations | indent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.bastion.gracePeriod }}
-      serviceAccountName: "{{ template "pulsar.fullname" . }}-burnell"
       volumes:
         {{- if .Values.enableTokenAuth }}
         - name: token-private-key
@@ -89,29 +88,6 @@ spec:
           secret:
             secretName: "{{ .Values.tlsSecretName }}" 
         {{- end }}
-      initContainers:
-      {{- if .Values.enableProvisionContainer }}
-      - name: provision-tls-jwt
-        image: "{{ .Values.image.burnell.repository }}:{{ .Values.image.burnell.tag }}"
-        imagePullPolicy: {{ .Values.image.burnell.pullPolicy }}
-      {{- if .Values.proxy.burnellResources }}
-        resources:
-{{ toYaml .Values.proxy.burnellResources | indent 10 }}
-      {{- end }}
-        ports:
-        volumeMounts:
-        env:
-          - name: ClusterName
-            value: "{{ template "pulsar.fullname" . }}"
-          - name: SuperRoles
-            value: {{ .Values.superUserRoles }}
-          - name: ProcessMode
-            value: "init"
-          - name: PulsarNamespace
-            value: {{ .Release.Namespace }}
-          - name: LogLevel
-            value: {{ .Values.burnell.logLevel | default "info" }}
-      {{- end }}
       containers:
 {{- if .Values.extra.pulsarHealer }}
       - name: "{{ template "pulsar.fullname" . }}-burnell" 
