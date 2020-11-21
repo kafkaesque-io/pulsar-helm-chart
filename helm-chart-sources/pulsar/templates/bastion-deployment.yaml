@@ -119,6 +119,10 @@ spec:
             value: {{ .Release.Namespace }}
           - name: LogLevel
             value: {{ .Values.burnell.logLevel | default "info" }}
+          - name: PrivateKeySecretName
+            value: {{ .Values.tokenPrivateKeyFile }}
+          - name: PublicKeySecretName
+            value: {{ .Values.tokenPublicKeyFile }}
 {{- end }}
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bastion.component }}"
         image: "{{ .Values.image.bastion.repository }}:{{ .Values.image.bastion.tag }}"
