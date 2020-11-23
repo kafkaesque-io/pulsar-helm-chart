@@ -544,8 +544,8 @@ spec:
           {{- end }}
           - name: FederatedPromURL
             value: {{ .Values.burnell.federatedPromUrl }}
-          - name: TenantUsageEnabled
-            value: {{ .Values.burnell.tenantUsageEnabled }}
+          - name: TenantsUsageDisabled
+            value: {{ .Values.burnell.tenantsUsageDisabled }}
           - name: TenantManagmentTopic
             value: {{ .Values.burnell.tenantDbTopic | default "persistent://public/default/tenant-management" }}
           - name: LogLevel
