@@ -46,6 +46,9 @@ spec:
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
 {{ toYaml .Values.autoRecovery.annotations | indent 8 }}
+      {{- if .Values.restartOnConfigMapChange.enabled }}
+        checksum/config: {{ include (print $.Template.BasePath "/autorecovery/autorecovery-configmap.yaml") . | sha256sum }}
+      {{- end }}
     spec:
       {{- if .Values.priorityClass.enabled }}
       priorityClassName: pulsar-priority

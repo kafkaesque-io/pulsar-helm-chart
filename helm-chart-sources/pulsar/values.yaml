@@ -360,7 +360,7 @@ storageOffload: {}
   # =================
   # Need to create access and secret key for S3 compatible service
   #
-  # driver: s3
+  # driver: aws-s3
   # accessKey: <access-key>
   # accessSecret: <secret-key> # pragma: allowlist secret 
   # serviceEndpoint: host:port
@@ -370,7 +370,7 @@ storageOffload: {}
   # Need to enable extra.tardigrade for the S3 gateway. 
   # See tardigrade section below to configure the S3 gateway
   #
-  # driver: s3
+  # driver: aws-s3
  
   
 

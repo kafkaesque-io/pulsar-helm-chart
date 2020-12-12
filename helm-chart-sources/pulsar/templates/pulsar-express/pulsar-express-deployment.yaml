@@ -46,6 +46,9 @@ spec:
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
 {{ toYaml .Values.pulsarexpress.annotations | indent 8 }}
+      {{- if .Values.restartOnConfigMapChange.enabled }}
+        checksum/config: {{ include (print $.Template.BasePath "/pulsar-express/pulsar-express-configmap.yaml") . | sha256sum }}
+      {{- end }}
     spec:
       {{- if .Values.priorityClass.enabled }}
       priorityClassName: pulsar-priority

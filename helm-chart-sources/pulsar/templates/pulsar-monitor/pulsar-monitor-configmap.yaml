@@ -28,7 +28,9 @@ data:
       intervalSeconds: 120
       heartbeatKey: {{ .Values.pulsarMonitor.config.opsGenieHeartbeatKey }}
       heartbeatUrl: {{ .Values.pulsarMonitor.config.opsGenieHeartbeatUrl }}
+      {{- if .Values.pulsarMonitor.config.opsGenieAlertKey }}
       alertKey: {{ .Values.pulsarMonitor.config.opsGenieAlertKey }}
+      {{- end }}
     k8sConfig:
       enabled: {{ .Values.pulsarMonitor.config.k8sInClusterMonitorEnabled | default false }}
     brokersConfig:

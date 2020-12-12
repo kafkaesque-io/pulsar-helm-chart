@@ -51,7 +51,7 @@ spec:
       annotations:
 {{ toYaml .Values.bookkeeper.annotations | indent 8 }}
       {{- if .Values.restartOnConfigMapChange.enabled }}
-        checksum/config: {{ include (print $.Template.BasePath "/bookkeeper-configmap.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/bookkeeper/bookkeeper-configmap.yaml") . | sha256sum }}
       {{- end }}
     spec:
       {{- if .Values.priorityClass.enabled }}

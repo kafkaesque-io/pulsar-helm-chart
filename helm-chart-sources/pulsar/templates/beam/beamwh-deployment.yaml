@@ -45,7 +45,12 @@ spec:
         component: {{ .Values.pulsarBeam.component }}
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
+      {{- if .Values.pulsarBeam.annotations }}
 {{ toYaml .Values.pulsarBeam.annotations | indent 8 }}
+      {{- end }}
+      {{- if .Values.restartOnConfigMapChange.enabled }}
+        checksum/config: {{ include (print $.Template.BasePath "/beam/beamwh-configmap.yaml") . | sha256sum }}
+      {{- end }}
     spec:
       {{- if .Values.priorityClass.enabled }}
       priorityClassName: pulsar-priority

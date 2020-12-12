@@ -45,7 +45,12 @@ spec:
         component: {{ .Values.bastion.component }}
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
+      {{- if .Values.restartOnConfigMapChange.enabled }}
+        checksum/config: {{ include (print $.Template.BasePath "/bastion/bastion-configmap.yaml") . | sha256sum }}
+      {{- end }}
+      {{- if .Values.bastion.annotations }}
 {{ toYaml .Values.bastion.annotations | indent 8 }}
+      {{- end }}
     spec:
       {{- if .Values.priorityClass.enabled }}
       priorityClassName: pulsar-priority

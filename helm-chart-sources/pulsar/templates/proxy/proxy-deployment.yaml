@@ -50,7 +50,7 @@ spec:
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
       {{- if .Values.restartOnConfigMapChange.enabled }}
-        checksum/config: {{ include (print $.Template.BasePath "/proxy-configmap.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/proxy/proxy-configmap.yaml") . | sha256sum }}
       {{- end }}
 {{ toYaml .Values.proxy.annotations | indent 8 }}
     spec:
