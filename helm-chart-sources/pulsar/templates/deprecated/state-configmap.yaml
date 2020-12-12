@@ -38,4 +38,7 @@ data:
   tokenPublicKey: "file:///pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
 {{- end }}
 {{ toYaml .Values.stateStorage.configData | indent 2 }}
+  # Workaround for double-quoted values in old values files
+  PULSAR_MEM: {{ .Values.stateStorage.configData.PULSAR_MEM }}
+  PULSAR_GC: {{ .Values.stateStorage.configData.PULSAR_GC }}
 {{- end }}

@@ -116,6 +116,9 @@ tls:
   # Enable TLS between function worker and broker
   function:
     enabled: yes
+  # Enable TLS between WebSocket proxy and broker
+  websocket:
+    enabled: yes
 
 # secrets:
   ## If you're providing your own certificates, please use this to add the certificates as secrets
@@ -455,8 +458,8 @@ zookeeper:
   ## templates/zookeeper-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms1g -Xmx1g -Dcom.sun.management.jmxremote -Djute.maxbuffer=10485760\""
-    PULSAR_GC: "\"-XX:+UseG1GC\""
+    PULSAR_MEM: "-Xms1g -Xmx1g -Dcom.sun.management.jmxremote -Djute.maxbuffer=10485760"
+    PULSAR_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -525,8 +528,8 @@ zookeepernp:
   ## templates/zookeepernp-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms1g -Xmx1g -Dcom.sun.management.jmxremote -Djute.maxbuffer=10485760\""
-    PULSAR_GC: "\"-XX:+UseG1GC\""
+    PULSAR_MEM: "-Xms1g -Xmx1g -Dcom.sun.management.jmxremote -Djute.maxbuffer=10485760"
+    PULSAR_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -671,8 +674,8 @@ bookkeeper:
   ## templates/bookkeeper-configmap.yaml
   ##
   configData:
-    BOOKIE_MEM: "\"-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ExitOnOutOfMemoryError\""
-    BOOKIE_GC: "\"-XX:+UseG1GC\""
+    BOOKIE_MEM: "-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ExitOnOutOfMemoryError"
+    BOOKIE_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -762,8 +765,8 @@ broker:
   ## templates/broker-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ExitOnOutOfMemoryError\""
-    PULSAR_GC: "\"-XX:+UseG1GC\""
+    PULSAR_MEM: "-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ExitOnOutOfMemoryError"
+    PULSAR_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -868,8 +871,8 @@ brokerSts:
   ## templates/broker-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ExitOnOutOfMemoryError\""
-    PULSAR_GC: "\"-XX:+UseG1GC\""
+    PULSAR_MEM: "-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ExitOnOutOfMemoryError"
+    PULSAR_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -996,8 +999,8 @@ function:
   ## templates/function-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -XX:+ExitOnOutOfMemoryError\""
-    PULSAR_GC: "\"-XX:+UseG1GC\""
+    PULSAR_MEM: "-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -XX:+ExitOnOutOfMemoryError"
+    PULSAR_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -1152,7 +1155,8 @@ stateStorage:
   ## templates/state-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\" -Xms1g -Xmx1g -XX:MaxDirectMemorySize=1g\""
+    PULSAR_MEM: "-Xms1g -Xmx1g -XX:MaxDirectMemorySize=1g"
+    PULSAR_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -1231,7 +1235,8 @@ proxy:
   ## templates/proxy-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms1g -Xmx1g -XX:MaxDirectMemorySize=1g\""
+    PULSAR_MEM: "-Xms1g -Xmx1g -XX:MaxDirectMemorySize=1g"
+    PULSAR_GC: "-XX:+UseG1GC"
     numHttpServerThreads: "10"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
@@ -1392,7 +1397,8 @@ autoRecovery:
   ## templates/autorecovery-configmap.yaml
   ##
   configData:
-    BOOKIE_MEM: "\" -Xms512m -Xmx512m -XX:+ExitOnOutOfMemoryError\""
+    BOOKIE_MEM: "-Xms512m -Xmx512m -XX:+ExitOnOutOfMemoryError"
+    BOOKIE_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -1546,7 +1552,8 @@ bastion:
   ## templates/bastion-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms256m -Xmx256m -XX:MaxDirectMemorySize=256m -XX:+ExitOnOutOfMemoryError\""
+    PULSAR_MEM: "-XX:+ExitOnOutOfMemoryError"
+    PULSAR_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"

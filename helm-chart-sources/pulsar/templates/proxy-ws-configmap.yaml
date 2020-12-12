@@ -60,7 +60,7 @@ data:
   authorizationEnabled: "true"
   superUserRoles: "{{ .Values.superUserRoles }}" 
   {{- end }}
-{{- if .Values.enableTls }}
+{{- if and .Values.enableTls .Values.tls.websocket.enabled }}
   webServicePortTls: "{{ .Values.proxy.wsProxyPortTls }}"
   tlsEnabled: "true"
   brokerClientTlsEnabled: "true"
@@ -73,4 +73,7 @@ data:
   {{- end }}
 {{- end }}
 {{ toYaml .Values.proxy.configData | indent 2 }}
+  # Workaround for double-quoted values in old values files
+  PULSAR_MEM: {{ .Values.proxy.configData.PULSAR_MEM }}
+  PULSAR_GC: {{ .Values.proxy.configData.PULSAR_GC }}
 {{- end }}

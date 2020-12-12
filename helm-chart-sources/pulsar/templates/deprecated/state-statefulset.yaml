@@ -140,7 +140,6 @@ spec:
         command: ["sh", "-c"]
         args:
         - >
-          bin/apply-config-from-env.py conf/pulsar_env.sh &&
           exec bin/pulsar standalone --no-broker --stream-containers {{ .Values.stateStorage.numStorageContainers }} --stream-use-hostname
         ports:
         - name: bkstate

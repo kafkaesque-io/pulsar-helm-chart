@@ -252,7 +252,6 @@ spec:
           cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
           {{- end }}
           bin/apply-config-from-env.py conf/proxy.conf &&
-          bin/apply-config-from-env.py conf/pulsar_env.sh &&
           {{- if .Values.enableTls }}
           openssl pkcs8 -topk8 -inform PEM -outform PEM -in /pulsar/certs/tls.key -out /pulsar/tls-pk8.key -nocrypt &&
           {{- end }}
@@ -308,7 +307,6 @@ spec:
           echo "tokenPublicKey=" >> /pulsar/conf/websocket.conf &&
           {{- end }}
           bin/apply-config-from-env.py conf/websocket.conf &&
-          bin/apply-config-from-env.py conf/pulsar_env.sh &&
           {{- if .Values.enableTls }}
           openssl pkcs8 -topk8 -inform PEM -outform PEM -in /pulsar/certs/tls.key -out /pulsar/tls-pk8.key -nocrypt &&
           {{- end }}
