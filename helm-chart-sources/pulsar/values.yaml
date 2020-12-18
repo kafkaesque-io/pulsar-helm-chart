@@ -125,7 +125,7 @@ tls:
   ## key and certificate should start with -----BEGIN CERTIFICATE----- or 
   ## -----BEGIN RSA PRIVATE KEY----- # pragma: allowlist secret
   ##
-  ## If you're using cert-manager, this is unneeded, as it will create the secret for you if it is not set
+  ## If you're using cert-manager (see below), this is unneeded, as it will create the secret for you if it is not set
   ##
   ## Note: The key should not be in PKCS 8 format even though that is the format used by Pulsar
   ##       The format will be converted by chart to PKCS 8. This is to maintain compatability with
@@ -1098,6 +1098,9 @@ stateStorage:
   component: statestorage
   replicaCount: 1
   numStorageContainers: 16
+  ensemble: 2
+  write: 2
+  ack: 2
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
@@ -1616,6 +1619,59 @@ pulsarMonitor:
       intervalSeconds: 60
   service: {}
 
+# Deploy cert-manager
+cert-manager:
+  enabled: no
+  namespaceOverride: cert-manager
+  selfSigned: 
+    enabled: no
+    includeDns: no
+  installCRDs: yes
+
+createCertificates:
+  selfSigned: 
+    enabled: no
+    includeDns: no
+  acme:
+    enabled: no
+    # Production server: https://acme-v02.api.letsencrypt.org/directory
+    # Staging server: https://acme-staging-v02.api.letsencrypt.org/directory
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: user@example.com
+    # Only enabled one of the below solvers
+    httpSolver:
+      # For this solver to work the ingress must support TCP connections to the Pulsar protocol port (6650) as well as HTTP connections since everything must have a single domain name
+      enabled: no
+      ingressClass: nginx
+    azureDns:
+      # See https://cert-manager.io/docs/configuration/acme/dns01/azuredns/ for information on getting these values and the format of the file for the secret
+      enabled: no
+      clientId: ""
+      clientSecretName: "azuredns-config"
+      clientSecretKey: "client-secret"
+      subscriptionId: ""
+      tenantId: ""
+      resourceGroupName: ""
+      dnsZone: ""
+    awsDns:
+      # Secret must contain the IAM secretAccessKey 
+      # See https://cert-manager.io/docs/configuration/acme/dns01/route53/ for more info
+      enabled: no
+      region: "us-east-1"
+      accessKey: ""
+      accessSecretName: ""
+      accessSecretKey: "secret-access-key"
+    gcpDns:
+      # See https://cert-manager.io/docs/configuration/acme/dns01/google/ for information
+      enabled: no
+      projectId: ""
+      secretName: "clouddns-dns01-solver-svc-acct"
+      secretKey: "key.json"
+    digitalOceanDns:
+      # See https://cert-manager.io/docs/configuration/acme/dns01/digitalocean/
+      enabled: no
+      secretName: "digitalocean-dns"
+      secretKey: "access-token"
 
 # Deploy Grafana dashboard for Pulsar.
 # These dashboard will be discovered by the kube-prometheus-stack 

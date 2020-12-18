@@ -181,9 +181,9 @@ spec:
           {{- end }}
           {{- if .Values.function.enableStateStorage }}
           {{- if not (or .Values.extra.stateStorage .Values.function.stateStorageUrlOverride) }}
-          echo 'dlog.bkcEnsembleSize=2' >> conf/bookkeeper.conf &&
-          echo 'dlog.bkcWriteQuorumSize=2'  >> conf/bookkeeper.conf &&
-          echo 'dlog.bkcAckQuorumSize=2' >> conf/bookkeeper.conf &&
+          echo 'dlog.bkcEnsembleSize={{ .Values.stateStorage.ensemble }}' >> conf/bookkeeper.conf &&
+          echo 'dlog.bkcWriteQuorumSize={{ .Values.stateStorage.write }}'  >> conf/bookkeeper.conf &&
+          echo 'dlog.bkcAckQuorumSize={{ .Values.stateStorage.ack }}' >> conf/bookkeeper.conf &&
           {{- end }}
           {{- end }}
           exec bin/pulsar bookie
