@@ -29,6 +29,7 @@ data:
       alertKey: {{ .Values.config.opsGenieAlertKey }}
     k8sConfig:
       enabled: {{ .Values.config.k8sInClusterMonitorEnabled }}
+      pulsarNamespace: {{ .Release.Namespace }}
     brokersConfig:
       {{- toYaml .Values.inclusterBrokerConfig | nindent 6 }}
     pulsarAdminRestConfig:
