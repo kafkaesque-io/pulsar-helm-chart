@@ -772,7 +772,7 @@ broker:
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
     brokerDeduplicationEnabled: "false"
     exposeTopicLevelMetricsInPrometheus: "true"
-    exposeConsumerLevelMetricsInPrometheus: "true"
+    exposeConsumerLevelMetricsInPrometheus: "false"
     backlogQuotaDefaultRetentionPolicy: "producer_exception"
   
   ## Broker service
@@ -878,7 +878,7 @@ brokerSts:
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
     brokerDeduplicationEnabled: "false"
     exposeTopicLevelMetricsInPrometheus: "true"
-    exposeConsumerLevelMetricsInPrometheus: "true"
+    exposeConsumerLevelMetricsInPrometheus: "false"
     backlogQuotaDefaultRetentionPolicy: "producer_exception"
   
   ## Broker service

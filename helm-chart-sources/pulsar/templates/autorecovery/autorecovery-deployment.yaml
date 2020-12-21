@@ -183,8 +183,10 @@ spec:
             value: "init"
           - name: PulsarNamespace
             value: {{ .Release.Namespace }}
-          - name: LogLevel
-            value: {{ .Values.burnell.logLevel | default "info" }}
+          - name: PrivateKeySecretName
+            value: {{ .Values.tokenPrivateKeyFile }}
+          - name: PublicKeySecretName
+            value: {{ .Values.tokenPublicKeyFile }}
       {{- end }}
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.autoRecovery.component }}"
