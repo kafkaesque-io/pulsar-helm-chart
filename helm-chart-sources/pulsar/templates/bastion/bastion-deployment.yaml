@@ -173,7 +173,7 @@ spec:
         - configMapRef:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.bastion.component }}"
         env:
-        # If proxy is deployed, us that for web service URL to 
+        # If proxy is deployed, use that for web service URL to 
         # properly forward command to broker or function worker
         {{- if .Values.extra.proxy }}
         {{- if .Values.enableTls }}

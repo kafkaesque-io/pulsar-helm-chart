@@ -1,10 +1,10 @@
-{{- if .Values.pulsarDashboards.enabled }}
+{{- if .Values.grafanaDashboards.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "grafana-bookkeeper-dashboard"
-  {{- if .Values.pulsarDashboards.namespaceOverride }}
-  namespace: {{ .Values.pulsarDashboards.namespaceOverride }}
+  {{- if .Values.grafanaDashboards.namespaceOverride }}
+  namespace: {{ .Values.grafanaDashboards.namespaceOverride }}
   {{- end }}
   labels:
     app: {{ template "pulsar.name" . }}
@@ -22,8 +22,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "grafana-jvm-dashboard"
-  {{- if .Values.pulsarDashboards.namespaceOverride }}
-  namespace: {{ .Values.pulsarDashboards.namespaceOverride }}
+  {{- if .Values.grafanaDashboards.namespaceOverride }}
+  namespace: {{ .Values.grafanaDashboards.namespaceOverride }}
   {{- end }}
   labels:
     app: {{ template "pulsar.name" . }}
@@ -41,8 +41,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "grafana-messaging-dashboard"
-  {{- if .Values.pulsarDashboards.namespaceOverride }}
-  namespace: {{ .Values.pulsarDashboards.namespaceOverride }}
+  {{- if .Values.grafanaDashboards.namespaceOverride }}
+  namespace: {{ .Values.grafanaDashboards.namespaceOverride }}
   {{- end }}
   labels:
     app: {{ template "pulsar.name" . }}
@@ -60,8 +60,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "grafana-namespace-dashboard"
-  {{- if .Values.pulsarDashboards.namespaceOverride }}
-  namespace: {{ .Values.pulsarDashboards.namespaceOverride }}
+  {{- if .Values.grafanaDashboards.namespaceOverride }}
+  namespace: {{ .Values.grafanaDashboards.namespaceOverride }}
   {{- end }}
   labels:
     app: {{ template "pulsar.name" . }}
@@ -79,8 +79,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "grafana-node-dashboard"
-  {{- if .Values.pulsarDashboards.namespaceOverride }}
-  namespace: {{ .Values.pulsarDashboards.namespaceOverride }}
+  {{- if .Values.grafanaDashboards.namespaceOverride }}
+  namespace: {{ .Values.grafanaDashboards.namespaceOverride }}
   {{- end }}
   labels:
     app: {{ template "pulsar.name" . }}
@@ -98,8 +98,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "grafana-overview-dashboard"
-  {{- if .Values.pulsarDashboards.namespaceOverride }}
-  namespace: {{ .Values.pulsarDashboards.namespaceOverride }}
+  {{- if .Values.grafanaDashboards.namespaceOverride }}
+  namespace: {{ .Values.grafanaDashboards.namespaceOverride }}
   {{- end }}
   labels:
     app: {{ template "pulsar.name" . }}
@@ -117,8 +117,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "grafana-proxy-dashboard"
-  {{- if .Values.pulsarDashboards.namespaceOverride }}
-  namespace: {{ .Values.pulsarDashboards.namespaceOverride }}
+  {{- if .Values.grafanaDashboards.namespaceOverride }}
+  namespace: {{ .Values.grafanaDashboards.namespaceOverride }}
   {{- end }}
   labels:
     app: {{ template "pulsar.name" . }}
@@ -136,8 +136,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "grafana-pulsarmonitor-dashboard"
-  {{- if .Values.pulsarDashboards.namespaceOverride }}
-  namespace: {{ .Values.pulsarDashboards.namespaceOverride }}
+  {{- if .Values.grafanaDashboards.namespaceOverride }}
+  namespace: {{ .Values.grafanaDashboards.namespaceOverride }}
   {{- end }}
   labels:
     app: {{ template "pulsar.name" . }}
@@ -155,8 +155,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "grafana-topic-dashboard"
-  {{- if .Values.pulsarDashboards.namespaceOverride }}
-  namespace: {{ .Values.pulsarDashboards.namespaceOverride }}
+  {{- if .Values.grafanaDashboards.namespaceOverride }}
+  namespace: {{ .Values.grafanaDashboards.namespaceOverride }}
   {{- end }}
   labels:
     app: {{ template "pulsar.name" . }}
@@ -174,8 +174,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "grafana-zookeeper-dashboard"
-  {{- if .Values.pulsarDashboards.namespaceOverride }}
-  namespace: {{ .Values.pulsarDashboards.namespaceOverride }}
+  {{- if .Values.grafanaDashboards.namespaceOverride }}
+  namespace: {{ .Values.grafanaDashboards.namespaceOverride }}
   {{- end }}
   labels:
     app: {{ template "pulsar.name" . }}

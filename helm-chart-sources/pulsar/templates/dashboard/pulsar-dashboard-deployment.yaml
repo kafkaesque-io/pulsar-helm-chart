@@ -1,23 +1,3 @@
-#
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
-#
-# trigger a build
-
 {{- if .Values.extra.pulsarDashboard }}
 apiVersion: apps/v1
 kind: Deployment
@@ -46,7 +26,11 @@ spec:
         component: {{ .Values.pulsarDashboard.component }}
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
-{{ toYaml .Values.pulsarMonitor.annotations | indent 8 }}
+        checksum/dashboard: {{ include (print $.Template.BasePath "/dashboard/pulsar-dashboard-configmap.yaml") . | sha256sum }}
+        checksum/nginx: {{ include (print $.Template.BasePath "/dashboard/pulsar-dashboard-nginx-configmap.yaml") . | sha256sum }}
+        {{- if .Values.pulsarDashboard.annotations }}
+{{ toYaml .Values.pulsarDashboard.annotations | indent 8 }}
+        {{- end }}
     spec:
       serviceAccountName: "{{ template "pulsar.fullname" . }}-burnell"
     {{- if .Values.pulsarDashboard.tolerations }}
@@ -55,6 +39,38 @@ spec:
     {{- end }}
       terminationGracePeriodSeconds: {{ .Values.pulsarDashboard.gracePeriod }}
       containers:
+      - name: nginx 
+        image: nginx 
+        imagePullPolicy: {{ .Values.image.pulsarDashboard.pullPolicy }}
+        ports:
+        - name: "nginx"
+          containerPort: 80
+        {{- if .Values.enableTls }}
+        - name: "nginx-tls"
+          containerPort: 443
+        {{- end }}
+        volumeMounts:
+        - mountPath: /etc/nginx
+          readOnly: true
+          name: nginxconf
+        {{- if .Values.enableTls }}
+        - mountPath: /certs
+          name: certs
+          readOnly: true
+        {{- end }}          
+        livenessProbe:
+          httpGet:
+            path: /ruok
+            port: 80 
+          initialDelaySeconds: {{ .Values.pulsarDashboard.probe.liveness.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.pulsarDashboard.probe.liveness.timeoutSeconds }}
+        readinessProbe:
+          httpGet:
+            path: /ruok
+            port: 80 
+          initialDelaySeconds: {{ .Values.pulsarDashboard.probe.readiness.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.pulsarDashboard.probe.readiness.timeoutSeconds }}
+        resources:
       - name: "{{ template "pulsar.fullname" . }}-pulsar-dashboard"
         image: "{{ .Values.image.pulsarDashboard.repository }}:{{ .Values.image.pulsarDashboard.tag }}"
         imagePullPolicy: {{ .Values.image.pulsarDashboard.pullPolicy }}
@@ -67,101 +83,48 @@ spec:
           containerPort: 6454
         - name: https
           containerPort: 6455
+        volumeMounts:
+          - name: dashboardconfig
+            mountPath: /root/dashboard/dist/config-override.js
+            subPath: config-override.js
+          {{- if .Values.enableTls }}
+          - name: certs
+            readOnly: true
+            mountPath: /pulsar/certs
+          {{- end }}
+          {{- if .Values.enableTokenAuth }}
+          - mountPath: "/pulsar/token-superuser"
+            name: token-superuser
+            readOnly: true
+          {{- end }}
         env:
-        - name: LOG_LEVEL
-          value: {{ .Values.pulsarDashboard.logLevel | default "info" }}
-        - name: K8S_NAMESPACE
-          value: {{ .Release.Namespace }}
+          {{- if .Values.enableTokenAuth }}
+          - name: token_path
+            value: "/pulsar/token-superuser/superuser.jwt"
+          {{- end }}
+          - name: auth_mode
+            value: {{ .Values.pulsarDashboard.authMode }}
+      volumes:
+        - name: dashboardconfig
+          configMap:
+            name: {{ template "pulsar.fullname" . }}-{{ .Values.pulsarDashboard.component }}
+            items:
+            - key: config-override.js
+              path: config-override.js
+        - name: nginxconf
+          configMap:
+            name: {{ template "pulsar.fullname" . }}-{{ .Values.pulsarDashboard.component }}-nginx 
+            items: 
+            - key: nginx.conf
+              path: nginx.conf
         {{- if .Values.enableTls }}
-        - name: PORT
-          value: "6455"
-        - name: CA_PATH 
-          value: /pulsar/certs/ca.crt
-        - name: CERT_PATH 
-          value: /pulsar/certs/tls.crt
-        - name: KEY_PATH 
-          value: /pulsar/certs/tls.key
-        - name: ca_certificate
-          value: 
-        {{- else }}
-        - name: PORT
-          value: "6454"
+        - name: certs
+          secret:
+            secretName: "{{ .Values.tlsSecretName }}" 
         {{- end }}
         {{- if .Values.enableTokenAuth }}
-        - name: admin_token
-          valueFrom:
-            secretKeyRef:
-              name: token-superuser
-              key: superuser.jwt
+        - name: token-superuser
+          secret:
+            secretName: token-superuser
         {{- end }}
-        - name: client_token 
-          value: {{ .Values.pulsarDashboard.config.clientToken | default "" }}
-        - name: template_directory_uri
-          value: {{ .Values.pulsarDashboard.config.templateDirectoryUri | default "" }}
-        - name: ajax_url
-          value: {{ .Values.pulsarDashboard.config.ajaxUrl | default "" }}
-        - name: rest_url
-          value: {{ .Values.pulsarDashboard.config.restUrl | default "" }}
-        - name: tenant
-          value: {{ .Values.pulsarDashboard.config.tenant | default "" }}
-        - name: polling_interval
-          value: {{ .Values.pulsarDashboard.config.polling_interval | default "6000" }}
-        - name: wss_url
-          value: {{ .Values.pulsarDashboard.config.wssUrl }}
-        - name: disable_billing
-          value: {{ .Values.pulsarDashboard.config.disableBilling | default "true" }}
-        - name: home_cluster
-          value: {{ template "pulsar.name" . }}
-        - name: test
-          value: {{ .Values.pulsarDashboard.config.test }}
-        - name: login
-          value: {{ .Values.pulsarDashboard.config.login }}
-        - name: email
-          value: {{ .Values.pulsarDashboard.config.email }}
-        - name: client_role
-          value: {{ .Values.pulsarDashboard.config.clientRole}}
-        - name: plan
-          value: {{ .Values.pulsarDashboard.config.plan }}
-        - name: need_to_create_plan
-          value: {{ .Values.pulsarDashboard.config.needToCreatePlan | default "false" }}
-        - name: plan_to_create
-          value: {{ .Values.pulsarDashboard.config.planToCreate }}
-        - name: admin_role
-          value: {{ .Values.pulsarDashboard.config.adminRole }}
-        - name: cluster_list
-          value: {{ .Values.pulsarDashboard.config.clusterList }}
-        - name: api_base_url
-          value: {{ .Values.pulsarDashboard.config.apiBaseUrl }}
-        - name: backend_url
-          value: {{ .Values.pulsarDashboard.config.backendUrl }}
-        - name: api_version
-          value: {{ .Values.pulsarDashboard.config.apiVersion}}
-        - name: default_plan
-          value: {{ .Values.pulsarDashboard.config.defaultPlan | default "free2" }}
-        - name: notice_text
-          value: {{ .Values.pulsarDashboard.config.noticeText }}
-        - name: user_role
-          value: {{ .Values.pulsarDashboard.config.userRole }}
-        - name: feature_flags
-          value: {{ .Values.pulsarDashboard.config.featureFlags }}
-        - name: security
-          value: {{ .Values.pulsarDashboard.config.security }}
-        - name: chargebee_site
-          value: {{ .Values.pulsarDashboard.config.chargebeeSite }}
-        - name: billing_provider
-          value: {{ .Values.pulsarDashboard.config.billingProvider }}
-        - name: multi_user_org
-          value: {{ .Values.pulsarDashboard.config.multiUserOrg | default "false" }}
-        - name: private_org
-          value: {{ .Values.pulsarDashboard.config.privateOrg | default "false" }}
-        - name: functions_disabled
-          value: {{ .Values.pulsarDashboard.config.functionsDisabled | default "false" }}
-        - name: clients_disabled
-          value: {{ .Values.pulsarDashboard.config.clientsDisabled | default "false" }}
-        - name: running_env
-          value: "k8s"
-        - name: use_token_list
-          value: {{ .Values.pulsarDashboard.config.useTokenList | default "false" }}
-        - name: SERVICE_URL
-          value: http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080/
 {{- end }}
