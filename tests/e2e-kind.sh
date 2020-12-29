@@ -5,7 +5,7 @@ set -o nounset
 set -o pipefail
 
 readonly CT_VERSION=v3.3.1
-readonly KIND_VERSION=0.9.0
+readonly KIND_VERSION=v0.9.0
 readonly CLUSTER_NAME=pulsar-helm-test
 readonly K8S_VERSION=v1.16.15
 
@@ -33,9 +33,8 @@ docker_exec() {
 
 create_kind_cluster() {
     echo 'Installing kind...'
-
-    curl -sSLo kind "https://github.com/kubernetes-sigs/kind/releases/download/$KIND_VERSION/kind-linux-amd64"
-    chmod +x kind
+    curl -Lo ./kind https://kind.sigs.k8s.io/dl/$KIND_VERSION/kind-linux-amd64
+    chmod +x ./kind
     sudo mv kind /usr/local/bin/kind
 
     kind create cluster --name "$CLUSTER_NAME" --config tests/kind-config.yaml --image "kindest/node:$K8S_VERSION" --wait 60s
