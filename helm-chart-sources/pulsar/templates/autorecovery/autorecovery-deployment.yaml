@@ -45,7 +45,9 @@ spec:
         component: {{ .Values.autoRecovery.component }}
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
+      {{- if .Values.autoRecovery.annotations }}
 {{ toYaml .Values.autoRecovery.annotations | indent 8 }}
+      {{- end }}
       {{- if .Values.restartOnConfigMapChange.enabled }}
         checksum/config: {{ include (print $.Template.BasePath "/autorecovery/autorecovery-configmap.yaml") . | sha256sum }}
       {{- end }}
