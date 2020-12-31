@@ -107,6 +107,7 @@ image:
     repository: apachepulsar/pulsar
 
 zookeeper:
+  replicaCount: 1
   resources:
     requests:
       memory: 400Mi

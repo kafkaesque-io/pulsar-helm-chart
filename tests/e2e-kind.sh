@@ -77,6 +77,8 @@ install_local-path-provisioner() {
 }
 
 install_charts() {
+    docker_exec helm repo add kube-prometheus-stack https://prometheus-community.github.io/helm-charts
+    docker_exec helm repo add cert-manager https://charts.jetstack.io 
     docker_exec ct install --chart-dirs helm-chart-sources --excluded-charts kesque-dashboard
     echo
 }

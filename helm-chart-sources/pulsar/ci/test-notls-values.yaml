@@ -24,6 +24,7 @@ image:
     tag: latest
 
 zookeeper:
+  replicaCount: 1
   resources:
     requests:
       memory: 400Mi
