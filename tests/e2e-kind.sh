@@ -86,8 +86,6 @@ main() {
     trap cleanup EXIT
 
     create_kind_cluster
-    install_local-path-provisioner
-    #install_tiller
     install_charts
 }
 
