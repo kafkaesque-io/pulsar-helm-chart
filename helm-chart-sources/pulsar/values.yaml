@@ -29,13 +29,6 @@ priorityClass:
   enabled: no
   value: 1000000
 
-## If prometheus_persistence is enabled, prometheus will be deployed
-## with PersistentVolumeClaims, otherwise, for test purposes, they
-## will be deployed with emptyDir
-prometheus_persistence: yes
-
-prometheus_rbac: yes
-
 # Enable initContainers that wait for dependent components to 
 # be enabled. Provides a graceful initial install. However, it some
 # failure scenarios it can prevent containers from starting
@@ -123,13 +116,16 @@ tls:
   # Enable TLS between function worker and broker
   function:
     enabled: yes
+  # Enable TLS between WebSocket proxy and broker
+  websocket:
+    enabled: yes
 
 # secrets:
   ## If you're providing your own certificates, please use this to add the certificates as secrets
   ## key and certificate should start with -----BEGIN CERTIFICATE----- or 
   ## -----BEGIN RSA PRIVATE KEY----- # pragma: allowlist secret
   ##
-  ## If you're using cert-manager, this is unneeded, as it will create the secret for you if it is not set
+  ## If you're using cert-manager (see below), this is unneeded, as it will create the secret for you if it is not set
   ##
   ## Note: The key should not be in PKCS 8 format even though that is the format used by Pulsar
   ##       The format will be converted by chart to PKCS 8. This is to maintain compatability with
@@ -156,9 +152,6 @@ tlsCaCert: ca-certificates.crt
 
 superUserRoles: superuser,admin,websocket,proxy
 proxyRoles: proxy
-
-# Enable auto provisioning of Pulsar keys and JWT
-enableProvisionContainer: no
 
 # Enable token-based authentication and authorization
 enableTokenAuth: no
@@ -254,8 +247,10 @@ extra:
   # that to use Beam. You need to expose the Pulsar Beam
   # port on the proxy. See the proxy section for details.
   pulsarBeam: no
-  # burnell - various Pulsar proxy
+  # Burnell - various Pulsar proxies
   burnell: no
+  # Burnell log collector for functions when using process runtime
+  burnellLogCollector: no
   # Pulsar manager UI for admin
   pulsarexpress: no
   # Zoonavigator for debugging Zookeeper
@@ -264,26 +259,10 @@ extra:
   # This runs the S3 gateway that connects to Tardigrade
   tardigrade: no
   # Pulsar Monitor
-  #
   pulsarMonitor: no
-  # Healer repairs any miconfiguration of Pulsar
-  pulsarHealer: no
-  #
-  # DEPRECATED
-  # Support for the monitoring extra is deprecated
-  # and will be removed in a future release.
-  #
-  # Maintaining Helm support for prometheus and grafana in this chart
-  # makes little sense when there are stable charts that are
-  # actively maintained that do a better job. The Prometheus 
-  # Operator Helm chart is recommended for monitoring since it 
-  # has a rich feature set and the latest versions and features.
-  #
-  # The pulsar dashboard is deprecated by the Pulsar project. This 
-  # chart includes Pulsar Express as an alternative.
-  #
-  # Monitoring stack (prometheus, grafana, and dashboard)
-  monitoring: no
+  # Pulsar Dashboard
+  pulsarDashboard: no
+
   
 ## Which images to use
 # When upgrading a Pulsar cluster, it is recommended to upgrade the 
@@ -332,7 +311,7 @@ image:
   burnellLogCollector:
     repository: kafkaesqueio/burnell-logcollector
     pullPolicy: IfNotPresent
-    tag: 0.2.0
+    tag: 0.2.99
   pulsarexpress:
     repository: kafkaesqueio/pulsar-express
     tag: 0.5.1_k3
@@ -349,17 +328,15 @@ image:
     repository: kesque/pulsar-monitor
     pullPolicy: IfNotPresent
     tag: 1.2.91
+  pulsarDashboard:
+    repository: kesque/pulsar-dashboard
+    pullPolicy: IfNotPresent
+    tag: latest
   # Standalone state storage is experimental and requires the custom image below 
   stateStorage:
     repository: kafkaesqueio/pulsar-all
     pullPolicy: IfNotPresent
     tag: 2.4.2-k2.1
-  dashboard:
-    tag: 2.5.0
-  grafana:
-    tag: 2.5.0
-  prometheus:
-    tag: v2.8.1
 
 
 ## Tiered Storage
@@ -390,7 +367,7 @@ storageOffload: {}
   # =================
   # Need to create access and secret key for S3 compatible service
   #
-  # driver: s3
+  # driver: aws-s3
   # accessKey: <access-key>
   # accessSecret: <secret-key> # pragma: allowlist secret 
   # serviceEndpoint: host:port
@@ -400,7 +377,7 @@ storageOffload: {}
   # Need to enable extra.tardigrade for the S3 gateway. 
   # See tardigrade section below to configure the S3 gateway
   #
-  # driver: s3
+  # driver: aws-s3
  
   
 
@@ -488,8 +465,8 @@ zookeeper:
   ## templates/zookeeper-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms1g -Xmx1g -Dcom.sun.management.jmxremote -Djute.maxbuffer=10485760\""
-    PULSAR_GC: "\"-XX:+UseG1GC\""
+    PULSAR_MEM: "-Xms1g -Xmx1g -Dcom.sun.management.jmxremote -Djute.maxbuffer=10485760"
+    PULSAR_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -558,8 +535,8 @@ zookeepernp:
   ## templates/zookeepernp-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms1g -Xmx1g -Dcom.sun.management.jmxremote -Djute.maxbuffer=10485760\""
-    PULSAR_GC: "\"-XX:+UseG1GC\""
+    PULSAR_MEM: "-Xms1g -Xmx1g -Dcom.sun.management.jmxremote -Djute.maxbuffer=10485760"
+    PULSAR_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -704,8 +681,8 @@ bookkeeper:
   ## templates/bookkeeper-configmap.yaml
   ##
   configData:
-    BOOKIE_MEM: "\"-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ExitOnOutOfMemoryError\""
-    BOOKIE_GC: "\"-XX:+UseG1GC\""
+    BOOKIE_MEM: "-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ExitOnOutOfMemoryError"
+    BOOKIE_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -795,14 +772,14 @@ broker:
   ## templates/broker-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ExitOnOutOfMemoryError\""
-    PULSAR_GC: "\"-XX:+UseG1GC\""
+    PULSAR_MEM: "-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ExitOnOutOfMemoryError"
+    PULSAR_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
     brokerDeduplicationEnabled: "false"
     exposeTopicLevelMetricsInPrometheus: "true"
-    exposeConsumerLevelMetricsInPrometheus: "true"
+    exposeConsumerLevelMetricsInPrometheus: "false"
     backlogQuotaDefaultRetentionPolicy: "producer_exception"
   
   ## Broker service
@@ -901,14 +878,14 @@ brokerSts:
   ## templates/broker-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ExitOnOutOfMemoryError\""
-    PULSAR_GC: "\"-XX:+UseG1GC\""
+    PULSAR_MEM: "-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ExitOnOutOfMemoryError"
+    PULSAR_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
     brokerDeduplicationEnabled: "false"
     exposeTopicLevelMetricsInPrometheus: "true"
-    exposeConsumerLevelMetricsInPrometheus: "true"
+    exposeConsumerLevelMetricsInPrometheus: "false"
     backlogQuotaDefaultRetentionPolicy: "producer_exception"
   
   ## Broker service
@@ -1029,8 +1006,8 @@ function:
   ## templates/function-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -XX:+ExitOnOutOfMemoryError\""
-    PULSAR_GC: "\"-XX:+UseG1GC\""
+    PULSAR_MEM: "-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -XX:+ExitOnOutOfMemoryError"
+    PULSAR_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -1128,6 +1105,9 @@ stateStorage:
   component: statestorage
   replicaCount: 1
   numStorageContainers: 16
+  ensemble: 2
+  write: 2
+  ack: 2
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
@@ -1185,7 +1165,8 @@ stateStorage:
   ## templates/state-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\" -Xms1g -Xmx1g -XX:MaxDirectMemorySize=1g\""
+    PULSAR_MEM: "-Xms1g -Xmx1g -XX:MaxDirectMemorySize=1g"
+    PULSAR_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -1264,7 +1245,8 @@ proxy:
   ## templates/proxy-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms1g -Xmx1g -XX:MaxDirectMemorySize=1g\""
+    PULSAR_MEM: "-Xms1g -Xmx1g -XX:MaxDirectMemorySize=1g"
+    PULSAR_GC: "-XX:+UseG1GC"
     numHttpServerThreads: "10"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
@@ -1313,9 +1295,14 @@ proxy:
   ## Proxy cluster service
   ## templates/proxy-service.yaml
   ##
+  autoPortAssign:
+    enablePlainTextWithTLS: no
+    matchingNodePort: no
   service:
     annotations: {}
     type: ClusterIP
+    autoPortAssign:
+      enabled: no
     ports:
     - name: http
       port: 8080
@@ -1331,6 +1318,8 @@ proxy:
   extraService:
     enabled: no
     annotations: {}
+    autoPortAssign:
+      enabled: no
     type: ClusterIP
     ports:
     - name: http
@@ -1383,6 +1372,8 @@ dns:
 autoRecovery:
   component: autorecovery
   replicaCount: 1
+  # Enable auto provisioning of Pulsar keys and JWT
+  enableProvisionContainer: no
   # nodeSelector:
   #   cloud.google.com/gke-nodepool: default-pool
   # nodeAffinity: 
@@ -1416,16 +1407,46 @@ autoRecovery:
   ## templates/autorecovery-configmap.yaml
   ##
   configData:
-    BOOKIE_MEM: "\" -Xms512m -Xmx512m -XX:+ExitOnOutOfMemoryError\""
+    BOOKIE_MEM: "-Xms512m -Xmx512m -XX:+ExitOnOutOfMemoryError"
+    BOOKIE_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
-## Pulsar Extra: Dashboard
+
+
+## Pulsar Extra: Pulsar Dashboard
 ## templates/dashboard-deployment.yaml
 ##
-dashboard:
+pulsarDashboard:
   component: dashboard
+  defaultTenant: public
+  adminUser: admin
+  # authMode: none or k8s
+  authMode: none
+  serverLogLevel: info
+  createUserSecret:
+    enabled: no
+    user: ''
+    password: ''
+  apiBaseUrl: "api/v1/"
+  probe:
+    liveness:
+      initialDelaySeconds: 15
+      timeoutSeconds: 15
+    readiness:
+      initialDelaySeconds: 5
+      timeoutSeconds: 3
   replicaCount: 1
+  codeSampleUrl:
+    useDnsName: yes
+    pulsar: "pulsar+ssl://pulsarhost:6651"
+    websocket: "wss://pulsarhost:8001"
+    http: "https://pulsarhost:8085"
+  ingress:
+    enabled: yes
+    host: ui.host.com
+    annotations: {}
+    enableTls: no
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations: {}
@@ -1433,11 +1454,8 @@ dashboard:
   gracePeriod: 60
   resources:
     requests:
-      memory: 1024Mi
-      cpu: 1
-  image:
-    repository: apachepulsar/pulsar-dashboard
-    pullPolicy: IfNotPresent
+      memory: 512Mi
+      cpu: 0.5
   ## Dashboard service
   ## templates/dashboard-service.yaml
   ##
@@ -1445,7 +1463,7 @@ dashboard:
     annotations: {}
     ports:
     - name: server
-      port: 80
+      port: 3100
 
 ## Components Stack: pulsarexpress
 ## templates/pulsarexpress.yaml
@@ -1570,7 +1588,8 @@ bastion:
   ## templates/bastion-configmap.yaml
   ##
   configData:
-    PULSAR_MEM: "\"-Xms256m -Xmx256m -XX:MaxDirectMemorySize=256m -XX:+ExitOnOutOfMemoryError\""
+    PULSAR_MEM: "-XX:+ExitOnOutOfMemoryError"
+    PULSAR_GC: "-XX:+UseG1GC"
     PULSAR_LOG_LEVEL: "info"
     PULSAR_LOG_ROOT_LEVEL: "info"
     PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
@@ -1631,66 +1650,308 @@ pulsarMonitor:
       intervalSeconds: 120
     latencyTest:
       intervalSeconds: 60
+  service: {}
 
-## Monitoring Stack: Prometheus
-## templates/prometheus-deployment.yaml
-##
-prometheus:
-  component: prometheus
-  replicaCount: 1
-  # nodeSelector:
-    # cloud.google.com/gke-nodepool: default-pool
-  annotations: {}
-  tolerations: []
-  gracePeriod: 60
-  resources:
-    requests:
-      memory: 512Mi
-      cpu: 0.5
-  image:
-    repository: prom/prometheus
-    pullPolicy: IfNotPresent
-  volumes:
-    data:
-      name: data
-      size: 5Gi
-      # storageClass:
-      #   type: gp2
-      #   provisioner: kubernetes.io/aws-ebs
-      #   fsType: ext4
-  ## Prometheus service
-  ## templates/prometheus-service.yaml
-  ##
-  service:
-    annotations: {}
-    ports:
-    - name: server
-      port: 9090
+# Deploy cert-manager
+cert-manager:
+  enabled: no
+  namespaceOverride: cert-manager
+  selfSigned: 
+    enabled: no
+    includeDns: no
+  installCRDs: yes
 
-## Monitoring Stack: Grafana
-## templates/grafana-deployment.yaml
-##
-grafana:
-  component: grafana
-  replicaCount: 1
-  # nodeSelector:
-    # cloud.google.com/gke-nodepool: default-pool
-  annotations: {}
-  tolerations: []
-  gracePeriod: 60
-  resources:
-    requests:
-      memory: 256Mi
-      cpu: 0.25
-  image:
-    repository: apachepulsar/pulsar-grafana
-    pullPolicy: IfNotPresent
-  ## Grafana service
-  ## templates/grafana-service.yaml
-  ##
-  service:
-    annotations: {}
-    ports:
-    - name: server
-      port: 3000
+createCertificates:
+  selfSigned: 
+    enabled: no
+    includeDns: no
+  acme:
+    enabled: no
+    # Production server: https://acme-v02.api.letsencrypt.org/directory
+    # Staging server: https://acme-staging-v02.api.letsencrypt.org/directory
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: user@example.com
+    # Only enabled one of the below solvers
+    httpSolver:
+      # For this solver to work the ingress must support TCP connections to the Pulsar protocol port (6650) as well as HTTP connections since everything must have a single domain name
+      enabled: no
+      ingressClass: nginx
+    azureDns:
+      # See https://cert-manager.io/docs/configuration/acme/dns01/azuredns/ for information on getting these values and the format of the file for the secret
+      enabled: no
+      clientId: ""
+      clientSecretName: "azuredns-config"
+      clientSecretKey: "client-secret"
+      subscriptionId: ""
+      tenantId: ""
+      resourceGroupName: ""
+      dnsZone: ""
+    awsDns:
+      # Secret must contain the IAM secretAccessKey 
+      # See https://cert-manager.io/docs/configuration/acme/dns01/route53/ for more info
+      enabled: no
+      region: "us-east-1"
+      accessKey: ""
+      accessSecretName: ""
+      accessSecretKey: "secret-access-key"
+    gcpDns:
+      # See https://cert-manager.io/docs/configuration/acme/dns01/google/ for information
+      enabled: no
+      projectId: ""
+      secretName: "clouddns-dns01-solver-svc-acct"
+      secretKey: "key.json"
+    digitalOceanDns:
+      # See https://cert-manager.io/docs/configuration/acme/dns01/digitalocean/
+      enabled: no
+      secretName: "digitalocean-dns"
+      secretKey: "access-token"
+
+# Deploy Grafana dashboard for Pulsar.
+# These dashboard will be discovered by the kube-prometheus-stack 
+# if it is running the same namespace as the stack
+
+grafanaDashboards:
+  enabled: no
+  namespaceOverride: monitoring
+
+# Deploy the kube-prometheus-stack which includes:
+# * Prometheus (using Prometheus Operator)
+# * Alertmanager (using Prometheus Operator)
+# * Grafana
+# * Prometheus node exporter
+#
+# https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack
+#
+# The default values will enable Prometheus and 
+# Grafana, but not AlertManager. 
+# Scraping configs for Pulsar pods are included. By default
+# pods in the namespace of the deployment will be scraped.
+#
+# The stack can add standard Kubernetes alert rules, but those 
+# are disabled by default. 
+#
+# A set of Pulsar-specific rules are included below.
+# The threshold for some of the rules are low and should 
+# be adjusted to match the performance/use of the Pulsar 
+# deployment. To be notified when the rules are triggered,
+# you need to enable and configure Alertmanager. It supports
+# many targets including email, Slack, OpsGenie, PagerDuty.
+
+kube-prometheus-stack:
+  enabled: no
+  namespaceOverride: monitoring
+  prometheus-node-exporter:
+    namespaceOverride: monitoring
+  defaultRules:
+    create: no
+    rules:
+      alertmanager: true
+      etcd: true
+      general: true
+      k8s: true
+      kubeApiserver: true
+      kubePrometheusNodeAlerting: true
+      kubePrometheusNodeRecording: true
+      kubeScheduler: true
+      kubernetesAbsent: true
+      kubernetesApps: true
+      kubernetesResources: true
+      kubernetesStorage: true
+      kubernetesSystem: true
+      node: true
+      prometheusOperator: true
+      prometheus: true
+
+  additionalPrometheusRules:
+
+  - name: general-rules
+    groups:
+    - name: acks
+      rules:
+      - alert: unacked-message-high
+        expr: pulsar_subscription_unacked_messages > 100
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          identifier: '{{ $labels.topic }}:{{ $labels.subscription }}'
+          description: 'Unacked messages on subscription high'
+      - alert: subscription-blocked-on-unacked-messages
+        expr: pulsar_subscription_blocked_on_unacked_messages > 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          identifier: '{{ $labels.topic }}:{{ $labels.subscription }}'
+          description: Subscription is blocked on unacked messages
+    - name: components
+      rules:
+      - alert: zookeeper-write-latency-high
+        expr: zookeeper_server_requests_latency_ms > 500
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          identifier: '{{ $labels.kubernetes_pod_name }}'
+          description: 'Zookeeper write latency is high'
+      - alert: bookkeeper-add-latency-high
+        expr: bookkeeper_server_ADD_ENTRY_REQUEST > 1500
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          description: Add latency to BookKeeper is high
+          identifier: '{{ $labels.kubernetes_pod_name }}'
+      - alert: bookkeeper-read-latency-high
+        expr: bookkeeper_server_READ_ENTRY_REQUEST > 1000
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          description: Read latency from BookKeeper is high
+          identifier: '{{ $labels.kubernetes_pod_name }}'
+      - alert: bookkeeper-bookie-readonly
+        expr: bookie_SERVER_STATUS == 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          description: Bookie is read-only
+          identifier: '{{ $labels.kubernetes_pod_name }}'
+  - name: cluster-normal
+    groups:
+    - name: exp-counts-rates
+      rules:
+      - alert: producers-high
+        expr: pulsar_producers_count > 500
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          description: Producer count is high
+          identifier: '{{ $labels.topic }}'
+      - alert: consumers-high
+        expr: pulsar_consumers_count > 500
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          description: Consumer count is high
+          identifier: '{{ $labels.topic }}'
+      - alert: in-rate-high
+        expr: pulsar_rate_in > 5000
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          description: Incoming message rate is high on broker
+          identifier: '{{ $labels.topic }}'
+      - alert: out-rate-high
+        expr: pulsar_rate_out > 5000
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          description: Outgoing message rate is high on broker
+          identifier: '{{ $labels.topic }}'  
+  - name: volumes
+    groups:
+    - name: volumes-filling
+      rules:
+      - alert: KubePersistentVolumeFillingUp
+        expr: kubelet_volume_stats_available_bytes{job="kubelet",metrics_path="/metrics",namespace=~".*"} / kubelet_volume_stats_capacity_bytes{job="kubelet",metrics_path="/metrics",namespace=~".*"} < 0.10
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          message: The PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} in Namespace {{ $labels.namespace }} is only {{ $value | humanizePercentage }} free.
+
+  alertmanager:
+    enabled: false
+
+  grafana:
+    enabled: true
+    namespaceOverride: "monitoring"
+    defaultDashboardsEnabled: true
+    adminUser: admin
+    adminPassword: ZhF9sS8B7PQSTR
+    ingress:
+      enabled: false
+      hosts: 
+        - grafana.example.com
+      path: /
+
+  kubeApiServer:
+    enabled: true
+  kubelet:
+    enabled: true
+  kubeControllerManager:
+    enabled: false
+  coreDns:
+    enabled: true
+  kubeDns:
+    enabled: false
+  kubeEtcd:
+    enabled: true
+  kubeScheduler:
+    enabled: false
+  kubeProxy:
+    enabled: false
+  kubeStateMetrics:
+    enabled: true
+  nodeExporter:
+    enabled: true
+
+  prometheusOperator:
+    enabled: true
+
+  prometheus:
+    enabled: true
+    ingress:
+      enabled: false
+      hosts: 
+        - prometheus.example.com
+    prometheusSpec:
+      retention: 10d
+      storageSpec: 
+        volumeClaimTemplate:
+          spec:
+            storageClassName: default
+            resources:
+              requests:
+                storage: 50Gi
+
+      additionalScrapeConfigs: 
+      - job_name: 'pulsar-pods'
+        honor_labels: true
+        kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+            - pulsar
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+          action: keep
+          regex: true
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+          action: replace
+          target_label: __metrics_path__
+          regex: (.+)
+        - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+          action: replace
+          regex: ([^:]+)(?::\d+)?;(\d+)
+          replacement: $1:$2
+          target_label: __address__
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+        - source_labels: [__meta_kubernetes_namespace]
+          action: replace
+          target_label: kubernetes_namespace
+        - source_labels: [__meta_kubernetes_pod_label_component]
+          action: replace
+          target_label: job
+        - source_labels: [__meta_kubernetes_pod_name]
+          action: replace
+          target_label: kubernetes_pod_name  
+
 

@@ -4,10 +4,10 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-readonly CT_VERSION=v2.4.0
-readonly KIND_VERSION=0.2.1
+readonly CT_VERSION=v3.3.1
+readonly KIND_VERSION=v0.9.0
 readonly CLUSTER_NAME=pulsar-helm-test
-readonly K8S_VERSION=v1.13.4
+readonly K8S_VERSION=v1.16.15
 
 run_ct_container() {
     echo 'Running ct container...'
@@ -33,9 +33,8 @@ docker_exec() {
 
 create_kind_cluster() {
     echo 'Installing kind...'
-
-    curl -sSLo kind "https://github.com/kubernetes-sigs/kind/releases/download/$KIND_VERSION/kind-linux-amd64"
-    chmod +x kind
+    curl -Lo ./kind https://kind.sigs.k8s.io/dl/$KIND_VERSION/kind-linux-amd64
+    chmod +x ./kind
     sudo mv kind /usr/local/bin/kind
 
     kind create cluster --name "$CLUSTER_NAME" --config tests/kind-config.yaml --image "kindest/node:$K8S_VERSION" --wait 60s
@@ -44,7 +43,7 @@ create_kind_cluster() {
 
     echo 'Copying kubeconfig to container...'
     local kubeconfig
-    kubeconfig="$(kind get kubeconfig-path --name "$CLUSTER_NAME")"
+    kubeconfig="${HOME}/.kube/config"
     docker cp "$kubeconfig" ct:/root/.kube/config
 
     docker_exec kubectl cluster-info
@@ -78,6 +77,8 @@ install_local-path-provisioner() {
 }
 
 install_charts() {
+    docker_exec helm repo add kube-prometheus-stack https://prometheus-community.github.io/helm-charts
+    docker_exec helm repo add cert-manager https://charts.jetstack.io 
     docker_exec ct install --chart-dirs helm-chart-sources --excluded-charts kesque-dashboard
     echo
 }
@@ -87,8 +88,6 @@ main() {
     trap cleanup EXIT
 
     create_kind_cluster
-    install_local-path-provisioner
-    install_tiller
     install_charts
 }
 

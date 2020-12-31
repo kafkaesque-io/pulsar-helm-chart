@@ -31,6 +31,29 @@ application:
   brokerService: pulsar-broker
   proxyService: pulsar-proxy
   httpService: pulsar-proxy
+  enableAntiAffinity: yes
+  tokenSecret:
+    enabled: no
+    secret: token-superuser
+    path: /config
+  configData:
+    PULSAR_STANDALONE: 'false'
+    PULSAR_CLUSTER: pulsar
+    PULSAR_TOKEN_PATH: /config
+    PULSAR_API_GATEWAY_BASE_URL: 'https://dashboard.example.com/api/v1'
+    PULSAR_INCLUSTER_API_GATEWAY_BASE_URL: http://dashboard-nginx
+    PULSAR_DEFAULT_TENANT: 'public'
+    PULSAR_DASHBOARD_WS_URL: 'wss://dashboard.example.com'
+    PULSAR_CLIENT_URL: 'pulsar://dashboard.example.com:6650'
+    PULSAR_CLIENT_URL_WS: 'ws://dashboard.example.com:8000'
+    PULSAR_CLIENT_URL_HTTP: 'http://dashboard.example.com:8084'
+    PULSAR_GRAFANA_URL: 'https://dashboard.example.com/grafana'
+    PULSAR_ENABLE_FUNCTIONS: 'true'
+    PULSAR_ENABLE_BUILT_IN_CLIENTS: 'true'
+    PULSAR_ENABLE_HTTP: 'false'
+    PULSAR_API_VERSION: '2.6.1'
+    PULSAR_POLLING_INTERVAL_IN_MS: '10000'
+
 
 
 service:
@@ -43,6 +66,8 @@ service:
   commonName:
   externalPort: 80
   internalPort: 80
+  wsPort: 8964
+  wsName: "pulsar"
   ingress:
     enabled: true
     mainPath: /*
@@ -62,6 +87,7 @@ nginx:
     k8sEnabled: yes
     k8sTargetDns: pulsar-proxy
     clusterName: pulsar
+    burnellTls: false
 livenessProbe:
   path: "/index.php"
   initialDelaySeconds: 15

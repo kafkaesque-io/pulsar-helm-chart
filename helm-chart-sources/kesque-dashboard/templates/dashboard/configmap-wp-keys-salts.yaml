@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: wp-keys-salts 
+  name: dashboard-config 
 data:
   WORDPRESS_AUTH_KEY: cSg+WnQ5W1pUUylJTUNXbj1BPkk+fHBgUlVsK3U4OykwbEdpUyQ8LTVwL1Vuez47cmctSlpFdldtXmx6Iz45Pgo=
   WORDPRESS_SECURE_AUTH_KEY: V2s3OWxdZFRocHxPZzdNQDI2WWo9VjBPIXUqel5ePDEhO0UtQ1ohaXgpYC06fGNlKVViYXhbfkpLSCEhKzBqLQo=
@@ -11,3 +11,6 @@ data:
   WORDPRESS_SECURE_AUTH_SALT: ZW1XbXx1Rk5NLTBZOFttWzNBOlR6SEJzME9LL2VSQ2MpOSFhbnQ0O1ZaZV1UXSZ9a3c0XiFGNCtYRmdsemQmdAo=
   WORDPRESS_LOGGED_IN_SALT: LWwub0FfKV92RkkpVSZLK0VxSWp8e28+LUV8PjwmWm48VywsJC55eTQtbzw9eytQOk5sdWdSLWhJKzV5RF5VNwo=
   WORDPRESS_NONCE_SALT: UGNqPi1LKnxEcyV1YHE4JjZSRzdOKis1KUg3YjhWQiRscFgoIXY6eSZQYi91WyspIWg0Pmtpdj4rekRjKEs8YAo=
+{{- if .Values.application.configData }}
+{{ toYaml .Values.application.configData | indent 2 }}
+{{- end }}
