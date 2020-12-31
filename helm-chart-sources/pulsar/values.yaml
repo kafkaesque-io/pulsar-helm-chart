@@ -1423,6 +1423,7 @@ pulsarDashboard:
   adminUser: admin
   # authMode: none or k8s
   authMode: none
+  serverLogLevel: info
   createUserSecret:
     enabled: no
     user: ''
@@ -1436,10 +1437,16 @@ pulsarDashboard:
       initialDelaySeconds: 5
       timeoutSeconds: 3
   replicaCount: 1
+  codeSampleUrl:
+    useDnsName: yes
+    pulsar: "pulsar+ssl://pulsarhost:6651"
+    websocket: "wss://pulsarhost:8001"
+    http: "https://pulsarhost:8085"
   ingress:
     enabled: yes
     host: ui.host.com
     annotations: {}
+    enableTls: no
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   annotations: {}

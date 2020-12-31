@@ -38,7 +38,11 @@ data:
         "api_version": "2.6.1",
         "default_plan": "",
         "notice_text": "",
+        {{- if index .Values "kube-prometheus-stack" "grafana" "ingress" "enabled"}}
+        "grafana_url": "https://{{ index .Values "kube-prometheus-stack" "grafana" "ingress" "hosts" 0 }}{{ index .Values "kube-prometheus-stack" "grafana" "ingress" "path" }}",
+        {{- else }}
         "grafana_url": "",
+        {{- end }}
         "user_role": "administrator",
         "feature_flags": {
             "function": true,
@@ -61,9 +65,15 @@ data:
         "use_token_list": "false",
         "auth_mode": "{{ .Values.pulsarDashboard.authMode }}",
         "host_overrides": {
-            "pulsar": "http://localhost:6650",
-            "ws": "ws://localhost:8080",
-            "http": "http://localhost:8964" 
+            {{- if .Values.pulsarDashboard.codeSampleUrl.useDnsName }}
+            "pulsar": "pulsar+ssl://{{ .Values.dnsName }}:6651",
+            "ws": "wss://{{ .Values.dnsName }}:8001",
+            "http": "https://{{ .Values.dnsName }}:8085"
+            {{- else }}
+            "pulsar": "{{ .Values.pulsarDashboard.codeSampleUrl.pulsar }}",
+            "ws": "{{ .Values.pulsarDashboard.codeSampleUrl.websocket }}",
+            "http": "{{ .Values.pulsarDashboard.codeSampleUrl.http }}"
+            {{- end }}
         }
     }
 
