@@ -695,6 +695,8 @@ bookkeeper:
     ports:
     - name: server
       port: 3181
+    includeClusterIpSvc: no
+
   ## Bookkeeper PodDisruptionBudget
   ## templates/bookkeeper-pdb.yaml
   ##
@@ -1353,7 +1355,9 @@ dns:
   component: dns
   provider: aws
   domainFilter: example.com 
-  hostAnnotations:
+  annotations: {}
+  # For AWS Route 53, add annotation:
+  # iam.amazonaws.com/role: arn:aws:iam::ACCOUNT-ID:role/IAM-SERVICE-ROLE-NAME
   # Trying to create CNAME records (ex AWS NLB)
   # Need to add TXT prefix to prevent conflicts
   # txtPrefix: k8s-
@@ -1656,10 +1660,7 @@ pulsarMonitor:
 cert-manager:
   enabled: no
   namespaceOverride: cert-manager
-  selfSigned: 
-    enabled: no
-    includeDns: no
-  installCRDs: yes
+  installCRDs: no
 
 createCertificates:
   selfSigned: 

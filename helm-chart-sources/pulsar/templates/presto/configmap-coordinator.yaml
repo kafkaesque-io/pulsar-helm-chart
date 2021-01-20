@@ -98,4 +98,7 @@ data:
       "gcsManagedLedgerOffloadServiceAccountKeyFile": "/pulsar/gcp-service-account/{{ .Values.storageOffload.gcsServiceAccountJsonFile }}" }
     {{- end }}
     {{- end }}
+  health_check.sh: |
+    #!/bin/bash 
+    curl --silent {{ template "pulsar.fullname" . }}-{{ .Values.pulsarSQL.component }}:{{ .Values.pulsarSQL.server.config.http.port }}/v1/node | tr "," "\n" | grep --silent $(hostname -i)
 {{- end }}

@@ -184,6 +184,7 @@ spec:
           echo 'dlog.bkcEnsembleSize={{ .Values.stateStorage.ensemble }}' >> conf/bookkeeper.conf &&
           echo 'dlog.bkcWriteQuorumSize={{ .Values.stateStorage.write }}'  >> conf/bookkeeper.conf &&
           echo 'dlog.bkcAckQuorumSize={{ .Values.stateStorage.ack }}' >> conf/bookkeeper.conf &&
+          echo 'storageserver.grpc.useHostname=true' >> conf/bookkeeper.conf &&
           {{- end }}
           {{- end }}
           exec bin/pulsar bookie

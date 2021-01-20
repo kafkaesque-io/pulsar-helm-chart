@@ -13,6 +13,8 @@ spec:
     metadata:
       labels:
         app: "{{ template "pulsar.fullname" . }}-{{ .Values.dns.component }}"
+      annotations:
+{{ toYaml .Values.dns.annotations | indent 8 }}     
     spec:
       {{- if .Values.priorityClass.enabled }}
       priorityClassName: pulsar-priority
