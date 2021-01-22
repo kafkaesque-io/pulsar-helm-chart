@@ -43,6 +43,8 @@ spec:
           secret:
             secretName: azure-config-file 
       {{- end }}
+      securityContext:
+        fsGroup: 65534
       containers:
       - name: external-dns
         image: registry.opensource.zalan.do/teapot/external-dns:latest
