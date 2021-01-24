@@ -25,7 +25,7 @@ icon: https://kafkaesque.io/wp-content/uploads/2019/04/color_logo_with_backgroun
 version: 1.0.32
 dependencies:
 - name: kube-prometheus-stack
-  version: 12.x.x
+  version: 12.12.2
   repository: https://prometheus-community.github.io/helm-charts
   condition: kube-prometheus-stack.enabled
 - name: cert-manager
