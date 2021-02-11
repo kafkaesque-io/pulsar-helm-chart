@@ -133,6 +133,10 @@ data:
   bookkeeperUseV2WireProtocol: "false"
   {{- end }}
 {{- end }}
+{{- if .Values.pulsarSQL.explicitLAC.enabled }}
+  bookkeeperUseV2WireProtocol: "false"
+  bookkeeperExplicitLacIntervalInMills: "{{ .Values.pulsarSQL.explicitLAC.intervalInMs }}"
+{{- end }}
 {{- if .Values.storageOffload.driver }}
 {{- if eq .Values.storageOffload.driver "aws-s3" }}
   managedLedgerOffloadDriver: "{{ .Values.storageOffload.driver }}" 

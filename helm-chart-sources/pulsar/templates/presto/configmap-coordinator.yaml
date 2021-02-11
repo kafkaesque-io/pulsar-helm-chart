@@ -37,12 +37,25 @@ data:
     query.max-memory-per-node={{ .Values.pulsarSQL.server.config.query.maxMemoryPerNode }}
     discovery-server.enabled=true
     discovery.uri=http://localhost:{{ .Values.pulsarSQL.server.config.http.port }}
-
+    {{- if .Values.pulsarSQL.authentication.enabled }}
+    http-server.process-forwarded=true
+    http-server.authentication.type=PASSWORD
+  
+  password-authenticator.properties: |-
+    password-authenticator.name=file
+    file.password-file=/pulsar/conf/presto/password.db
+  password.db: |
+{{ toYaml .Values.pulsarSQL.authentication.passwordDB | indent 4 }}
+    {{- end }}
   log.properties: |
     io.prestosql={{ .Values.pulsarSQL.server.log.presto.level }}
 
   pulsar.properties: |
     connector.name=pulsar
+    {{- if .Values.pulsarSQL.explicitLAC.enabled }}
+    pulsar.bookkeeper-use-v2-protocol=false
+    pulsar.bookkeeper-explicit-interval={{ .Values.pulsarSQL.explicitLAC.intervalInMs }}
+    {{- end }}
     {{- if .Values.enableTls }}
     # pulsar.broker-service-url=https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8443
     pulsar.broker-service-url=http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080

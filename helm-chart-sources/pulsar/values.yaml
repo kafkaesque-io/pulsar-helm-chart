@@ -379,6 +379,14 @@ storageOffload: {}
   #
   # driver: aws-s3
  
+  # For Aure Blob
+  # =================
+  # Need to create an Azure storage account and a blob containter (bucket) 
+  # To retrieve key, see https://docs.microsoft.com/en-us/azure/storage/common/storage-account-keys-manage?tabs=azure-portal#code-try-1
+  #
+  # driver: azureblob
+  # storageAccount: <account name>
+  # storageAccountKey: <account key>
   
 
   ## For Google Cloud Storage
@@ -1035,9 +1043,18 @@ function:
 # Configuration for presto SQL
 pulsarSQL:
   component: sql
+  explicitLAC:
+    enabled: no
+    intervalInMs: 1000
   # nodeSelector:
   # affinity:
   # tolerations:
+  authentication:
+    enabled: no
+    # To create the password line, use the following command:
+    #   htpasswd  -Bnb -C 10 <user> <password>
+    passwordDB:
+      admin:$2y$10$rjhSX55Y/1zxOmFRwEHyVeyiwGIGfj7TBDRcwNQNSPJz6xl2cRkqa
   server:
     scheduleCoordinator: yes
     workers: 0
@@ -1866,6 +1883,17 @@ kube-prometheus-stack:
           severity: critical
         annotations:
           message: The PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} in Namespace {{ $labels.namespace }} is only {{ $value | humanizePercentage }} free.
+  - name: jvm
+    groups:
+    - name: threads
+      rules:
+      - alert: ThreadDeadLock
+        expr: jvm_threads_deadlocked > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          message: Thread deadlock detected.
 
   alertmanager:
     enabled: false

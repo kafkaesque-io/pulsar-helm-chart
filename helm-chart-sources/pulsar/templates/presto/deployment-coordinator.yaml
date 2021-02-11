@@ -83,6 +83,14 @@ spec:
             - mountPath: /pulsar/conf/presto/config.properties
               name: config-volume
               subPath: config.properties
+            {{- if .Values.pulsarSQL.authentication.enabled }}
+            - mountPath: /pulsar/conf/presto/password-authenticator.properties
+              name: config-volume
+              subPath: password-authenticator.properties
+            - mountPath: /pulsar/conf/presto/password.db
+              name: config-volume
+              subPath: password.db
+            {{- end }}
             - mountPath: /pulsar/conf/presto/catalog/pulsar.properties
               name: config-volume
               subPath: pulsar.properties
