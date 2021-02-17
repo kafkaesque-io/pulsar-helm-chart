@@ -80,6 +80,26 @@ spec:
 {{ toYaml .Values.bookkeeper.podAntiAffinity | indent 10 }}
         {{- else }}       
           {{- if .Values.antiAffinity.host.enabled }}
+          {{- if eq .Values.antiAffinity.host.mode "preferred" }}
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                  - "{{ template "pulsar.name" . }}"
+                - key: "release"
+                  operator: In
+                  values:
+                  - {{ .Release.Name }}
+                - key: "component"
+                  operator: In
+                  values:
+                  - {{ .Values.autoRecovery.component }}
+              topologyKey: "kubernetes.io/hostname"
+          {{- else }}
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
@@ -96,6 +116,7 @@ spec:
                 values:
                 - {{ .Values.bookkeeper.component }}
             topologyKey: "kubernetes.io/hostname"
+          {{- end }}
           {{- end }}
           {{- if .Values.antiAffinity.zone.enabled }}
           preferredDuringSchedulingIgnoredDuringExecution: 
@@ -184,6 +205,7 @@ spec:
           echo 'dlog.bkcEnsembleSize={{ .Values.stateStorage.ensemble }}' >> conf/bookkeeper.conf &&
           echo 'dlog.bkcWriteQuorumSize={{ .Values.stateStorage.write }}'  >> conf/bookkeeper.conf &&
           echo 'dlog.bkcAckQuorumSize={{ .Values.stateStorage.ack }}' >> conf/bookkeeper.conf &&
+          echo 'storageserver.grpc.useHostname=true' >> conf/bookkeeper.conf &&
           {{- end }}
           {{- end }}
           exec bin/pulsar bookie

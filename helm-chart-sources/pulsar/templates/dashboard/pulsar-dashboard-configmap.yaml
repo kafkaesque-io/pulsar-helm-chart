@@ -39,7 +39,11 @@ data:
         "default_plan": "",
         "notice_text": "",
         {{- if index .Values "kube-prometheus-stack" "grafana" "ingress" "enabled"}}
+        {{- if .Values.enableTls }}
         "grafana_url": "https://{{ index .Values "kube-prometheus-stack" "grafana" "ingress" "hosts" 0 }}{{ index .Values "kube-prometheus-stack" "grafana" "ingress" "path" }}",
+        {{- else }}
+        "grafana_url": "http://{{ index .Values "kube-prometheus-stack" "grafana" "ingress" "hosts" 0 }}{{ index .Values "kube-prometheus-stack" "grafana" "ingress" "path" }}",
+        {{- end }}
         {{- else }}
         "grafana_url": "",
         {{- end }}

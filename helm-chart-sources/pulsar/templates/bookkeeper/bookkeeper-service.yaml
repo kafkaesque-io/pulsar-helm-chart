@@ -49,3 +49,37 @@ spec:
     app: {{ template "pulsar.name" . }}
     release: {{ .Release.Name }}
     component: {{ .Values.bookkeeper.component }}
+
+
+{{- if .Values.bookkeeper.service.includeClusterIpSvc }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}-ca"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "pulsar.name" . }}
+    chart: {{ template "pulsar.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.bookkeeper.component }}
+    cluster: {{ template "pulsar.fullname" . }}
+  annotations:
+    {{- if .Values.bookkeeper.service.annotations }}
+{{ toYaml .Values.bookkeeper.service.annotations | indent 4 }}
+    {{- end }}
+spec:
+  ports:
+  {{- if .Values.function.enableStateStorage }}
+  {{- if not (or .Values.extra.stateStorage .Values.function.stateStorageUrlOverride) }}
+  - name: statestorage
+    port: 4181
+  {{- end }}
+  {{- end }}
+{{ toYaml .Values.bookkeeper.service.ports | indent 2 }}
+  selector:
+    app: {{ template "pulsar.name" . }}
+    release: {{ .Release.Name }}
+    component: {{ .Values.bookkeeper.component }}
+{{- end }}

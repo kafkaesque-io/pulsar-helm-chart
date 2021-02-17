@@ -332,3 +332,11 @@ Once you have created the secrets that store the cerficate info (or specified it
 ```
 enableTls: yes
 ```
+
+### Chart dependency
+
+To avoid unneccesary and freqnuent Prometheus chart upgrade, please pull the same chart version so that kube-prometheus-stack won't be upgraded unnecessarily.
+```
+helm pull prometheus-community/kube-prometheus-stack --version 12.12.2
+helm dependency update
+```
