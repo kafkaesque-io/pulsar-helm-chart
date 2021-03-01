@@ -39,8 +39,13 @@ data:
 
   pulsar.properties: |
     connector.name=pulsar
+    {{- if .Values.pulsarSQL.explicitLAC.enabled }}
+    pulsar.bookkeeper-use-v2-protocol=false
+    pulsar.bookkeeper-explicit-interval={{ .Values.pulsarSQL.explicitLAC.intervalInMs }}
+    {{- end }}
     {{- if .Values.enableTls }}
-    pulsar.broker-service-url=https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8443
+    #pulsar.broker-service-url=https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8443
+    pulsar.broker-service-url=http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:8080
     pulsar.tls-allow-insecure-connection = false
     pulsar.tls-hostname-verification-enable = false
     {{- if .Values.secrets }}

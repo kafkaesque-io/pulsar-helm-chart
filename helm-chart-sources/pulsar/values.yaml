@@ -1049,6 +1049,10 @@ pulsarSQL:
   # nodeSelector:
   # affinity:
   # tolerations:
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 0.5
   authentication:
     enabled: no
     # To create the password line, use the following command:
