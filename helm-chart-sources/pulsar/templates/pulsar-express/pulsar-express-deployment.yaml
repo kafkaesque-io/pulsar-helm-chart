@@ -45,8 +45,10 @@ spec:
         component: {{ .Values.pulsarexpress.component }}
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
+      {{- if .Values.pulsarexpress.annotations }}
 {{ toYaml .Values.pulsarexpress.annotations | indent 8 }}
       {{- if .Values.restartOnConfigMapChange.enabled }}
+      {{- end }}
         checksum/config: {{ include (print $.Template.BasePath "/pulsar-express/pulsar-express-configmap.yaml") . | sha256sum }}
       {{- end }}
     spec:

@@ -145,7 +145,11 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
           resources:
+          {{- if .Values.pulsarSQL.workerResources }}
+{{ toYaml .Values.pulsarSQL.workerResources | indent 12 }}
+          {{- else }}
 {{ toYaml .Values.pulsarSQL.resources | indent 12 }}
+          {{- end }}
     {{- with .Values.pulsarSQL.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

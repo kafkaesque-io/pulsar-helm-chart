@@ -60,7 +60,7 @@ data:
         name: "pubsub-latency-incluster-{{ template "pulsar.fullname" . }}"
         intervalSeconds: {{ .Values.pulsarMonitor.config.latencyTest.intervalSeconds | default 60 }}
         pulsarUrl: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}:6650"
-        topicName: {{ .Values.pulsarMonitor.config.latencyTest.intervalSeconds | default "persistent://public/default/pubsub-latency-test" }}
+        topicName: {{ .Values.pulsarMonitor.config.latencyTest.topicName | default "persistent://public/default/pubsub-latency-test" }}
         payloadSizes: [15B]
         numberOfMessages: 1
         alertPolicy:
