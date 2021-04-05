@@ -16,6 +16,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
+  "id": 28,
   "links": [],
   "panels": [
     {
@@ -621,7 +622,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": false
       },
-      "tableColumn": "{cluster=\"useast2-aws\"}",
+      "tableColumn": "{cluster=\"pex-azure\"}",
       "targets": [
         {
           "expr": "sum(pulsar_storage_size{job=~\"broker\"}) by (cluster)",
@@ -708,7 +709,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": false
       },
-      "tableColumn": "{cluster=\"useast2-aws\"}",
+      "tableColumn": "{cluster=\"pex-azure\"}",
       "targets": [
         {
           "expr": "sum(pulsar_msg_backlog{job=~\"broker\"}) by (cluster)",
@@ -1275,6 +1276,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1317,8 +1319,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(pulsar_storage_size{job=~\"broker\"}) by (cluster)",
+          "expr": "sum(avg(pulsar_storage_size{job=~\"broker.*\"}) by (topic)) by (cluster)",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{ cluster }}",
           "refId": "A"
@@ -1372,6 +1375,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1414,15 +1418,17 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(pulsar_rate_in{job=~\"broker\"}) by (cluster)",
+          "expr": "sum(avg(pulsar_rate_in{job=~\"broker.*\"}) by (topic)) by (cluster)",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{ cluster }} - In",
           "refId": "A"
         },
         {
-          "expr": "sum(pulsar_rate_out{job=~\"broker\"}) by (cluster)",
+          "expr": "sum(avg(pulsar_rate_out{job=~\"broker\"}) by (topic)) by (cluster)",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{ cluster }} - Out",
           "refId": "B"
@@ -1612,8 +1618,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(pulsar_msg_backlog{job=~\"broker\"}) by (cluster)",
+          "expr": "sum(avg(pulsar_msg_backlog{job=~\"broker.*\"}) by (topic)) by (cluster)",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{ cluster }}",
           "refId": "A"
@@ -1667,6 +1674,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1709,15 +1717,17 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(pulsar_throughput_in{job=~\"broker\"}) by (cluster)",
+          "expr": "sum(avg(pulsar_throughput_in{job=~\"broker.*\"}) by (topic)) by (cluster)",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{ cluster }} - In",
           "refId": "A"
         },
         {
-          "expr": "sum(pulsar_throughput_out{job=~\"broker\"}) by (cluster)",
+          "expr": "sum(avg(pulsar_throughput_out{job=~\"broker.*\"}) by (topic)) by (cluster)",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{ cluster }} - Out",
           "refId": "B"
@@ -1771,6 +1781,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1813,8 +1824,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(pulsar_subscription_unacked_messages{job=~\"broker\"}) by (cluster)",
+          "expr": "sum(avg(pulsar_subscription_unacked_messages{job=~\"broker.*\"}) by (topic)) by (cluster)",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{ cluster }} - In",
           "refId": "A"
@@ -1910,8 +1922,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(pulsar_producers_count{job=~\"broker\"}) by (cluster)",
+          "expr": "sum(avg(pulsar_producers_count{job=~\"broker.*\"}) by (topic)) by (cluster)",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{ cluster }} - In",
           "refId": "A"
@@ -2059,6 +2072,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -2101,8 +2115,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(pulsar_consumers_count{job=~\"broker\"}) by (cluster)",
+          "expr": "sum(avg(pulsar_consumers_count{job=~\"broker.*\"}) by (topic)) by (cluster)",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{ cluster }} - In",
           "refId": "A"
@@ -2156,6 +2171,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -2198,8 +2214,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(pulsar_subscriptions_count{job=~\"broker\"}) by (cluster)",
+          "expr": "sum(avg(pulsar_subscriptions_count{job=~\"broker.*\"}) by (broker)) by (cluster)",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{ cluster }} - In",
           "refId": "A"
@@ -2630,204 +2647,13 @@
       "type": "table-old"
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 7,
-        "w": 7,
-        "x": 0,
-        "y": 38
-      },
-      "hiddenSeries": false,
-      "id": 58,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "sum(pulsar_storage_offloaded_size)",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Offloaded Size Total",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:489",
-          "format": "decbytes",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:490",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "columns": [],
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fontSize": "100%",
-      "gridPos": {
-        "h": 12,
-        "w": 8,
-        "x": 16,
-        "y": 44
-      },
-      "hideTimeOverride": false,
-      "id": 59,
-      "links": [],
-      "pageSize": null,
-      "scroll": true,
-      "showHeader": true,
-      "sort": {
-        "col": 2,
-        "desc": true
-      },
-      "styles": [
-        {
-          "alias": "",
-          "align": "auto",
-          "colorMode": null,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 2,
-          "link": false,
-          "pattern": "Time",
-          "thresholds": [],
-          "type": "hidden",
-          "unit": "short"
-        },
-        {
-          "alias": "Topic name",
-          "align": "auto",
-          "colorMode": null,
-          "colors": [
-            "#890f02",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 2,
-          "link": false,
-          "pattern": "topic",
-          "thresholds": [],
-          "type": "number",
-          "unit": "short"
-        },
-        {
-          "alias": "Bytes",
-          "align": "auto",
-          "colorMode": null,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 0,
-          "pattern": "Value",
-          "thresholds": [
-            ""
-          ],
-          "type": "number",
-          "unit": "decbytes"
-        }
-      ],
-      "targets": [
-        {
-          "expr": " topk(10, sum(pulsar_storage_offloaded_size{job=~\"broker\"}) by (topic))",
-          "format": "table",
-          "instant": true,
-          "interval": "",
-          "intervalFactor": 2,
-          "legendFormat": "{{ topic }}",
-          "refId": "A"
-        }
-      ],
-      "title": "Top 10  Topics Offload Size",
-      "transform": "table",
-      "type": "table-old"
-    },
-    {
       "collapsed": true,
       "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 56
+        "y": 44
       },
       "id": 42,
       "panels": [
