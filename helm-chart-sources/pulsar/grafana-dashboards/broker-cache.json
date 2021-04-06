@@ -66,13 +66,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(avg(pulsar_ml_cache_hits_rate) by (topic))",
+          "expr": "sum(pulsar_ml_cache_hits_rate)",
           "interval": "",
           "legendFormat": "Cache Hit",
           "refId": "A"
         },
         {
-          "expr": "sum(avg(pulsar_ml_cache_misses_rate) by (topic))",
+          "expr": "sum(pulsar_ml_cache_misses_rate)",
           "interval": "",
           "legendFormat": "Miss Rate",
           "refId": "B"
@@ -707,12 +707,12 @@
     "list": []
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Pulsar / Broker Cache",
   "uid": "7p_lYd_Mk",
-  "version": 10
+  "version": 11
 }
