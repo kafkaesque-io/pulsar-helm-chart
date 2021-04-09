@@ -19,7 +19,7 @@ helm install --name teleport --namespace pulsar --values <file>.yaml kafkaesque/
 
 (helm 3)
 kubectl create namespace pulsar
-helm install teleport kafkaesque/teleport --values <file>.yaml kafkaesque/teleport
+helm install teleport kafkaesque/teleport --values <file>.yaml
 ```
 
 Make sure the Teleport pod goes into the running state.
