@@ -68,11 +68,15 @@ data:
     pulsar.max-split-entry-queue-size={{ .Values.pulsarSQL.catalog.pulsar.maxSplitEntryQueueSize }}
     pulsar.namespace-delimiter-rewrite-enable={{ .Values.pulsarSQL.catalog.pulsar.namespaceDelimiterRewriteEnable }}
     pulsar.rewrite-namespace-delimiter={{ .Values.pulsarSQL.catalog.pulsar.rewriteNamespaceDelimiter }}
+    pulsar.bookkeeper-num-io-threads={{ .Values.pulsarSQL.catalog.pulsar.bookkeeperNumIoThreads }}
+    pulsar.bookkeeper-num-worker-threads={{ .Values.pulsarSQL.catalog.pulsar.bookkeeperNumWorkerThreads }}
+    pulsar.managed-ledger-cache-size-MB={{ .Values.pulsarSQL.catalog.pulsar.managedLedgerCacheSizeMb }}
+    pulsar.managed-ledger-num-scheduler-threads={{ .Values.pulsarSQL.catalog.pulsar.managedLedgerNumSchedulerThreads }}
+    pulsar.managed-ledger-num-worker-threads={{ .Values.pulsarSQL.catalog.pulsar.managedLedgerNumWorkerThreads }}
     {{- if .Values.enableTokenAuth }}
     pulsar.auth-plugin=org.apache.pulsar.client.impl.auth.AuthenticationToken
     pulsar.auth-params=file:///pulsar/token-superuser-stripped.jwt
     {{- end }}
-    # pulsar.managed-ledger-cache-size-MB = {{ .Values.pulsarSQL.catalog.pulsar.managedLedgerCacheSizeMB }}
     {{- if .Values.storageOffload.driver }}
     pulsar.offloaders-directory = /pulsar/offloaders
     pulsar.managed-ledger-offload-max-threads = 2
