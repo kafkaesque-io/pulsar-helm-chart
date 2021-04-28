@@ -72,4 +72,14 @@ spec:
         - name: DO_TOKEN
           value: "{{ .Values.dns.digitalOceanApiKey}}"
         {{- end  }}
+        {{- if and (eq .Values.dns.provider "aws") .Values.dns.aws.enabled}}
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          value: "{{ .Values.dns.aws.accessKey}}"
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.dns.aws.secretKeySecret}}
+              key: {{ .Values.dns.aws.secretKeyKey}}
+        {{- end  }}
 {{- end }}

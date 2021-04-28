@@ -39,7 +39,11 @@ metadata:
     projectcontour.io/upstream-protocol.tls: "https,8964"
 {{- end}}
 {{- if .Values.extra.dnsOnProxy }}
+    {{- if .Values.proxy.service.extraDns }}
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.dnsName }},{{ .Values.proxy.service.extraDns }}
+    {{- else }}
     external-dns.alpha.kubernetes.io/hostname: {{ .Values.dnsName }}
+    {{- end }}
 {{- end }}
 spec:
   type: {{ .Values.proxy.service.type }}

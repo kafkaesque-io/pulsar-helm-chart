@@ -1109,6 +1109,11 @@ pulsarSQL:
       rewriteNamespaceDelimiter: "/"
       bookkeeperThrottleValue: "0"
       managedLedgerCacheSizeMB: "0"
+      bookkeeperNumIoThreads: "2"
+      bookkeeperNumWorkerThreads: "1"
+      managedLedgerCacheSizeMb: "0"
+      managedLedgerNumSchedulerThreads: "1"
+      managedLedgerNumWorkerThreads: "1"
 
 # Tardigrade S3 gateway
 #
@@ -1329,6 +1334,7 @@ proxy:
   service:
     annotations: {}
     type: ClusterIP
+    extraDns: ''
     autoPortAssign:
       enabled: no
     ports:
@@ -1382,6 +1388,11 @@ dns:
   provider: aws
   domainFilter: example.com 
   annotations: {}
+  aws:
+    enabled: no
+    accessKey: 
+    secretKeySecret: prod-route53-credentials-secret
+    secretKeyKey: secret-access-key
   # For AWS Route 53, add annotation:
   # iam.amazonaws.com/role: arn:aws:iam::ACCOUNT-ID:role/IAM-SERVICE-ROLE-NAME
   # Trying to create CNAME records (ex AWS NLB)
@@ -1799,7 +1810,7 @@ kube-prometheus-stack:
         expr: pulsar_subscription_unacked_messages > 100
         for: 1m
         labels:
-          severity: critical
+          severity: warning
         annotations:
           identifier: '{{ $labels.topic }}:{{ $labels.subscription }}'
           description: 'Unacked messages on subscription high'
