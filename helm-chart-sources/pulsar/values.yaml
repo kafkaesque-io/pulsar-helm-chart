@@ -120,6 +120,11 @@ tls:
   websocket:
     enabled: yes
 
+# For Pulsar loads that use rootless containers, it is necessary to update the ownership of 
+# files on upgrade
+fixRootlessPermissions:
+  enabled: no
+  containerImage: openjdk:11-jdk-slim
 # secrets:
   ## If you're providing your own certificates, please use this to add the certificates as secrets
   ## key and certificate should start with -----BEGIN CERTIFICATE----- or 
@@ -419,6 +424,7 @@ zookeeper:
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
+
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   # nodeAffinity:
@@ -949,6 +955,20 @@ function:
     cpu: "0.1"
     ram: "307200000"
     disk: "10737418240"
+  # Runtime customizer applies to Kubernetes
+  customizedRuntime:
+    enabled: false
+    # extractLabels:
+    # extraAnnotations:
+    # nodeSelectorLabels:
+    #   astra-node: functionworker
+    # jobNamespace: pulsar
+    # tolerations:
+    #   - key: tier
+    #     value: funcworker
+    #     effect: NoSchedule
+
+  
   # If state storage is enabled state storage will be enabled on Bookkeeper and the 
   # function workers will connect to BookKeeper by default.
   # If you enable standalone state storage (extra.stateStorage), the function workers will 
@@ -1685,6 +1705,7 @@ pulsarMonitor:
     opsGenieHeartbeatUrl:
     opsGenieHeartbeatKey:
     opsGenieAlertKey:
+    pagerDutyIntegrationKey: 
     broker:
       intervalSeconds: 45
     adminRest:
@@ -1807,7 +1828,7 @@ kube-prometheus-stack:
     - name: acks
       rules:
       - alert: unacked-message-high
-        expr: pulsar_subscription_unacked_messages > 100
+        expr: pulsar_subscription_unacked_messages > 50000
         for: 1m
         labels:
           severity: warning
@@ -1818,7 +1839,7 @@ kube-prometheus-stack:
         expr: pulsar_subscription_blocked_on_unacked_messages > 1
         for: 1m
         labels:
-          severity: critical
+          severity: warning
         annotations:
           identifier: '{{ $labels.topic }}:{{ $labels.subscription }}'
           description: Subscription is blocked on unacked messages
@@ -1911,9 +1932,18 @@ kube-prometheus-stack:
         expr: jvm_threads_deadlocked > 0
         for: 1m
         labels:
-          severity: warning
+          severity: critical
         annotations:
           message: Thread deadlock detected.
+    - name: GarbageCollection
+      rules:
+      - alert: GCPauseHigh
+        expr: "(sum by (kubernetes_pod_name)(increase(jvm_gc_collection_seconds_sum[60s]))*100) > 1000"
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          message: Garbage collection pauses are high.
 
   alertmanager:
     enabled: false

@@ -31,6 +31,10 @@ data:
       {{- if .Values.pulsarMonitor.config.opsGenieAlertKey }}
       alertKey: {{ .Values.pulsarMonitor.config.opsGenieAlertKey }}
       {{- end }}
+    pagerDutyConfig:
+      {{- if .Values.pulsarMonitor.config.pagerDutyIntegrationKey }}
+      integrationKey: {{ .Values.pulsarMonitor.config.pagerDutyIntegrationKey}}
+      {{- end }}
     k8sConfig:
       enabled: {{ .Values.pulsarMonitor.config.k8sInClusterMonitorEnabled | default false }}
       pulsarNamespace: {{ .Release.Namespace }}
