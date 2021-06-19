@@ -8,21 +8,6 @@ extra:
   burnell: yes
   pulsarHealer: yes
 
-autoRecovery:
-  enableProvisionContainer: yes
-
-image:
-  broker:
-    repository: apachepulsar/pulsar
-  pulsarMonitor:
-    repository: kesque/pulsar-monitor
-    pullPolicy: IfNotPresent
-    tag: latest
-  burnell:
-    repository: kesque/burnell
-    pullPolicy: IfNotPresent
-    tag: latest
-
 zookeeper:
   replicaCount: 1
   resources:

@@ -23,7 +23,7 @@ Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
 _Don't want to run it yourself? Go to [Kesque](https://kesque.com) for fully managed Pulsar services._
 
 ## Add to local Helm repository 
-To add this chart to your local Helm repository:
+To add this chart to your local Helm repository (Helm 3):
 
 ```helm repo add kafkaesque https://helm.kafkaesque.io```
 
@@ -34,12 +34,6 @@ To update to the latest chart:
 Note: This command updates all your Helm charts.
 
 To list the version of the chart in the local Helm repository:
-
-Helm 2
-
-```helm search -l kafkaesque/pulsar```
-
-Helm 3
 
 ```helm search repo kafkaesque/pulsar```
 
@@ -90,15 +84,8 @@ See the [values file](https://github.com/kafkaesque-io/pulsar-helm-chart/blob/ma
 
 Once you have your storage settings in the values file, install the chart like this :
 
-Helm 2
 
-```helm install kafkaesque/pulsar --name pulsar --namespace pulsar --values storage_values.yaml```
-
-Helm 3
-
-```helm install pulsar kafkaesque/pulsar --namespace pulsar --values storage_values.yaml```
-
-**Note:** For Helm 3 you need to create the namespace prior to running the command.
+```helm install pulsar kafkaesque/pulsar --namespace pulsar --create-namespace --values storage_values.yaml```
 
 ## Installing Pulsar for development
 
@@ -110,15 +97,8 @@ This chart is designed for production use, but it can be used in development env
 
 For an example set of values, download this [values file](https://github.com/kafkaesque-io/pulsar-helm-chart/blob/master/examples/dev-values.yaml). Use that values file or one like it to start the cluster:
 
-Helm 2
 
-```helm install kafkaesque/pulsar --name pulsar --namespace pulsar --values dev-values.yaml```
-
-Helm 3
-
-```helm install pulsar kafkaesque/pulsar --namespace pulsar --values dev-values.yaml```
-
-**Note:** For Helm 3 you need to create the namespace prior to running the command.
+```helm install pulsar kafkaesque/pulsar --namespace pulsar --create-namespace --values dev-values.yaml```
 
 
 ## Accessing the Pulsar cluster in cloud
@@ -335,7 +315,7 @@ enableTls: yes
 
 ### Chart dependency
 
-To avoid unneccesary and freqnuent Prometheus chart upgrade, please pull the same chart version so that kube-prometheus-stack won't be upgraded unnecessarily.
+To avoid unnecessary and frequent Prometheus chart upgrades, please pull the same chart version so that kube-prometheus-stack won't be upgraded unnecessarily.
 ```
 helm pull prometheus-community/kube-prometheus-stack --version 12.12.2
 helm dependency update
