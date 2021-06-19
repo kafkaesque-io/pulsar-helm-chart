@@ -15,10 +15,198 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 33,
-  "iteration": 1617738872658,
+  "id": 12,
+  "iteration": 1621329296794,
   "links": [],
   "panels": [
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 47,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "pulsar_lb_cpu_usage",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "CPU Usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 48,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "pulsar_lb_memory_usage",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Memory Usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
     {
       "collapsed": false,
       "datasource": null,
@@ -26,12 +214,294 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 8
       },
       "id": 15,
       "panels": [],
       "title": "Totals",
       "type": "row"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "hiddenSeries": false,
+      "id": 50,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "pulsar_lb_bandwidth_in_usage",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Bandwidth In Usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      },
+      "hiddenSeries": false,
+      "id": 49,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "pulsar_lb_directMemory_usage",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Direct Memory Usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 17
+      },
+      "hiddenSeries": false,
+      "id": 51,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "pulsar_lb_bandwidth_out_usage",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Bandwidth Out Usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     },
     {
       "aliasColors": {},
@@ -51,8 +521,8 @@
       "gridPos": {
         "h": 8,
         "w": 5,
-        "x": 0,
-        "y": 1
+        "x": 12,
+        "y": 17
       },
       "hiddenSeries": false,
       "id": 10,
@@ -146,8 +616,8 @@
       "gridPos": {
         "h": 8,
         "w": 5,
-        "x": 5,
-        "y": 1
+        "x": 17,
+        "y": 17
       },
       "hiddenSeries": false,
       "id": 11,
@@ -241,8 +711,8 @@
       "gridPos": {
         "h": 8,
         "w": 5,
-        "x": 10,
-        "y": 1
+        "x": 0,
+        "y": 25
       },
       "hiddenSeries": false,
       "id": 7,
@@ -325,7 +795,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 33
       },
       "id": 13,
       "panels": [],
@@ -359,7 +829,7 @@
         "h": 8,
         "w": 5,
         "x": 0,
-        "y": 10
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 8,
@@ -395,7 +865,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "pulsar_lb_cpu_usage{kubernetes_pod_name=~\"$instance\"}",
+          "expr": "pulsar_lb_cpu_usage",
           "interval": "",
           "legendFormat": "{{ kubernetes_pod_name }}",
           "refId": "A"
@@ -470,7 +940,7 @@
         "h": 8,
         "w": 5,
         "x": 5,
-        "y": 10
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 5,
@@ -572,7 +1042,7 @@
         "h": 8,
         "w": 4,
         "x": 10,
-        "y": 10
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 9,
@@ -674,7 +1144,7 @@
         "h": 8,
         "w": 4,
         "x": 14,
-        "y": 10
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 4,
@@ -776,7 +1246,7 @@
         "h": 8,
         "w": 4,
         "x": 18,
-        "y": 10
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 6,
@@ -866,12 +1336,12 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 42
       },
-      "id": 16,
+      "id": 52,
       "panels": [],
       "repeat": null,
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 13,
       "scopedVars": {
         "instance": {
@@ -902,10 +1372,10 @@
         "h": 8,
         "w": 5,
         "x": 0,
-        "y": 19
+        "y": 43
       },
       "hiddenSeries": false,
-      "id": 17,
+      "id": 53,
       "legend": {
         "avg": false,
         "current": false,
@@ -925,7 +1395,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 8,
       "repeatedByRow": true,
       "scopedVars": {
@@ -941,13 +1411,22 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "pulsar_lb_cpu_usage{kubernetes_pod_name=~\"$instance\"}",
+          "expr": "pulsar_lb_cpu_usage",
           "interval": "",
           "legendFormat": "{{ kubernetes_pod_name }}",
           "refId": "A"
         }
       ],
-      "thresholds": [],
+      "thresholds": [
+        {
+          "colorMode": "warning",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 85,
+          "yaxis": "left"
+        }
+      ],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
@@ -1007,10 +1486,10 @@
         "h": 8,
         "w": 5,
         "x": 5,
-        "y": 19
+        "y": 43
       },
       "hiddenSeries": false,
-      "id": 18,
+      "id": 54,
       "legend": {
         "avg": false,
         "current": false,
@@ -1030,7 +1509,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 5,
       "repeatedByRow": true,
       "scopedVars": {
@@ -1112,10 +1591,10 @@
         "h": 8,
         "w": 4,
         "x": 10,
-        "y": 19
+        "y": 43
       },
       "hiddenSeries": false,
-      "id": 19,
+      "id": 55,
       "legend": {
         "avg": false,
         "current": false,
@@ -1135,7 +1614,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 9,
       "repeatedByRow": true,
       "scopedVars": {
@@ -1217,10 +1696,10 @@
         "h": 8,
         "w": 4,
         "x": 14,
-        "y": 19
+        "y": 43
       },
       "hiddenSeries": false,
-      "id": 20,
+      "id": 56,
       "legend": {
         "avg": false,
         "current": false,
@@ -1240,7 +1719,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 4,
       "repeatedByRow": true,
       "scopedVars": {
@@ -1322,10 +1801,10 @@
         "h": 8,
         "w": 4,
         "x": 18,
-        "y": 19
+        "y": 43
       },
       "hiddenSeries": false,
-      "id": 21,
+      "id": 57,
       "legend": {
         "avg": false,
         "current": false,
@@ -1345,7 +1824,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 6,
       "repeatedByRow": true,
       "scopedVars": {
@@ -1415,12 +1894,12 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 51
       },
-      "id": 22,
+      "id": 58,
       "panels": [],
       "repeat": null,
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 13,
       "scopedVars": {
         "instance": {
@@ -1451,10 +1930,10 @@
         "h": 8,
         "w": 5,
         "x": 0,
-        "y": 28
+        "y": 52
       },
       "hiddenSeries": false,
-      "id": 23,
+      "id": 59,
       "legend": {
         "avg": false,
         "current": false,
@@ -1474,7 +1953,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 8,
       "repeatedByRow": true,
       "scopedVars": {
@@ -1490,13 +1969,22 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "pulsar_lb_cpu_usage{kubernetes_pod_name=~\"$instance\"}",
+          "expr": "pulsar_lb_cpu_usage",
           "interval": "",
           "legendFormat": "{{ kubernetes_pod_name }}",
           "refId": "A"
         }
       ],
-      "thresholds": [],
+      "thresholds": [
+        {
+          "colorMode": "warning",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 85,
+          "yaxis": "left"
+        }
+      ],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
@@ -1556,10 +2044,10 @@
         "h": 8,
         "w": 5,
         "x": 5,
-        "y": 28
+        "y": 52
       },
       "hiddenSeries": false,
-      "id": 24,
+      "id": 60,
       "legend": {
         "avg": false,
         "current": false,
@@ -1579,7 +2067,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 5,
       "repeatedByRow": true,
       "scopedVars": {
@@ -1661,10 +2149,10 @@
         "h": 8,
         "w": 4,
         "x": 10,
-        "y": 28
+        "y": 52
       },
       "hiddenSeries": false,
-      "id": 25,
+      "id": 61,
       "legend": {
         "avg": false,
         "current": false,
@@ -1684,7 +2172,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 9,
       "repeatedByRow": true,
       "scopedVars": {
@@ -1766,10 +2254,10 @@
         "h": 8,
         "w": 4,
         "x": 14,
-        "y": 28
+        "y": 52
       },
       "hiddenSeries": false,
-      "id": 26,
+      "id": 62,
       "legend": {
         "avg": false,
         "current": false,
@@ -1789,7 +2277,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 4,
       "repeatedByRow": true,
       "scopedVars": {
@@ -1871,10 +2359,10 @@
         "h": 8,
         "w": 4,
         "x": 18,
-        "y": 28
+        "y": 52
       },
       "hiddenSeries": false,
-      "id": 27,
+      "id": 63,
       "legend": {
         "avg": false,
         "current": false,
@@ -1894,7 +2382,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 6,
       "repeatedByRow": true,
       "scopedVars": {
@@ -1964,12 +2452,12 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 36
+        "y": 60
       },
-      "id": 28,
+      "id": 64,
       "panels": [],
       "repeat": null,
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 13,
       "scopedVars": {
         "instance": {
@@ -2000,10 +2488,10 @@
         "h": 8,
         "w": 5,
         "x": 0,
-        "y": 37
+        "y": 61
       },
       "hiddenSeries": false,
-      "id": 29,
+      "id": 65,
       "legend": {
         "avg": false,
         "current": false,
@@ -2023,7 +2511,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 8,
       "repeatedByRow": true,
       "scopedVars": {
@@ -2039,13 +2527,22 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "pulsar_lb_cpu_usage{kubernetes_pod_name=~\"$instance\"}",
+          "expr": "pulsar_lb_cpu_usage",
           "interval": "",
           "legendFormat": "{{ kubernetes_pod_name }}",
           "refId": "A"
         }
       ],
-      "thresholds": [],
+      "thresholds": [
+        {
+          "colorMode": "warning",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 85,
+          "yaxis": "left"
+        }
+      ],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
@@ -2105,10 +2602,10 @@
         "h": 8,
         "w": 5,
         "x": 5,
-        "y": 37
+        "y": 61
       },
       "hiddenSeries": false,
-      "id": 30,
+      "id": 66,
       "legend": {
         "avg": false,
         "current": false,
@@ -2128,7 +2625,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 5,
       "repeatedByRow": true,
       "scopedVars": {
@@ -2210,10 +2707,10 @@
         "h": 8,
         "w": 4,
         "x": 10,
-        "y": 37
+        "y": 61
       },
       "hiddenSeries": false,
-      "id": 31,
+      "id": 67,
       "legend": {
         "avg": false,
         "current": false,
@@ -2233,7 +2730,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 9,
       "repeatedByRow": true,
       "scopedVars": {
@@ -2315,10 +2812,10 @@
         "h": 8,
         "w": 4,
         "x": 14,
-        "y": 37
+        "y": 61
       },
       "hiddenSeries": false,
-      "id": 32,
+      "id": 68,
       "legend": {
         "avg": false,
         "current": false,
@@ -2338,7 +2835,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 4,
       "repeatedByRow": true,
       "scopedVars": {
@@ -2420,10 +2917,10 @@
         "h": 8,
         "w": 4,
         "x": 18,
-        "y": 37
+        "y": 61
       },
       "hiddenSeries": false,
-      "id": 33,
+      "id": 69,
       "legend": {
         "avg": false,
         "current": false,
@@ -2443,7 +2940,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 6,
       "repeatedByRow": true,
       "scopedVars": {
@@ -2513,12 +3010,12 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 45
+        "y": 69
       },
-      "id": 34,
+      "id": 70,
       "panels": [],
       "repeat": null,
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 13,
       "scopedVars": {
         "instance": {
@@ -2549,10 +3046,10 @@
         "h": 8,
         "w": 5,
         "x": 0,
-        "y": 46
+        "y": 70
       },
       "hiddenSeries": false,
-      "id": 35,
+      "id": 71,
       "legend": {
         "avg": false,
         "current": false,
@@ -2572,7 +3069,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 8,
       "repeatedByRow": true,
       "scopedVars": {
@@ -2588,13 +3085,22 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "pulsar_lb_cpu_usage{kubernetes_pod_name=~\"$instance\"}",
+          "expr": "pulsar_lb_cpu_usage",
           "interval": "",
           "legendFormat": "{{ kubernetes_pod_name }}",
           "refId": "A"
         }
       ],
-      "thresholds": [],
+      "thresholds": [
+        {
+          "colorMode": "warning",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 85,
+          "yaxis": "left"
+        }
+      ],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
@@ -2654,10 +3160,10 @@
         "h": 8,
         "w": 5,
         "x": 5,
-        "y": 46
+        "y": 70
       },
       "hiddenSeries": false,
-      "id": 36,
+      "id": 72,
       "legend": {
         "avg": false,
         "current": false,
@@ -2677,7 +3183,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 5,
       "repeatedByRow": true,
       "scopedVars": {
@@ -2759,10 +3265,10 @@
         "h": 8,
         "w": 4,
         "x": 10,
-        "y": 46
+        "y": 70
       },
       "hiddenSeries": false,
-      "id": 37,
+      "id": 73,
       "legend": {
         "avg": false,
         "current": false,
@@ -2782,7 +3288,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 9,
       "repeatedByRow": true,
       "scopedVars": {
@@ -2864,10 +3370,10 @@
         "h": 8,
         "w": 4,
         "x": 14,
-        "y": 46
+        "y": 70
       },
       "hiddenSeries": false,
-      "id": 38,
+      "id": 74,
       "legend": {
         "avg": false,
         "current": false,
@@ -2887,7 +3393,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 4,
       "repeatedByRow": true,
       "scopedVars": {
@@ -2969,10 +3475,10 @@
         "h": 8,
         "w": 4,
         "x": 18,
-        "y": 46
+        "y": 70
       },
       "hiddenSeries": false,
-      "id": 39,
+      "id": 75,
       "legend": {
         "avg": false,
         "current": false,
@@ -2992,7 +3498,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 6,
       "repeatedByRow": true,
       "scopedVars": {
@@ -3062,12 +3568,12 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 54
+        "y": 78
       },
-      "id": 40,
+      "id": 76,
       "panels": [],
       "repeat": null,
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 13,
       "scopedVars": {
         "instance": {
@@ -3098,10 +3604,10 @@
         "h": 8,
         "w": 5,
         "x": 0,
-        "y": 55
+        "y": 79
       },
       "hiddenSeries": false,
-      "id": 41,
+      "id": 77,
       "legend": {
         "avg": false,
         "current": false,
@@ -3121,7 +3627,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 8,
       "repeatedByRow": true,
       "scopedVars": {
@@ -3137,13 +3643,22 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "pulsar_lb_cpu_usage{kubernetes_pod_name=~\"$instance\"}",
+          "expr": "pulsar_lb_cpu_usage",
           "interval": "",
           "legendFormat": "{{ kubernetes_pod_name }}",
           "refId": "A"
         }
       ],
-      "thresholds": [],
+      "thresholds": [
+        {
+          "colorMode": "warning",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 85,
+          "yaxis": "left"
+        }
+      ],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
@@ -3203,10 +3718,10 @@
         "h": 8,
         "w": 5,
         "x": 5,
-        "y": 55
+        "y": 79
       },
       "hiddenSeries": false,
-      "id": 42,
+      "id": 78,
       "legend": {
         "avg": false,
         "current": false,
@@ -3226,7 +3741,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 5,
       "repeatedByRow": true,
       "scopedVars": {
@@ -3308,10 +3823,10 @@
         "h": 8,
         "w": 4,
         "x": 10,
-        "y": 55
+        "y": 79
       },
       "hiddenSeries": false,
-      "id": 43,
+      "id": 79,
       "legend": {
         "avg": false,
         "current": false,
@@ -3331,7 +3846,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 9,
       "repeatedByRow": true,
       "scopedVars": {
@@ -3413,10 +3928,10 @@
         "h": 8,
         "w": 4,
         "x": 14,
-        "y": 55
+        "y": 79
       },
       "hiddenSeries": false,
-      "id": 44,
+      "id": 80,
       "legend": {
         "avg": false,
         "current": false,
@@ -3436,7 +3951,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 4,
       "repeatedByRow": true,
       "scopedVars": {
@@ -3518,10 +4033,10 @@
         "h": 8,
         "w": 4,
         "x": 18,
-        "y": 55
+        "y": 79
       },
       "hiddenSeries": false,
-      "id": 45,
+      "id": 81,
       "legend": {
         "avg": false,
         "current": false,
@@ -3541,7 +4056,7 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeatIteration": 1617738872658,
+      "repeatIteration": 1621329296794,
       "repeatPanelId": 6,
       "repeatedByRow": true,
       "scopedVars": {
@@ -3614,7 +4129,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "All",
           "value": "$__all"
         },
@@ -3676,7 +4191,7 @@
     ]
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {
@@ -3695,5 +4210,5 @@
   "timezone": "",
   "title": "Pulsar / Load Balancing",
   "uid": "WLVt6P_Mk",
-  "version": 8
+  "version": 1
 }
