@@ -12,6 +12,9 @@ spec:
   commonName: "{{ .Values.dnsName}}" 
   dnsNames:
   - "{{ .Values.dnsName}}"
+{{- if .Values.proxy.service.extraDns }}  
+  - "{{ .Values.proxy.service.extraDns }}"
+{{- end }}
 --- 
 {{- if .Values.createCertificates.acme.httpSolver.enabled }}
 apiVersion: cert-manager.io/v1
