@@ -581,6 +581,7 @@ zookeepernp:
 ## metadata deployed
 zookeeperMetadata:
   component: zookeeper-metadata
+  annotations: {}
 
 ## Pulsar: Bookkeeper cluster
 ## templates/bookkeeper-statefulset.yaml

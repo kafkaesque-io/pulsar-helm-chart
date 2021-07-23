@@ -32,6 +32,9 @@ metadata:
     cluster: {{ template "pulsar.fullname" . }}
 spec:
   template:
+    metadata:
+      annotations:
+{{ toYaml .Values.zookeeperMetadata.annotations | indent 8 }}
     spec:
       {{- if .Values.zookeeper.nodeAffinity }}
       affinity:
