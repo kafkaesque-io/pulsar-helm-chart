@@ -1944,6 +1944,15 @@ kube-prometheus-stack:
           severity: warning
         annotations:
           message: Garbage collection pauses are high.
+    - name: direct-memory-usage
+      rules:
+      - alert: DirectMemoryUsageHigh
+        expr: jvm_memory_direct_bytes_used/jvm_memory_direct_bytes_max*100 > 90
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          message: Direct memory usage for {{ $labels.kubernetes_pod_name }} is greater than 90%.
 
   alertmanager:
     enabled: false
