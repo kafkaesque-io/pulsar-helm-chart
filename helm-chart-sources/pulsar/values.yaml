@@ -1843,6 +1843,20 @@ kube-prometheus-stack:
         annotations:
           identifier: '{{ $labels.topic }}:{{ $labels.subscription }}'
           description: Subscription is blocked on unacked messages
+      - alert: replication-backlog-high
+        expr: sum(pulsar_replication_backlog) > 50000
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          description: Replication backlog is high
+      - alert: replication-backlog-critical
+        expr: sum(pulsar_replication_backlog) > 500000
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          description: Replication backlog is critical
     - name: components
       rules:
       - alert: zookeeper-write-latency-high
