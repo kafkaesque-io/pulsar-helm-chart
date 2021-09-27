@@ -234,6 +234,9 @@ spec:
           echo 'storageserver.grpc.useHostname=true' >> conf/bookkeeper.conf &&
           {{- end }}
           {{- end }}
+          {{- if .Values.bookkeeper.fixBookieId.enabled }}
+          sed -i "s/advertisedAddress=/advertisedAddress=$(hostname).{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}.{{ .Values.bookkeeper.fixBookieId.origNamespace}}.svc.cluster.local/" conf/bookkeeper.conf &&
+          {{- end }}
           exec bin/pulsar bookie
         ports:
         - name: client

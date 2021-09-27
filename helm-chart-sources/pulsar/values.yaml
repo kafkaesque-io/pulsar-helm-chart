@@ -591,6 +591,9 @@ bookkeeper:
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
+  fixBookieId:
+    enabled: no
+    origNamespace: "pulsar"
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   # nodeAffinity: 
@@ -689,6 +692,9 @@ bookkeeper:
     #   fsType: ext4
     #   extraParams:
     #      replication-type: none
+
+
+    
 
     
   ## Bookkeeper configmap
