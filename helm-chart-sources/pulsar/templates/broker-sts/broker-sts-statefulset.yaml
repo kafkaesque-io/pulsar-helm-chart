@@ -215,13 +215,15 @@ spec:
             command:
             - "/pulsar/health/broker_health_check.sh"
           initialDelaySeconds: {{ .Values.brokerSts.probe.initial }} 
-          periodSeconds:  {{ .Values.brokerSts.probe.period }} 
+          periodSeconds:  {{ .Values.brokerSts.probe.period }}
+          timeoutSeconds: {{ .Values.broker.probe.timeout }}
         livenessProbe:
           exec:
             command:
             - "/pulsar/health/broker_health_check.sh"
           initialDelaySeconds: {{ .Values.brokerSts.probe.initial }} 
-          periodSeconds: {{ .Values.broker.probe.period }} 
+          periodSeconds: {{ .Values.broker.probe.period }}
+          timeoutSeconds: {{ .Values.broker.probe.timeout }}
         {{- end }}
       {{- if .Values.brokerSts.resources }}
         resources:
