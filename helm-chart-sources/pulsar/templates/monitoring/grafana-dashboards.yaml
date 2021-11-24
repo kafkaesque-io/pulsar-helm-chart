@@ -262,6 +262,6 @@ metadata:
     cluster: {{ template "pulsar.fullname" . }}
     grafana_dashboard: debezium
 data:
-  offload.json: |-
+  debezium.json: |-
 {{ .Files.Get "grafana-dashboards/debezium.json" | indent 4}}
 {{- end }}
