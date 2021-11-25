@@ -775,6 +775,7 @@ broker:
     initial: 10
     period: 30
     timeout: 1
+    # failureThreshold: 3
   resources:
     requests:
       memory: 2Gi

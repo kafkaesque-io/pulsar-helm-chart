@@ -49,8 +49,6 @@ spec:
         component: {{ .Values.stateStorage.component }}
         cluster: {{ template "pulsar.fullname" . }}
       annotations:
-        publishNotReadyAddresses: "true"
-        service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
       {{- if .Values.restartOnConfigMapChange.enabled }}
         checksum/config: {{ include (print $.Template.BasePath "/deprecated/state-configmap.yaml") . | sha256sum }}
       {{- end }}

@@ -25,6 +25,7 @@ spec:
   {{- end }}
 {{ toYaml .Values.zookeepernp.service.ports | indent 2 }}
   clusterIP: None
+  publishNotReadyAddresses: true
   selector:
     app: {{ template "pulsar.name" . }}
     release: {{ .Release.Name }}
