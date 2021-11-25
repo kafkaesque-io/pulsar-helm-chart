@@ -64,6 +64,7 @@ data:
   PULSAR_PREFIX_tlsKeyStore: /pulsar/tls-pk8.key
   PULSAR_PREFIX_tlsTrustStoreType: PEM
   PULSAR_PREFIX_bookkeeperTLSClientAuthentication: "true"
+  PULSAR_PREFIX_tlsCertFilesRefreshDurationSeconds: "300"
   {{- if .Values.secrets }}
   PULSAR_PREFIX_bookkeeperTLSTrustCertsFilePath: /pulsar/certs/ca.crt
   {{- else }}
