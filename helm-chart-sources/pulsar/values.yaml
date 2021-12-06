@@ -774,7 +774,7 @@ broker:
     port: 8080
     initial: 10
     period: 30
-    timeout: 1
+    timeout: 10
     # failureThreshold: 3
   resources:
     requests:

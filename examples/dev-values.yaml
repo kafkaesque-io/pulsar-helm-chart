@@ -9,7 +9,7 @@ zookeeper:
       memory: 512Mi
       cpu: 0.3
   configData:
-    PULSAR_MEM: "-Xms512m -Xmx512m -Dzookeeper.forceSync=no"
+    PULSAR_MEM: "-Xms512m -Xmx512m -Dzookeeper.forceSync=yes"
 
 bookkeeper:
   replicaCount: 1
