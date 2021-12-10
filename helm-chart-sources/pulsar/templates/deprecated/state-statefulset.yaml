@@ -138,7 +138,7 @@ spec:
         command: ["sh", "-c"]
         args:
         - >
-          exec bin/pulsar standalone --no-broker --stream-containers {{ .Values.stateStorage.numStorageContainers }} --stream-use-hostname
+          OPTS="${OPTS} -Dlog4j2.formatMsgNoLookups=true" exec bin/pulsar standalone --no-broker --stream-containers {{ .Values.stateStorage.numStorageContainers }} --stream-use-hostname
         ports:
         - name: bkstate
           containerPort: 4181
