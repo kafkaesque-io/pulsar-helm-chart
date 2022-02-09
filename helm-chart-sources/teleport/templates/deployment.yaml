@@ -45,6 +45,10 @@ spec:
           {{- end }}
           kill `cat /tmp/teleport.pid` 
         volumeMounts:
+        - name: ca-pemstore
+          mountPath: /etc/ssl/certs/my-cert.pem
+          subPath: my-cert.pem
+          readOnly: false
 {{- if .Values.proxy.tls.enabled }}
         - mountPath: /var/lib/certs
           name: {{ template "teleport.fullname" . }}-tls-web
@@ -92,6 +96,10 @@ spec:
         resources:
 {{ toYaml .Values.resources | indent 10 }}
         volumeMounts:
+        - name: ca-pemstore
+          mountPath: /etc/ssl/certs/my-cert.pem
+          subPath: my-cert.pem
+          readOnly: false
 {{- if .Values.proxy.tls.enabled }}
         - mountPath: /var/lib/certs
           name: {{ template "teleport.fullname" . }}-tls-web
@@ -111,6 +119,9 @@ spec:
 {{ toYaml .Values.extraVolumeMounts | indent 8 }}
 {{- end }}
       volumes:
+      - name: ca-pemstore
+        configMap:
+          name: {{ template "teleport.fullname" . }}-cert
 {{- if .Values.proxy.tls.enabled }}
       - name: {{ template "teleport.fullname" . }}-tls-web
         secret:
