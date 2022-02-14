@@ -75,7 +75,7 @@ data:
       # "master" proxy server:
       web_proxy_addr: {{ .Values.config.trusted_cluster.address }}:3080
       role_map:
-        - remote: "admin"  
+        - remote: "editor"  
           local: [editor]
 {{- end }}
 {{- if .Values.config.github.enabled }}
