@@ -75,8 +75,55 @@ data:
       # "master" proxy server:
       web_proxy_addr: {{ .Values.config.trusted_cluster.address }}:3080
       role_map:
-        - remote: "editor"  
-          local: [editor]
+        - remote: "access"  
+          local: [k8s-access]
+
+  k8s-access.yaml: |-
+    kind: role
+    metadata:
+      description: Access k8s cluster resources
+      name: k8s-access
+    spec:
+      allow:
+        app_labels:
+          '*': '*'
+        db_labels:
+          '*': '*'
+        db_names:
+        - '{{ "{{" }}internal.db_names{{ "}}" }}'
+        db_users:
+        - '{{ "{{" }}internal.db_users{{ "}}" }}'
+        kubernetes_groups:
+        - '{{ "{{" }}internal.kubernetes_groups{{ "}}" }}'
+        - 'system:masters'
+        kubernetes_labels:
+          '*': '*'
+        kubernetes_users:
+        - '{{ "{{" }}internal.kubernetes_users{{ "}}" }}'
+        logins:
+        - '{{ "{{" }}internal.logins{{ "}}" }}'
+        node_labels:
+          '*': '*'
+        rules:
+        - resources:
+          - event
+          verbs:
+          - list
+          - read
+        windows_desktop_labels:
+          '*': '*'
+        windows_desktop_logins:
+        - '{{ "{{" }}internal.windows_logins{{ "}}" }}'
+      deny: {}
+      options:
+        cert_format: standard
+        enhanced_recording:
+        - command
+        - network
+        forward_agent: true
+        max_session_ttl: 30h0m0s
+        port_forwarding: true
+    version: v4
 {{- end }}
 {{- if .Values.config.github.enabled }}
   github.yaml: |-

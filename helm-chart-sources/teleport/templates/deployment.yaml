@@ -38,6 +38,7 @@ spec:
           teleport start -c /etc/teleport/teleport.yaml --pid-file /tmp/teleport.pid &
           sleep 5 &&
           {{- if .Values.config.trusted_cluster.enabled }}
+          tctl create -f /etc/teleport/k8s-access.yaml &&
           tctl create -f /etc/teleport/trusted-cluster.yaml &&
           {{- end }}
           {{- if .Values.config.github.enabled}}
