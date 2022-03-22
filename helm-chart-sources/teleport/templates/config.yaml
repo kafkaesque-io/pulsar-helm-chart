@@ -47,14 +47,16 @@ data:
       https_key_file: {{ .Values.config.https_key_file }}
       https_cert_file: {{ .Values.config.https_cert_file }}
       {{- end }}
+      kube_public_addr: [{{ .Values.config.cluster_name }}]
+      kube_listen_addr: 0.0.0.0:3026
+
+
       # kubernetes section configures
       # kubernetes proxy protocol support
-      kubernetes:
-        enabled: {{ .Values.config.kubernetes.enabled }}
-        listen_addr: 0.0.0.0:3026
-        # public_addr is used to set values
-        # setup in kubeconfig after tsh login
-        # public_addr: [kubeproxy.example.com:443]
+    kubernetes_service:
+      enabled: {{ .Values.config.kubernetes.enabled }}
+      listen_addr: 0.0.0.0:3027
+      kube_cluster_name: {{ .Values.config.cluster_name }}
 {{- if .Values.config.trusted_cluster.enabled }}
   trusted-cluster.yaml: |-
     kind: trusted_cluster

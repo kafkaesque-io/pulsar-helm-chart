@@ -1,6 +1,6 @@
 {{- if .Values.rbac.create -}}
-{{- if .Values.highPriority.enabled }}
-apiVersion: scheduling.k8s.io/v1beta1
+{{- if .Values.highPriority.createPriorityClass }}
+apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
 metadata:
   name: high-priority-teleport

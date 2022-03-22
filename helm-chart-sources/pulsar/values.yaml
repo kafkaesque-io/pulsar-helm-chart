@@ -1865,6 +1865,13 @@ kube-prometheus-stack:
           severity: critical
         annotations:
           description: Replication backlog is critical
+      - alert: certificate-expiring-soon
+        expr: (-(timestamp(certmanager_certificate_expiration_timestamp_seconds)-certmanager_certificate_expiration_timestamp_seconds)/86400) < 25
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          description: Certificate will expire in less than 25 days
     - name: components
       rules:
       - alert: zookeeper-write-latency-high

@@ -4,7 +4,7 @@ addClusterRole: true
 
 image:
   repository: quay.io/gravitational/teleport
-  tag: 8.2.0
+  tag: 8.1.0
   pullPolicy: IfNotPresent
   # Optionally specify an array of imagePullSecrets.
   # Secrets must be manually created in the namespace.
@@ -80,6 +80,10 @@ service:
       port: 3026
       targetPort: 3026
       protocol: TCP
+    proxykube2:
+      port: 3027
+      targetPort: 3027
+      protocol: TCP
     proxyssh:
       port: 3023
       targetPort: 3023
@@ -120,6 +124,8 @@ ports:
     containerPort: 3025
   proxykube:
     containerPort: 3026
+  proxykube2:
+    containerPort: 3027
   proxyssh:
     containerPort: 3023
   nodessh:
@@ -207,6 +213,7 @@ resources: {}
 highPriority:
   # Run the pod as system-cluster-critical to ensure it get scheduled over other pods 
   enabled: true
+  createPriorityClass: true
 
 rbac:
   # Specifies whether RBAC resources should be created

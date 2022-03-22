@@ -16,6 +16,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
+  "id": 5,
   "links": [],
   "panels": [
     {
@@ -1833,12 +1834,18 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(avg(pulsar_replication_backlog{job=~\"broker.*\"}) by (topic)) by (cluster)",
+          "expr": "sum(pulsar_replication_backlog)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "{{ cluster }} - In",
+          "legendFormat": "Total",
           "refId": "A"
+        },
+        {
+          "expr": "sum(pulsar_replication_backlog) by (remote_cluster)",
+          "interval": "",
+          "legendFormat": "{{ remote_cluster}}",
+          "refId": "B"
         }
       ],
       "thresholds": [],
@@ -3399,7 +3406,7 @@
     "list": []
   },
   "time": {
-    "from": "now-2d",
+    "from": "now-12h",
     "to": "now"
   },
   "timepicker": {
