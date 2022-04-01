@@ -1833,12 +1833,20 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(avg(pulsar_replication_backlog{job=~\"broker.*\"}) by (topic)) by (cluster)",
+          "expr": "sum(pulsar_replication_backlog{job=~\"broker.*\"}) by (remote_cluster)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "{{ cluster }} - In",
+          "legendFormat": "{{ remote_cluster }}",
           "refId": "A"
+        },
+        {
+          "expr": "sum(pulsar_replication_backlog{job=~\"broker.*\"})",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "Total",
+          "refId": "B"
         }
       ],
       "thresholds": [],
@@ -3399,7 +3407,7 @@
     "list": []
   },
   "time": {
-    "from": "now-2d",
+    "from": "now-12h",
     "to": "now"
   },
   "timepicker": {
