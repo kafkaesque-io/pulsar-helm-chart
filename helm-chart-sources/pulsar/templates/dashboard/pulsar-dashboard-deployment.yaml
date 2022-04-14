@@ -85,7 +85,7 @@ spec:
           containerPort: 6455
         volumeMounts:
           - name: dashboardconfig
-            mountPath: /root/dashboard/dist/config-override.js
+            mountPath: /home/appuser/dashboard/dist/config-override.js
             subPath: config-override.js
           {{- if .Values.enableTls }}
           - name: certs

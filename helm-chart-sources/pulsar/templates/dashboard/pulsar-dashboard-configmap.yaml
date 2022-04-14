@@ -18,7 +18,7 @@ data:
         "ajax_url": "",
         "rest_url": "",
         "tenant": "{{ .Values.pulsarDashboard.defaultTenant }}",
-        "polling_interval": "10000",
+        "polling_interval": "{{ .Values.pulsarDashboard.pollingIntervalMs }}",
         "wss_url": "",
         "disable_billing": "",
         "home_cluster": "{{ template "pulsar.fullname" . }}",

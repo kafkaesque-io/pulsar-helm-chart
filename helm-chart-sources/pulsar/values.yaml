@@ -336,7 +336,7 @@ image:
   pulsarDashboard:
     repository: datastax/pulsar-admin-console
     pullPolicy: IfNotPresent
-    tag: 1.0.0
+    tag: 1.2.7
   # Standalone state storage is experimental
   stateStorage:
     repository: datastax/pulsar-all
@@ -1488,6 +1488,7 @@ autoRecovery:
 ##
 pulsarDashboard:
   component: dashboard
+  pollingIntervalMs: 10000
   defaultTenant: public
   adminUser: admin
   # authMode: none or k8s
