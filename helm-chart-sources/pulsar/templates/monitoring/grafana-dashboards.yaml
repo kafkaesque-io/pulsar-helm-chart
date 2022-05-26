@@ -13,7 +13,7 @@ metadata:
     heritage: {{ .Release.Service }}
     component: "grafana-bookkeeper-dashboard"
     cluster: {{ template "pulsar.fullname" . }}
-    grafana_dashboard: bookkeeper
+    grafana_dashboard: "1"
 data:
   bookkeeper.json: |-
 {{ .Files.Get "grafana-dashboards/bookkeeper.json" | indent 4}}
@@ -32,7 +32,7 @@ metadata:
     heritage: {{ .Release.Service }}
     component: "grafana-jvm-dashboard"
     cluster: {{ template "pulsar.fullname" . }}
-    grafana_dashboard: jvm
+    grafana_dashboard: "1"
 data:
   jvm.json: |-
 {{ .Files.Get "grafana-dashboards/jvm.json" | indent 4}}
@@ -51,7 +51,7 @@ metadata:
     heritage: {{ .Release.Service }}
     component: "grafana-messaging-dashboard"
     cluster: {{ template "pulsar.fullname" . }}
-    grafana_dashboard: messaging
+    grafana_dashboard: "1"
 data:
   messaging.json: |-
 {{ .Files.Get "grafana-dashboards/messaging.json" | indent 4}}
@@ -70,7 +70,7 @@ metadata:
     heritage: {{ .Release.Service }}
     component: "grafana-namespace-dashboard"
     cluster: {{ template "pulsar.fullname" . }}
-    grafana_dashboard: namespace
+    grafana_dashboard: "1"
 data:
   namespace.json: |-
 {{ .Files.Get "grafana-dashboards/namespace.json" | indent 4}}
@@ -89,7 +89,7 @@ metadata:
     heritage: {{ .Release.Service }}
     component: "grafana-node-dashboard"
     cluster: {{ template "pulsar.fullname" . }}
-    grafana_dashboard: node
+    grafana_dashboard: "1"
 data:
   node.json: |-
 {{ .Files.Get "grafana-dashboards/node.json" | indent 4}}
@@ -108,7 +108,7 @@ metadata:
     heritage: {{ .Release.Service }}
     component: "grafana-overview-dashboard"
     cluster: {{ template "pulsar.fullname" . }}
-    grafana_dashboard: overview
+    grafana_dashboard: "1"
 data:
   overview.json: |-
 {{ .Files.Get "grafana-dashboards/overview.json" | indent 4}}
@@ -127,7 +127,7 @@ metadata:
     heritage: {{ .Release.Service }}
     component: "grafana-proxy-dashboard"
     cluster: {{ template "pulsar.fullname" . }}
-    grafana_dashboard: proxy
+    grafana_dashboard: "1"
 data:
   proxyx.json: |-
 {{ .Files.Get "grafana-dashboards/proxy.json" | indent 4}}
@@ -146,7 +146,7 @@ metadata:
     heritage: {{ .Release.Service }}
     component: "grafana-pulsarmonitor-dashboard"
     cluster: {{ template "pulsar.fullname" . }}
-    grafana_dashboard: pulsarmonitor
+    grafana_dashboard: "1"
 data:
   pulsarmonitor.json: |-
 {{ .Files.Get "grafana-dashboards/pulsarmonitor.json" | indent 4}}
@@ -165,7 +165,7 @@ metadata:
     heritage: {{ .Release.Service }}
     component: "grafana-topic-dashboard"
     cluster: {{ template "pulsar.fullname" . }}
-    grafana_dashboard: topic
+    grafana_dashboard: "1"
 data:
   topic.json: |-
 {{ .Files.Get "grafana-dashboards/topic.json" | indent 4}}
@@ -184,7 +184,7 @@ metadata:
     heritage: {{ .Release.Service }}
     component: "grafana-zookeeper-dashboard"
     cluster: {{ template "pulsar.fullname" . }}
-    grafana_dashboard: zookeeper
+    grafana_dashboard: "1"
 data:
   zookeeper.json: |-
 {{ .Files.Get "grafana-dashboards/zookeeper.json" | indent 4}}
@@ -203,7 +203,7 @@ metadata:
     heritage: {{ .Release.Service }}
     component: "grafana-broker-cache-dashboard"
     cluster: {{ template "pulsar.fullname" . }}
-    grafana_dashboard: broker-cache
+    grafana_dashboard: "1"
 data:
   broker-cache.json: |-
 {{ .Files.Get "grafana-dashboards/broker-cache.json" | indent 4}}
@@ -222,7 +222,7 @@ metadata:
     heritage: {{ .Release.Service }}
     component: "grafana-load-balance-dashboard"
     cluster: {{ template "pulsar.fullname" . }}
-    grafana_dashboard: load-balance
+    grafana_dashboard: "1"
 data:
   load-balance.json: |-
 {{ .Files.Get "grafana-dashboards/load-balance.json" | indent 4}}
@@ -241,7 +241,7 @@ metadata:
     heritage: {{ .Release.Service }}
     component: "grafana-offload-dashboard"
     cluster: {{ template "pulsar.fullname" . }}
-    grafana_dashboard: offload
+    grafana_dashboard: "1"
 data:
   offload.json: |-
 {{ .Files.Get "grafana-dashboards/offload.json" | indent 4}}
@@ -260,7 +260,7 @@ metadata:
     heritage: {{ .Release.Service }}
     component: "grafana-debezium-dashboard"
     cluster: {{ template "pulsar.fullname" . }}
-    grafana_dashboard: debezium
+    grafana_dashboard: "1"
 data:
   debezium.json: |-
 {{ .Files.Get "grafana-dashboards/debezium.json" | indent 4}}
