@@ -42,6 +42,7 @@ spec:
           tctl create -f /etc/teleport/trusted-cluster.yaml &&
           {{- end }}
           {{- if .Values.config.github.enabled}}
+          tctl create -f /etc/teleport/sso-users.yaml &&
           tctl create -f /etc/teleport/github.yaml &&
           {{- end }}
           kill `cat /tmp/teleport.pid` 

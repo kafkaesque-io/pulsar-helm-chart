@@ -77,7 +77,7 @@ data:
       # "master" proxy server:
       web_proxy_addr: {{ .Values.config.trusted_cluster.address }}:3080
       role_map:
-        - remote: "access"  
+        - remote: "sso-users"  
           local: [k8s-access]
 
   k8s-access.yaml: |-
@@ -104,6 +104,7 @@ data:
         - '{{ "{{" }}internal.kubernetes_users{{ "}}" }}'
         logins:
         - '{{ "{{" }}internal.logins{{ "}}" }}'
+        - root
         node_labels:
           '*': '*'
         rules:
@@ -128,6 +129,23 @@ data:
     version: v4
 {{- end }}
 {{- if .Values.config.github.enabled }}
+  sso-users.yaml: |-
+    kind: role
+    version: v4
+    metadata:
+      name: sso-users
+    spec:
+      allow:
+        logins: 
+        - root
+        - ec2-user
+        node_labels:
+          '*': '*'
+        kubernetes_labels:
+          '*': '*'
+        kubernetes_groups:
+        - 'system:masters'
+
   github.yaml: |-
     kind: github
     version: v3
@@ -142,7 +160,5 @@ data:
         - organization: {{ .Values.config.github.organization }}
           team: {{ .Values.config.github.team }}
           logins:
-            - ec2-user
-            - root
-          kubernetes_groups: ["system:masters"]
+            - sso-users
 {{- end }}
