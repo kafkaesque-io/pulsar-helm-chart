@@ -4,7 +4,7 @@ addClusterRole: true
 
 image:
   repository: quay.io/gravitational/teleport
-  tag: 8.1.0
+  tag: 8.3.14
   pullPolicy: IfNotPresent
   # Optionally specify an array of imagePullSecrets.
   # Secrets must be manually created in the namespace.
