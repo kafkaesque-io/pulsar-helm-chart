@@ -9,7 +9,7 @@ data:
     teleport:
       log:
         output: stderr
-        severity: DEBUG
+        severity: INFO
       data_dir: /var/lib/teleport
       storage:
         type: {{ .Values.config.storage_type }}
@@ -78,6 +78,8 @@ data:
       web_proxy_addr: {{ .Values.config.trusted_cluster.address }}:3080
       role_map:
         - remote: "sso-users"  
+          local: [k8s-access]
+        - remote: "access"  
           local: [k8s-access]
 
   k8s-access.yaml: |-
