@@ -302,7 +302,6 @@ metadata:
 data:
   book-compact.json: |-
 {{ .Files.Get "grafana-dashboards/book-compact.json" | indent 4}}
-{{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -320,6 +319,6 @@ metadata:
     cluster: {{ template "pulsar.fullname" . }}
     grafana_dashboard: "1"
 data:
-  book-compact.json: |-
+  tenant.json: |-
 {{ .Files.Get "grafana-dashboards/tenant.json" | indent 4}}
 {{- end }}
