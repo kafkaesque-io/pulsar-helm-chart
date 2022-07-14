@@ -25,7 +25,7 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 45,
-  "iteration": 1657747724846,
+  "iteration": 1657750112643,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -954,12 +954,14 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(pulsar_storage_size{cluster=~\"$cluster\", namespace=~\"$tenant/.*\"})",
+          "editorMode": "code",
+          "expr": "sum(pulsar_storage_size{cluster=~\"$cluster\", namespace=~\"$tenant/.*\"}) by (cluster)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "$namespace",
+          "legendFormat": "{{cluster}}",
           "metric": "pulsar_storage_size",
+          "range": true,
           "refId": "A",
           "step": 10
         }
@@ -1004,299 +1006,13 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "fieldConfig": {
-        "defaults": {
-          "links": []
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 0,
-        "y": 28
-      },
-      "hiddenSeries": false,
-      "id": 10,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.5.0",
-      "pointradius": 5,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sum(pulsar_replication_rate_in{cluster=~\"$cluster\", namespace=~\"$tenant/.*\", remote_cluster!=\"local\"}) by (cluster, remote_cluster)",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 2,
-          "legendFormat": "{{remote_cluster}} → {{cluster}}",
-          "metric": "pulsar_rate_in",
-          "refId": "A",
-          "step": 10
-        }
-      ],
-      "thresholds": [],
-      "timeRegions": [],
-      "title": "Incoming replication rate | any → $cluster",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": "msg / s",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        },
-        {
-          "format": "short",
-          "logBase": 1,
-          "show": false
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "links": []
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 12,
-        "y": 28
-      },
-      "hiddenSeries": false,
-      "id": 11,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.5.0",
-      "pointradius": 5,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sum(pulsar_replication_rate_out{cluster=~\"$cluster\", namespace=~\"$tenant/.*\"})",
-          "format": "time_series",
-          "intervalFactor": 2,
-          "legendFormat": "{{cluster}} → {{remote_cluster}}",
-          "metric": "pulsar_rate",
-          "refId": "A",
-          "step": 10
-        }
-      ],
-      "thresholds": [],
-      "timeRegions": [],
-      "title": "Outgoing replication rate | $cluster → any",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": "msg / s",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        },
-        {
-          "format": "short",
-          "logBase": 1,
-          "show": false
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 0,
-        "y": 35
-      },
-      "hiddenSeries": false,
-      "id": 15,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.5.0",
-      "pointradius": 5,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sum(pulsar_replication_backlog{cluster=~\"$cluster\", namespace=~\"$tenant/.*\"}) by (cluster, remote_cluster)",
-          "format": "time_series",
-          "intervalFactor": 2,
-          "legendFormat": "{{cluster}} → {{remote_cluster}}",
-          "metric": "pulsar_replication_backlog",
-          "refId": "A",
-          "step": 10
-        }
-      ],
-      "thresholds": [],
-      "timeRegions": [],
-      "title": "Replication backlog | $cluster → any",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": "messages",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        },
-        {
-          "format": "short",
-          "logBase": 1,
-          "show": false
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
       "fill": 6,
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 12,
-        "x": 12,
-        "y": 35
+        "x": 0,
+        "y": 28
       },
       "hiddenSeries": false,
       "id": 12,
@@ -1489,23 +1205,28 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Rate of writes into storage (can be lower than publish rate, when batching is enabled)",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 12,
-        "x": 0,
-        "y": 42
+        "x": 12,
+        "y": 28
       },
       "hiddenSeries": false,
-      "id": 13,
+      "id": 11,
       "legend": {
         "avg": false,
         "current": false,
         "max": false,
         "min": false,
-        "show": false,
+        "show": true,
         "total": false,
         "values": false
       },
@@ -1531,19 +1252,18 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(pulsar_storage_write_rate{cluster=~\"$cluster\", namespace=~\"$tenant/.*\"})",
+          "expr": "sum(pulsar_replication_rate_out{cluster=~\"$cluster\", namespace=~\"$tenant/.*\"})",
           "format": "time_series",
-          "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "$namespace",
-          "metric": "pulsar_storage_write_rate",
+          "legendFormat": "{{cluster}} → {{remote_cluster}}",
+          "metric": "pulsar_rate",
           "refId": "A",
           "step": 10
         }
       ],
       "thresholds": [],
       "timeRegions": [],
-      "title": "Storage Write Rate",
+      "title": "Outgoing replication rate | $cluster → any",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1558,8 +1278,9 @@
       "yaxes": [
         {
           "format": "short",
-          "label": "entry / s",
+          "label": "msg / s",
           "logBase": 1,
+          "min": "0",
           "show": true
         },
         {
@@ -1581,23 +1302,28 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Reads from bookies",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 12,
-        "x": 12,
-        "y": 42
+        "x": 0,
+        "y": 35
       },
       "hiddenSeries": false,
-      "id": 14,
+      "id": 10,
       "legend": {
         "avg": false,
         "current": false,
         "max": false,
         "min": false,
-        "show": false,
+        "show": true,
         "total": false,
         "values": false
       },
@@ -1623,19 +1349,19 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(pulsar_storage_read_rate{cluster=~\"$cluster\", namespace=~\"$$tenant/.*\"})",
+          "expr": "sum(pulsar_replication_rate_in{cluster=~\"$cluster\", namespace=~\"$tenant/.*\", remote_cluster!=\"local\"}) by (cluster, remote_cluster)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "read rate",
-          "metric": "pulsar_storage_read_rate",
+          "legendFormat": "{{remote_cluster}} → {{cluster}}",
+          "metric": "pulsar_rate_in",
           "refId": "A",
           "step": 10
         }
       ],
       "thresholds": [],
       "timeRegions": [],
-      "title": "Storage read entry rate",
+      "title": "Incoming replication rate | any → $cluster",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1650,7 +1376,98 @@
       "yaxes": [
         {
           "format": "short",
-          "label": "entries / s",
+          "label": "msg / s",
+          "logBase": 1,
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 35
+      },
+      "hiddenSeries": false,
+      "id": 15,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "8.5.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum(pulsar_replication_backlog{cluster=~\"$cluster\", namespace=~\"$tenant/.*\"}) by (cluster, remote_cluster)",
+          "format": "time_series",
+          "intervalFactor": 2,
+          "legendFormat": "{{cluster}} → {{remote_cluster}}",
+          "metric": "pulsar_replication_backlog",
+          "refId": "A",
+          "step": 10
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Replication backlog | $cluster → any",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "messages",
           "logBase": 1,
           "min": "0",
           "show": true
@@ -1704,46 +1521,12 @@
       },
       {
         "current": {
-          "selected": false,
-          "text": "athena-cdc/astracdc",
-          "value": "athena-cdc/astracdc"
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "prometheus"
-        },
-        "definition": "pulsar_producers_count{cluster=\"$cluster\"}",
-        "hide": 0,
-        "includeAll": false,
-        "label": "Namespace",
-        "multi": false,
-        "name": "namespace",
-        "options": [],
-        "query": {
-          "query": "pulsar_producers_count{cluster=\"$cluster\"}",
-          "refId": "Prometheus-namespace-Variable-Query"
-        },
-        "refresh": 2,
-        "regex": "/.*,namespace=\\\"([^\\\"]+)\\\".*/",
-        "skipUrlSync": false,
-        "sort": 1,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
-      },
-      {
-        "current": {
           "selected": true,
           "text": [
-            "boomi",
-            "cymatic",
-            "cymatic-dev2"
+            "commonstock-production"
           ],
           "value": [
-            "boomi",
-            "cymatic",
-            "cymatic-dev2"
+            "commonstock-production"
           ]
         },
         "datasource": {
@@ -1753,7 +1536,7 @@
         "definition": "pulsar_producers_count{cluster=\"$cluster\"}",
         "hide": 0,
         "includeAll": false,
-        "label": "Namespace",
+        "label": "Tenant",
         "multi": true,
         "name": "tenant",
         "options": [],
@@ -1803,6 +1586,6 @@
   "timezone": "browser",
   "title": "Pulsar / Tenant",
   "uid": "FV6Yoeenz",
-  "version": 2,
+  "version": 4,
   "weekStart": ""
 }
