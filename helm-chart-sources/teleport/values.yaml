@@ -179,6 +179,9 @@ config:
     client_secret:
     organization:
     team:
+  configured_users:
+    enabled: false
+  logLevel: INFO
 
 
 

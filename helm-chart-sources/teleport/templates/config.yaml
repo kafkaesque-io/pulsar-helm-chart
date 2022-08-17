@@ -9,7 +9,7 @@ data:
     teleport:
       log:
         output: stderr
-        severity: INFO
+        severity: {{ .Values.config.logLevel }}
       data_dir: /var/lib/teleport
       storage:
         type: {{ .Values.config.storage_type }}
@@ -79,8 +79,10 @@ data:
       role_map:
         - remote: "sso-users"  
           local: [k8s-access]
+      {{- if .Values.config.configured_users.enabled }}
         - remote: "access"  
           local: [k8s-access]
+      {{- end }}
 
   k8s-access.yaml: |-
     kind: role
