@@ -182,6 +182,7 @@ config:
   configured_users:
     enabled: false
   logLevel: INFO
+  checksum_override: ""
 
 
 

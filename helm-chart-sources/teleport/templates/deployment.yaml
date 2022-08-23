@@ -21,7 +21,11 @@ spec:
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
       annotations:
+        {{- if .Values.config.checksum_override }}
+        checksum/config: {{ .Values.config.checksum_override }}
+        {{- else }}
         checksum/config: {{ toYaml .Values.config | sha256sum }}
+        {{- end }}
 {{- if .Values.annotations }}
 {{ toYaml .Values.annotations | indent 8 }}
 {{- end }}
