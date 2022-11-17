@@ -183,6 +183,9 @@ config:
     enabled: false
   logLevel: INFO
   checksum_override: ""
+  # With restricted_users enabled, the users will not be able to exec into pods or access secrets
+  restricted_users:
+    enabled: false
 
 
 

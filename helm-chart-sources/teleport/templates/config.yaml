@@ -100,8 +100,12 @@ data:
         db_users:
         - '{{ "{{" }}internal.db_users{{ "}}" }}'
         kubernetes_groups:
+        {{- if .Values.config.restricted_users.enabled }}
+        - 'restricted'
+        {{- else }}
         - '{{ "{{" }}internal.kubernetes_groups{{ "}}" }}'
         - 'system:masters'
+        {{- end }}
         kubernetes_labels:
           '*': '*'
         kubernetes_users:
