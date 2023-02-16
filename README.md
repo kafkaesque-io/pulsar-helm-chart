@@ -2,6 +2,8 @@
 [![CircleCI](https://circleci.com/gh/kafkaesque-io/pulsar-helm-chart/tree/master.svg?style=svg)](https://circleci.com/gh/kafkaesque-io/pulsar-helm-chart/tree/master)
 [![LICENSE](https://img.shields.io/hexpm/l/pulsar.svg)](https://github.com/kafkaesque-io/pulsar-helm-chart/blob/master/LICENSE)
 
+This chart has been deprecated and is no longer actively developed. It has bee replaced by https://github.com/datastax/pulsar-helm-chart
+
 # Helm Chart for an Apache Pulsar Cluster
 
 This Helm chart configures an Apache Pulsar cluster. It is designed for production use, but can also be used in local development environments with the proper settings.
