@@ -56,7 +56,7 @@ spec:
         imagePullPolicy: {{ .Values.image.zookeeper.pullPolicy }}
         command: ["sh", "-c"]
         args:
-          - >-
+          - |-
             until nslookup {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-{{ add (.Values.zookeeper.replicaCount | int) -1 }}.{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}.{{ .Release.Namespace }}; do
               sleep 3;
             done;
@@ -70,7 +70,7 @@ spec:
       {{- end }}
         command: ["sh", "-c"]
         args:
-          - >
+          - |
             bin/pulsar initialize-cluster-metadata \
               --cluster {{ template "pulsar.fullname" . }} \
               --zookeeper {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }} \
